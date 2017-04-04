@@ -1,0 +1,37 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9) (preloaded format=pdflatex 2016.10.6)  4 APR 2017 18:22
+entering extended mode
+**\nonstopmode\input intro.tex
+(intro.tex ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\subfiles\subfiles.cls"
+Document Class: subfiles 2012/05/23 Federico Garcia
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\verbatim.sty"
+Package: verbatim 2014/10/28 v1.5q LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks14
+\verbatim@line=\toks15
+\verbatim@in@stream=\read1
+)
+Preamble taken from file `../thesis.tex'
+(../thesis.tex
+
+! LaTeX Error: File `cmuthesis.cls' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: cls)
+
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.4 
+     
+*** (cannot \read from terminal in nonstop modes)
+
+ 
+Here is how much of TeX's memory you used:
+ 58 strings out of 493334
+ 1072 string characters out of 3136675
+ 53242 words of memory out of 3000000
+ 3674 multiletter control sequences out of 15000+200000
+ 3640 words of font info for 14 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 18i,0n,17p,183b,16s stack positions out of 5000i,500n,10000p,200000b,50000s
+!  ==> Fatal error occurred, no output PDF file produced!
