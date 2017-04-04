@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9) (preloaded format=pdflatex 2016.10.6)  4 APR 2017 18:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9) (preloaded format=pdflatex 2016.10.6)  4 APR 2017 18:40
 entering extended mode
 **\nonstopmode\input thesis.tex
 (thesis.tex (cmuthesis.cls
@@ -493,31 +493,24 @@ Chapter 3.
 
 ]
 Chapter 4.
-[7] [8
+(Conclusion/conclusion.tex) [7] [8
 
 ]
 No file thesis.bbl.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 147.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 147.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 148.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 148.
 (thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 147.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 147.
-
-
-Package rerunfilecheck Warning: File `thesis.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `thesis.out':
-(rerunfilecheck)             Before: 7D3EC936398F691EFF7F5C24C963EB2E;224
-(rerunfilecheck)             After:  EB309DF439FB20A9D4093688A36DC5F5;318.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 147.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 148.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 148.
+Package rerunfilecheck Info: File `thesis.out' has not changed.
+(rerunfilecheck)             Checksum: EB309DF439FB20A9D4093688A36DC5F5;318.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 148.
  ) 
 Here is how much of TeX's memory you used:
- 7511 strings out of 493334
- 107663 string characters out of 3136675
+ 7517 strings out of 493334
+ 107756 string characters out of 3136675
  206971 words of memory out of 3000000
- 10890 multiletter control sequences out of 15000+200000
+ 10892 multiletter control sequences out of 15000+200000
  23781 words of font info for 52 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  39i,14n,39p,262b,355s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -526,9 +519,9 @@ m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program
 Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)
 /MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9
 /fonts/type1/urw/times/utmri8a.pfb>
-Output written on thesis.pdf (22 pages, 64341 bytes).
+Output written on thesis.pdf (22 pages, 66309 bytes).
 PDF statistics:
- 144 PDF objects out of 1000 (max. 8388607)
+ 156 PDF objects out of 1000 (max. 8388607)
  32 named destinations out of 1000 (max. 500000)
- 33 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 49 words of extra memory for PDF output out of 10000 (max. 10000000)
 
