@@ -49,7 +49,7 @@ The task is to drill a hole, shown as a green cylinder, at a specific location d
 Internal tolerances prevent simply treating the entire system as a rigid body.
 
 
-This chapter first considers rigid-body particle filtering for high-precision localization (section \ref{sec:rigid_body}), which overcomes the particle starvation problem and serves as the basis for this paper \cite{Saund2017}. 
+This chapter first considers rigid-body particle filtering for high-precision localization (section \ref{sec:rigid_body}), which overcomes the particle starvation problem and serves as the basis for this chapter \cite{Saund2017}. 
 The datum-based particle filter is then introduced to generalize this rigid-body approach for objects with coupled rigid sections (section \ref{sec:datum}).
 Two related but different approaches are proposed for this problem.
 The first approach maintains a single particle filter system that stores the full joint distribution of the coupled datums, while the second approach simplifies the relationships by assuming independence between the distribution of the internal transformations and the pose of the sections, and models the system using separate coupled particle filters. 
@@ -117,55 +117,252 @@ The entire information obtained from the measurement $t$ is $z_t = \{\maction_t,
 Measurement error exists due to sensor error and robot uncertainty. 
 %% For the robot arms and sensors used in manufacturing, the uncertainty added typically ranges from 0.1 to 1mm \cite{Saund2013}. 
 
+\subsection{Problems with the standard particle filter} \label{sec:pfilterProblems}
 
-\subsection{Modeling Part Uncertainty: Problems with the Standard Particle Filter} 
+A common method of updating particles based on a measurement is importance sampling \cite{Thrun2000}.
+In importance sampling each particle is weighted by the probability of the measurement conditioned on the state that particle represents. 
+This is usually followed by resampling, where particles are redrawn from the set of weighted particles with probability proportional to their weights. 
+The effectiveness of importance sampling relies on the existence of multiple particles consistent with the measurement, such that inconsistent particles will have low weights and be unlikely to be resampled, but a sufficient number of particles will be resampled to model the true belief of the state. 
 
-At each time step, the belief is a probability distribution of poses, approximated using a particle filter. 
-This belief distribution is also used to plan measurements actions that maximize the expected information gain. 
-The advantage of using a particle filter over other Bayes estimation methods, such as the original\cite{kalman1960new}, extended\cite{kalman1961new} or unscented\cite{julier1997new} Kalman filter, is that a particle filter can model multi-modal non-Gaussian distribution with a non-linear measurement model.
+Importance sampling tends to break down in situations with accurate measurements and low densities of particles.
+This is because when a measurement is consistent with the true prior belief yet no particles are consistent with the measurement, a situation called \textit{particle starvation}, resampling will yield a set of particles that does not model the true posterior belief. 
+A more accurate sensor measurement is consistent with a smaller volume of state space, thus a higher density of particles is required. 
+For higher dimensional state spaces and more accurate sensors the number of particles required becomes prohibitively computationally expensive. 
+This leads to the counter-intuitive result that particle filters tend to perform worse as measurement accuracy increases \cite{Koval2013}. 
 
 
-The belief of the state at time $t$ is dependent on the measurements: $bel(x_t) = p(x_t| z_1, \textellipsis, z_t, x_0)$. The measurement model follows a non-linear probabilistic function of the true state: $\measurement_t \sim p(\measurement_t|\state_{actual})$. 
-As in all Bayesian filters, the belief $bel(x_{t+1})$ is calculated recursively as follows\footnote{The full update of a Bayesian filter also includes a process model.
-The assumption of a fixed object yields the static process model and this simpler formulation} \cite{Thrun2000}:
-\begin{align}
-bel(x_{t+1}) \leftarrow \eta \ p(z_t|x_{t+1}) \  bel(x_t)
-\end{align}
-with $\eta$ as a normalization factor. Each new measurement value triggers an update to the belief $bel(x)$. 
+%% Artificially increase the measurement uncertainty alleviates particle starvation, however this loses the benefits of using an accurate sensor. 
+%% Another technique uses an adaptive number of particles, as to only incur a high computational cost when it is needed. 
+%% Once the particles converge updates will be fast, yet initial updates will still be slow.
 
-\subsection{Rejection Sampling to Overcome Particle Starvation}
-  
-The traditional particle filter uses importance sampling to update particles \cite{Thrun2000}, where samples are drawn based on the process model and weighted by the observation. However, for precise measurements and higher dimensions, the chance that a particle is consistent with the measurement is extremely low, thus few of them will survive during the update \cite{Koval2013}. 
-Alleviating this problem would require an exponential (in the dimension of the state) number of particles to maintain high enough particle density.
 
-Instead, the approach used updates the particles using rejection sampling \cite{Saund2017}. At each update step $t$, the continuous prior belief is estimated using Gaussian Mixture Models by applying a Gaussian kernel to each particle, with the kernel covariance proportional to the covariance of the particle configurations. 
-New samples $\particle[t+1][i]$ are then drawn directly from this estimated prior. 
-Using rejection sampling, each sample is accepted with probability $p(z_t|\particle[t+1])$. 
-Sampled configurations with the part boundary far from the measured contact location, and thus inconsistent with the measurement, will have a low probability of being accepted
-%% This probability depends on the actual distance between the measurement and the object: if the object with pose $\particle[t]$ is sufficiently far away from the measurement, the sample will be rejected.
+\subsection{Rejection Sampling Method}
+%% Our approach to update our belief based on a measurement uses rejection sampling to avoid the issues of importance sampling. 
+%% We do not require a high density of particles to avoid particle starvation, and failure of rejection sampling is far easier to notice and resolve. 
+%% Most importantly, we increase the limits of state dimensionality and measurement accuracy we are able to handle efficiently. 
 
-The computational cost of potentially rejecting many samples is offset by using a voxelized distance field \cite{Felzenszwalb2004}, where the distance between each voxel in 3D workspace and the object is precomputed. 
-As the measurement $\measurement_t$ is described in the world frame, during the rejection sampling the measurement is transformed to the part frame before lookup in the distance field.
-%% , as each sample represents a transformation relation $T(x_{t})$ from world frame to the part 
-%% frame. 
-The minimal unsigned distance $dist_u(\measurement_t,S)$ between each measurement $\measurement_t$ and the object $S(\particle[t+1])$ can be obtained directly\cite{Saund2017}: 
-\begin{align}\label{eq:unsigned}
-dist_u(M_t,S(\particle[t+1])) = D_f(T(\particle[t+1])^{-1}M_t)
-\end{align}
-\begin{align}\label{eq:signed}
-dist(M_t,&S(\particle[t+1])) =\\
- &\left\{
+An alternate approach is to use rejection sampling. Rejection sampling does not require a high density of particles to avoid particle starvation and failure of rejection sampling is far easier to notice and resolve. Most importantly, we can increase the limits of state dimensionality and measurement accuracy that can be handled efficiently.
+
+
+
+
+
+Rejection sampling generates independent samples from a density $f$ by sampling from a different distribution $g$. 
+A constant $M$ is determined such that $f(x) \leq M g(x) \ \forall \  x$. 
+A sample $x^*$ drawn from $g(x)$ is accepted with probability $f(x^*) / {M g(x^*)}$ and rejected otherwise. 
+The process is repeated until the desired number of samples has been accepted. 
+We wish to sample particles from the posterior $bel(x_{t+1})$ but cannot do so directly. 
+Instead we sample from our continuous prior belief $bel(x)$ and possibly reject based on the measurement.
+
+
+
+\textit{Broad Particles}: We first reconstruct the continuous prior belief by broadening each of the particles. 
+We apply a \textit{Gaussian kernel} to the particles, with the kernel covariance proportional to the covariance of the particle states. 
+This reduces particle starvation, as even if no prior particle is consistent with the measurement, the continuous belief generated fills in the gaps between particles.
+
+
+
+%% \begin{align}
+%%     \Sigma = COV(\chi)\\
+%%     x_{sampled} \sim \sum_i \eta \ (\chi_i + \normal{k \Sigma})
+%% \end{align}
+
+\subsection{Fast Evaluation of Sampled States}
+
+States sampled from this continuous prior are then rejected if they are inconsistent with the measurement. 
+While the formulation of rejection sampling allows us to model complicated measurement error, we implement a binary measurement model. We reject all sampled particles where the measured point is sufficiently far from all faces of the object. We define ``sufficiently far'' as more than 3 standard deviations of the sensor measurement noise.
+As a low uncertainty measurement will accept only a thin manifold in state space, the probability of sampling a particle consistent with the measurement may be low, and a lot of sampling may be required, therefore we desire the rejection process to be fast.
+
+
+
+To reduce the computational cost per sampled state we use discretized space, known as a \textit{distance field} \cite{Felzenszwalb2004}, to precompute and cache the minimum unsigned distance $D_f(p)$ from point $p$ in voxelized space to the object surface $\partial S\subseteq \mathbb{R}^3$:
+\begin{align}\label{eq:7}
+D_f(p) = \min_{q\in \mathbb{R}^3}(||p - q|| + f(q))\\
+\label{eq:8}
+f(q) = \left\{
 \begin{array}{ll}
-dist_u(M_t,S(\particle[t+1])) - r_p, & \text{if }M_t\notin S\\
--dist_u(M_t,S(\particle[t+1])) - r_p, & \text{otherwise}.
+0, & \text{if }q\in\partial S\\
+\infty & \text{otherwise}.
+\end{array}
+\right.
+\end{align}
+
+As the object is fixed during the localization process, voxelization can be done for the entire piece based on the given CAD mesh model in the precomputation step. 
+
+
+\textit{Voxelization}: Voxelization is the key part to transform the mesh model to axis-aligned discretized space, which can be stored and accessed easily as a standard array. 
+The array form of the CAD model can greatly facilitate the computation of the distance field, as described below. 
+Each voxel is assumed to be a cube in 3D space. 
+A fast 3D Triangle-Box Overlap method \cite{Akenine-Mollser2001} is used to label the voxels that overlap the mesh triangles of the object surface. 
+The voxel map is then mapped to a binary-valued 3D array $f(q)$, where each value is either $0$ or $\infty$ depending on whether the corresponding voxel overlaps the object surface.
+
+\textit{Voxelized Distance Field}: The computation of distance field $D_f(p)$ takes the input of the computed binary array $f(q)$ (Eq. \ref{eq:8}), and a linear-time algorithm for 3D distance field construction \cite{Felzenszwalb2004} is then used. The resulting distance field is also stored in an array for constant time access during the evaluation of sampled states.
+ 
+\textit{Fast Evaluation}: Different configurations result in different poses of the object in the workspace, which makes it difficult to compute the distance field directly in the world frame. 
+Instead, the computation of the voxel map and distance field is relative to the object frame, where the object is assumed fixed during the entire localization. 
+Each measurement $M_t$ in the workspace is then transformed into the part frame, where the transform $T(x_{t+1})$ comes from the pose of the sampled state $x_{t+1}$. 
+Therefore, by transforming back to the object frame, all measurements on this same object can share the same distance field, where the minimal unsigned distance $dist_u(M_t,S)$ between each measurement $M_t$ and the object $S(x_{t+1})$ can be obtained directly: 
+\begin{align}\label{eq:9}
+dist_u(M_t,S(x_{t+1})) = D_f(T(x_{t+1})^{-1}M_t)
+\end{align}
+
+%% Because $dist_u(M_t,S)$ is the distance between the center of the spherical tip of the probe and the object, when the radius $r_p$ of tip is non-zero, whether the center of the probe is inside the object becomes important. 
+%% Signed distance $dist(M_t,S(x_t)$ between the probe and the object can be obtained from unsigned distance, as shown in Eq. \ref{eq:5}, by checking whether the voxel is inside or outside of the object. 
+%% For the manifold shape object, ray-casting is applied from the corresponding voxel in a certain direction: if the number of intersections between the ray and mesh is odd, the voxel is inside of the object; otherwise, it's outside.
+
+The signed distance $dist(M_t,S(x_t))$ between the probe and the object can be obtained from the unsigned distance, as shown in Eq. \ref{eq:10}, by checking whether the voxel is inside or outside of the object. 
+For the manifold shape object, ray-casting is applied from the corresponding voxel in a certain direction: the voxel is inside of the object only if the number of intersections between the ray and mesh is odd
+\begin{align}\label{eq:10}
+dist(M_t,S(x_t) = \left\{
+\begin{array}{ll}
+dist_u(M_t,S(x_t) - r_p, & \text{if }M_t\notin S\\
+-dist_u(M_t,S(x_t) - r_p, & \text{otherwise}.
 \end{array}
 \right.
 \end{align}  
-where $D_f$ is the precomputed distance field, $r_p$ is the radius of the spherical tip of the touch probe. 
-%% For 1D range finder, $r_p=0$.
 
-New samples $x_t$ are accepted based on the signed distance $dist(M_t,S(x_t))$ between the object and the measurement on the object. Rejection sampling continues until a desired number of particles have been accepted for this update. 
-These particles represent the updated belief $bel(x_t)$ of the pose. 
+The unsigned distance $dist(M_t,S)$ is always $0$ in the ideal case, however, when evaluating a sampled state, only those that satisfy $|dist(M_t,S)| > T_d$ will be rejected, where $T_d$ is the tolerance selected according to the measurement uncertainty of the touch probe and the robot. If the distance is within the tolerance, ray-casting is then applied to check intersections from the start point $\mathcal{A}_p$ along the path vector $\mathcal{A}_v$ in order to determine whether the path is free of collision with other parts of the object.
+
+When the measurement is very accurate, in order to sample enough particles from the prior belief, a large number of states will get rejected, which makes the ray-casting for all sampled states computationally expensive. Instead, early rejection is applied using a greater distance $dist_u(M_t,S) + r_p$ before the computation of signed distance. 
+
+\subsection{Improvements on the Particle Filter}
+\textit{Adaptive Voxelization}: When the workspace is large enough, it will not be feasible to compute a distance transform for the entire workspace while maintaining a sufficiently small voxel size due to the huge memory requirements. 
+Instead, the distance field for each measurement is generated prior to the update. 
+As the belief of the object's pose is represented as a distribution, the range of the distance field $DF$ for each measurement $M_t$ is selected so that:
+\begin{align}
+    \xi < \int_{T(x_t)^{-1} M_t \in DF} bel(x_{t}) dx
+\end{align}
+
+%% Where $T(x_{t-1})^{-1}M_t$ is the measurement transformed back to the object frame. 
+The voxel size is adjusted accordingly while keeping the number of voxels fixed. 
+When there is large uncertainty the voxels will become larger to improve the sample speed. When the uncertainty is low the precision is increased.
+
+
+%% We improve the performance of our particle filter, shown in Figure \ref{fig:FasterParticles}, by adaptively choose the bandwidth and number of particles.
+
+\textit{Adaptive Bandwidth}: The selection of the Gaussian kernel bandwidth $h$ is important during the sampling process. 
+A larger bandwidth is needed when the variance of $bel(x_t)$ is large for a fixed number of particles; otherwise a smaller bandwidth is preferred to avoid over-smoothing. 
+Silverman\textquotesingle s rule of thumb estimator \cite{Silverman1986} is used to dynamically adjust the bandwidth:
+$h(t) = (\frac{4}{(d+2)n})^{1/(d+4)} \hat{\sigma}_t$, where $\hat{\sigma}_t$ is the standard deviation of the sampled states and number of dimensions $d = 6$.
+%% $h(t) = (\frac{4}{3n})^{1/5} \hat{\sigma}_t$, where $\hat{\sigma}_t$ is the standard deviation of the sampled states.
+
+\textit{Adaptive Sample Size}: The number of particles is determined by \textit{Kullback-Leibler divergence} (KL-divergence) which measures the difference between the sample-based maximum likelihood estimate $\hat{p}$ and the true distribution $p$:
+\begin{align}
+D_{KL}(\hat{p},p) = \sum_{x}\hat{p}(x)log\frac{\hat{p}(x)}{p(x)}.
+\end{align}
+
+%% Suppose that the true distribution is given by a discrete multinomial distribution with $k$ different bins with probability $p=\{p_i\}$ and the number of samples drawn from each bin $x=\{x_i\}$, the \textit{log-likelihood ratio statistic} $log\Lambda$ is£º
+%% \begin{align}
+%% log\Lambda(\hat{p},p) = log\frac{P(x|\hat{p})}{P(x|\hat{p})}&=n\sum_{i}\hat{p}_ilog\frac{\hat{p}_i}{p_i}\\&=nD_{KL}(\hat{p},p)
+%% \end{align}
+%% where $log\Lambda$ converges to $\chi^2$-distribution. By substituting $log\Lambda$ with $D_{KL}(\hat{p},p)$, it can be shown that with probability $1-\delta$, the probability that KL-divergence is less than or equal to $\epsilon$ is:
+%% \begin{align}
+%% P(D_{KL}(\hat{p},p) \leq \epsilon) \stackrel{.}{=} P(\chi_{k-1}^2\leq 2n\epsilon) = 1-\delta
+%% \end{align}
+%% where $\chi_{k-1}^2$ is the $\chi^2$-distribution with $k-1$ degrees of freedom. By using Wilson-Hilferty transformation of $\chi^2$-distribution, the sample size $n$ is given by:
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+  \node (img) {\includegraphics[width=.5\linewidth]{./Localization/diff_trans_method}};
+  \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+       {Translational Error (cm)};
+\end{tikzpicture}
+\begin{tikzpicture}
+  \node (img) {\includegraphics[width=.5\linewidth]{./Localization/diff_rot_method}};
+  \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+       {Rotational Error (rad)};
+\end{tikzpicture}
+\begin{tikzpicture}
+  \node (img) {\includegraphics[width=.5\linewidth]{./Localization/time_method}};
+  \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+       {Time for Particle Update (ms)};
+  \node[below=of img, node distance=0cm, yshift=1.2cm] 
+       {Measurement Number};
+
+\end{tikzpicture}
+
+
+\caption{Comparison of the time and accuracy of the particle filter update step when using Adaptive Bandwidth and Adaptive Sample Size}
+\label{fig:FasterParticles}
+\end{figure}
+
+
+Suppose that the true distribution is given by a discrete multinomial distribution with $k$ different bins, it can be shown that with probability $1-\delta$, the KL-divergence is less than or equal to $\epsilon$ when the sample size $n$ is given by \cite{Fox2003}:
+
+\begin{align}
+   n &= \frac{1}{2\epsilon} \chi_{k-1, 1-\delta}^2 \\
+   \label{eq:17}
+   &\approx \frac{k-1}{2\epsilon} 
+     \left( 1-\frac{2}{9(k-1)} + \sqrt{\frac{2}{9(k-1)} z_{1-\delta} } \ \right)^3
+\end{align}
+where $\chi_{k-1, 1-\delta}^2$ is the upper $1-\delta$ quantile of $\chi^2$-distribution with $k-1$ degrees of freedom, and $z_{1-\delta}$ is the upper $1-\delta$ quantile of the normal distribution.
+
+%% Therefore, the number of particles $n$ can be adjusted according to the number $k$ of bins with support, as shown in Eq. \ref{eq:17}. The bins are implemented as a multidimensional grid with fixed size in the configuration space. During sampling, the number $k$ of occupied bins is counted simultaneously whenever the newly sampled state falls into an empty bin. The current sample size is counted and each increment of $k$ will result in an update of the desired sample size $n$. When the actual number of particles reaches the desired value or a predefined minimal limit, whichever is smaller, the sampling process finishes.
+
+Therefore, the number of particles $n$ can be adjusted according to the number $k$ of bins with support, as shown in Eq. \ref{eq:9}. The bins are implemented as a multidimensional grid with fixed size in the configuration space. During sampling, the number $k$ of occupied bins is counted whenever the newly sampled state falls into an empty bin. The current sample size is counted and each increment of $k$ will result in an update of desired sample size $n$. When the actual number of particles reaches the desired value or a predefined maximal limit, whichever is smaller, the sampling process finishes.
+
+
+
+
+
+
+Figure \ref{fig:FasterParticles} shows the comparison between the particle filters with different improvements that are mentioned above. 
+The simulation uses a mesh model with 39444 triangles. 
+The set of measurements used for each method is fixed and predefined. 
+The baseline method represents the particle filter that only implements adaptive voxelization while using fixed kernel bandwidth $h=0.0035$ and fixed number of particles ($n=500$). 
+Adaptive Bandwidth improves the convergence accuracy significantly compared to the baseline method, while Adaptive Sample Size generally leads to poorer convergence with faster speed. 
+The combined method applies all of the improvements above. 
+It can achieve both faster and more accurate convergence compared to the other methods.
+
+%% \subsection{Modeling Part Uncertainty: Problems with the Standard Particle Filter} 
+
+%% At each time step, the belief is a probability distribution of poses, approximated using a particle filter. 
+%% This belief distribution is also used to plan measurements actions that maximize the expected information gain. 
+%% The advantage of using a particle filter over other Bayes estimation methods, such as the original\cite{kalman1960new}, extended\cite{kalman1961new} or unscented\cite{julier1997new} Kalman filter, is that a particle filter can model multi-modal non-Gaussian distribution with a non-linear measurement model.
+
+
+%% The belief of the state at time $t$ is dependent on the measurements: $bel(x_t) = p(x_t| z_1, \textellipsis, z_t, x_0)$. The measurement model follows a non-linear probabilistic function of the true state: $\measurement_t \sim p(\measurement_t|\state_{actual})$. 
+%% As in all Bayesian filters, the belief $bel(x_{t+1})$ is calculated recursively as follows\footnote{The full update of a Bayesian filter also includes a process model.
+%% The assumption of a fixed object yields the static process model and this simpler formulation} \cite{Thrun2000}:
+%% \begin{align}
+%% bel(x_{t+1}) \leftarrow \eta \ p(z_t|x_{t+1}) \  bel(x_t)
+%% \end{align}
+%% with $\eta$ as a normalization factor. Each new measurement value triggers an update to the belief $bel(x)$. 
+
+%% \subsection{Rejection Sampling to Overcome Particle Starvation}
+  
+%% The traditional particle filter uses importance sampling to update particles \cite{Thrun2000}, where samples are drawn based on the process model and weighted by the observation. However, for precise measurements and higher dimensions, the chance that a particle is consistent with the measurement is extremely low, thus few of them will survive during the update \cite{Koval2013}. 
+%% Alleviating this problem would require an exponential (in the dimension of the state) number of particles to maintain high enough particle density.
+
+%% Instead, the approach used updates the particles using rejection sampling \cite{Saund2017}. At each update step $t$, the continuous prior belief is estimated using Gaussian Mixture Models by applying a Gaussian kernel to each particle, with the kernel covariance proportional to the covariance of the particle configurations. 
+%% New samples $\particle[t+1][i]$ are then drawn directly from this estimated prior. 
+%% Using rejection sampling, each sample is accepted with probability $p(z_t|\particle[t+1])$. 
+%% Sampled configurations with the part boundary far from the measured contact location, and thus inconsistent with the measurement, will have a low probability of being accepted
+%% %% This probability depends on the actual distance between the measurement and the object: if the object with pose $\particle[t]$ is sufficiently far away from the measurement, the sample will be rejected.
+
+%% The computational cost of potentially rejecting many samples is offset by using a voxelized distance field \cite{Felzenszwalb2004}, where the distance between each voxel in 3D workspace and the object is precomputed. 
+%% As the measurement $\measurement_t$ is described in the world frame, during the rejection sampling the measurement is transformed to the part frame before lookup in the distance field.
+%% %% , as each sample represents a transformation relation $T(x_{t})$ from world frame to the part 
+%% %% frame. 
+%% The minimal unsigned distance $dist_u(\measurement_t,S)$ between each measurement $\measurement_t$ and the object $S(\particle[t+1])$ can be obtained directly\cite{Saund2017}: 
+%% \begin{align}\label{eq:unsigned}
+%% dist_u(M_t,S(\particle[t+1])) = D_f(T(\particle[t+1])^{-1}M_t)
+%% \end{align}
+%% \begin{align}\label{eq:signed}
+%% dist(M_t,&S(\particle[t+1])) =\\
+%%  &\left\{
+%% \begin{array}{ll}
+%% dist_u(M_t,S(\particle[t+1])) - r_p, & \text{if }M_t\notin S\\
+%% -dist_u(M_t,S(\particle[t+1])) - r_p, & \text{otherwise}.
+%% \end{array}
+%% \right.
+%% \end{align}  
+%% where $D_f$ is the precomputed distance field, $r_p$ is the radius of the spherical tip of the touch probe. 
+%% %% For 1D range finder, $r_p=0$.
+
+%% New samples $x_t$ are accepted based on the signed distance $dist(M_t,S(x_t))$ between the object and the measurement on the object. Rejection sampling continues until a desired number of particles have been accepted for this update. 
+%% These particles represent the updated belief $bel(x_t)$ of the pose. 
 
 
 \section{Datum Based Particle Filter} \label{sec:datum}
@@ -506,12 +703,36 @@ To calculate the conditional entropy, $H(\particles[][][G]|\maction)$, the measu
 where $\delta_j$ is the deviation from the nominal measurement action, $Simulate$ computes the value for a measurement action applied to the part in a specific configuration, and with $\eta_j$ as measurement noise.
 
 
+\subsubsection{Measurement Simulation}
+
+
+To predict the measurement value obtained from a measurement action: $p(m_j)$, the measurement uncertainty is again approximated by a discrete sampling of the continuous distribution.
+For a single measurement action, and for each particle a sampling of measurement values is drawn from the distribution of measurement values that would be obtained if that particle was the true state.
+
+
+The sensor measurement will indicate a distance $z$ traveled along the measurement action $\mathcal{A}$ until reaching the part. 
+We start by examining the distance from the start point along the vector until the first intersection with the part. 
+Though a crude approximation of the true measurement value, the benefit of this model is that given a measurement action and part pose, the measurement value can be calculated as the intersection of a ray and a triangular mesh. 
+Due to their heavy use in computer graphics, ray-mesh intersection algorithms have been heavily optimized and can be computed in parallel.
+
+
+\textit{Measurement Width}: While a ray is infinitely thin, the touch probe's spherical tip has a non-zero diameter, and thus will cast a cylinder rather than a ray.
+The true value returned by our sensor is the smallest distance until any contact with the part.
+Ray casting approximates the measurement cylinder by discrete uniformly spaced rays on the cylinder exterior, with the measurement value as  the lowest ray-mesh intersection distance from this set. 
+
+
+\textit{Measurement Error}: Error is caused both by inaccurate start positions and orientations due to robot positioning error, as well as inaccuracies in the sensor. 
+In the most extreme cases error may cause a measurement to move from barely hitting an edge to completely missing the part. 
+Thus it is clear neither adding a constant error term, nor a dependent Gaussian error will accurately model the error. 
+
+
+Instead discrete general method models this error. 
+For each measurement action we make many simulated measurements where we perturb the initial conditions according to an error model for the robot and perturb the measured value according to a model of the sensor. 
+Because our ray-mesh intersection method is cheap, the additional cost these extra simulations add is acceptable.
 
 
 
-
-
-
+\subsubsection{Bins}
 
 
 $H(\particles[][][G]|\maction)$ is calculated by dividing the continuous values $\measurement_{i,j}$ into discrete bins, $\bin_k$.
@@ -542,7 +763,55 @@ Then the entropy of the bin can be calculated:
   H(\particles | \bin_k) = -\sum_i p(\particles[][i]|\bin_k) \log(p(\particles[][i]|\bin_k))
 \end{align}
 
+
+
+
+\begin{figure}
+    \hfill
+    \begin{subfigure}[b]{0.23\linewidth}
+        \includegraphics[width=\textwidth, clip, trim=1.2in 0in .2in 0in]{./Localization/IG1_heatmap}
+        \caption{Initial Belief}
+        \label{heat:first}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.23\linewidth}
+        \includegraphics[width=\textwidth, clip, trim=1.2in 0in .2in 0in]{./Localization/IG2_heatmap}
+        \caption{1 Measurement}
+        \label{heat:second}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.23\linewidth}
+        \includegraphics[width=\textwidth, clip, trim=1.2in 0in .2in 0in]{./Localization/IG3_heatmap}
+        \caption{2 Measurements}
+        \label{heat:third}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.015\linewidth}
+        \includegraphics[height=1.3in, width=\linewidth, clip, trim=0.05in 0.2in 0.02in 0.05in]{./Localization/Colorbar}
+        \label{heat:colorbar}
+    \end{subfigure}
+    \hspace*{\fill}
+\caption{Heat maps showing information gain}
+%% \caption{Heat maps showing information gain of vertical measurements during the localization process.
+%% The intensity of every pixel is the normalized expected information gain of a measurement passing through the pixel orthogonal to the image.
+%% Initially \subcap{heat:first} probing into the page is likely to miss the part, providing little information.
+%% The first measurement reduced the uncertainty such that probing in this direction will more likely contact the part and provide information \subcap{heat:second}.
+%% Repeating another measurement in the same place would not provide much information. 
+%% \subcap{heat:third}
+%% }
+\label{fig:Heatmaps}
+\end{figure}
+
 Figure \ref{fig:bins} visualizes this binning process. Three measurement actions (arrows) $\maction + \delta_j$ are simulated on three configurations of the part ($\particle[][i] = \text{particle } i$). The intersection between the simulated measurement action and the part determines the measurement value $\measurement_{i,j}$. These measurement values are sorted into bins.
+
+
+Figure \ref{fig:Heatmaps} visualizes the densely computed information gain for a grid of parallel rays as the ``temperature'' in a heat map. 
+Initially \subcap{heat:first} probing into the page is likely to miss the part, so information gain is low for all these measurements and we instead probe sideways. 
+After this first measurement \subcap{heat:second} the uncertainty is reduced, and probing into the page is more likely to hit the part and provide information. 
+Once this second measurement is performed \subcap{heat:third}, another measurement in the same place will not provide more information.
+
+
+
 
 Adaptations are made to this process to accommodate the two representations as described next:
 
@@ -569,7 +838,7 @@ Then, particles that produce sufficiently similar goal feature configurations ar
   H(\particles | \bin_k) &= -\sum_L p(\particles[][L]|\bin_k) \log(p(\particles[][L]|\bin_k))  
 \end{align}
 These group can be constructed by discretizing the space of possible configurations for the goal feature.
-An issue which this paper does not address is the balance of a requiring a reasonably small number of particles while maintaining sufficient density for this descretization of goal feature configuration to produce meaningful group sizes.
+An issue which this thesis does not address is the balance of a requiring a reasonably small number of particles while maintaining sufficient density for this descretization of goal feature configuration to produce meaningful group sizes.
 
 
 \subsection{Information for Independent-State Representation}
@@ -614,31 +883,31 @@ The information gain for each measurement is calculated based on the current est
 For each measurement performed, candidate actions are evaluated until 500 actions with non-zero information gain have been modeled.
 Only the measurement action with the largest expected information gain is ``performed'' in simulation and used to update the belief. 
 \begin{figure}
-\centering
-\begin{tikzpicture}
-  \node (img) {\includegraphics[width=3in, clip, trim=1.5in 3.3in 1.5in 3.3in]{./Localization/translational_error}};
-  \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
-       {Translational Error (cm)};
-\end{tikzpicture}
-\begin{tikzpicture}
-  \node (img) {\includegraphics[width=3in, clip, trim=1.5in 3.3in 1.5in 3.3in]{./Localization/rotational_error}};
-  \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
-      {Rotational Error (rad)};
-  \node[below=of img, node distance=0cm, yshift=1.2cm] 
-      {Measurement Number};
-\end{tikzpicture}
-%% \begin{tikzpicture}
-%%   \node (img) {\includegraphics[width=3in, clip, trim=0in 0in 0in 0in]{./Localization/fitted_rate}};
-%%   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
-%%       {Fitted Rate (\%)};
-%%   \node[below=of img, node distance=0cm, yshift=1.2cm] 
-%%       {Measurement Number};
+  \centering
+  \begin{tikzpicture}
+    %% \node (img) {\includegraphics[width=.3\linewidth, clip, trim=1.5in 3.3in 1.5in 3.3in]{./Localization/translational_error}};
+    \node (img) {\includegraphics[width=.7\linewidth]{./Localization/translational_error}};
+    \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+         {Translational Error (cm)};
+  \end{tikzpicture}
+  \begin{tikzpicture}
+    \node (img) {\includegraphics[width=.7\linewidth]{./Localization/rotational_error}};
+    \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+         {Rotational Error (rad)};
+         \node[below=of img, node distance=0cm, yshift=1.2cm] 
+              {Measurement Number};
+  \end{tikzpicture}
+  %% \begin{tikzpicture}
+  %%   \node (img) {\includegraphics[width=3in, clip, trim=0in 0in 0in 0in]{./Localization/fitted_rate}};
+  %%   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+  %%       {Fitted Rate (\%)};
+  %%   \node[below=of img, node distance=0cm, yshift=1.2cm] 
+  %%       {Measurement Number};
 
-%% \end{tikzpicture}
+  %% \end{tikzpicture}
 
-\caption{Comparison of the accuracy of the update step when using full-state particle filter and independent-state particle filter}
-% ???TODO??? NEW GRAPH NEEDED WITH DATA FROM BOTH PARTICLE FILTERS
-\label{fig:Simulation}
+  \caption{Comparison of the accuracy of the update step when using full-state particle filter and independent-state particle filter}
+  \label{fig:Simulation}
 \end{figure}
 
 \subsection{Simulation Results}
