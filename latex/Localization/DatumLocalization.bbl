@@ -1,0 +1,173 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{#1}
+\csname url@rmstyle\endcsname
+\providecommand{\newblock}{\relax}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand\BIBentrySTDinterwordspacing{\spaceskip=0pt\relax}
+\providecommand\BIBentryALTinterwordstretchfactor{4}
+\providecommand\BIBentryALTinterwordspacing{\spaceskip=\fontdimen2\font plus
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
+\providecommand\BIBforeignlanguage[2]{{%
+\expandafter\ifx\csname l@#1\endcsname\relax
+\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+\typeout{** loaded for the language `#1'. Using the pattern for}%
+\typeout{** the default language instead.}%
+\else
+\language=\csname l@#1\endcsname
+\fi
+#2}}
+
+\bibitem{Thrun2000a}
+S.~Thrun, B.~Wolfram, and F.~Dieter, ``{Probabilistic Robotics},'' pp.
+  1999--2000, 2000.
+
+\bibitem{Saund2017}
+B.~Saund, S.~Chen, and R.~Simmons, ``{Touch Based Localization of Parts for
+  High Precision Manufacturing},'' vol.~6, no.~1, 2017, pp. 29--33.
+
+\bibitem{del2012control}
+A.~Del~Prete, F.~Nori, G.~Metta, and L.~Natale, ``Control of contact forces:
+  The role of tactile feedback for contact localization,'' in \emph{Intelligent
+  Robots and Systems (IROS), 2012 IEEE/RSJ International Conference on}.\hskip
+  1em plus 0.5em minus 0.4em\relax IEEE, 2012, pp. 4048--4053.
+
+\bibitem{hammond2012soft}
+F.~L. Hammond, R.~K. Kramer, Q.~Wan, R.~D. Howe, and R.~J. Wood, ``Soft tactile
+  sensor arrays for micromanipulation,'' in \emph{Intelligent Robots and
+  Systems (IROS), 2012 IEEE/RSJ International Conference on}.\hskip 1em plus
+  0.5em minus 0.4em\relax IEEE, 2012, pp. 25--32.
+
+\bibitem{fishel2012sensing}
+J.~A. Fishel and G.~E. Loeb, ``Sensing tactile microvibrations with the
+  biotac—comparison with human sensitivity,'' in \emph{Biomedical Robotics
+  and Biomechatronics (BioRob), 2012 4th IEEE RAS \& EMBS International
+  Conference on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2012, pp.
+  1122--1127.
+
+\bibitem{rajaraman2013automated}
+M.~Rajaraman, M.~Dawson-Haggerty, K.~Shimada, and D.~Bourne, ``Automated
+  workpiece localization for robotic welding,'' in \emph{Automation Science and
+  Engineering (CASE), 2013 IEEE International Conference on}.\hskip 1em plus
+  0.5em minus 0.4em\relax IEEE, 2013, pp. 681--686.
+
+\bibitem{kalman1960new}
+R.~E. Kalman \emph{et~al.}, ``A new approach to linear filtering and prediction
+  problems,'' \emph{Journal of basic Engineering}, vol.~82, no.~1, pp. 35--45,
+  1960.
+
+\bibitem{kalman1961new}
+R.~E. Kalman and R.~S. Bucy, ``New results in linear filtering and prediction
+  theory,'' \emph{Journal of basic engineering}, vol.~83, no.~3, pp. 95--108,
+  1961.
+
+\bibitem{julier1997new}
+S.~J. Julier and J.~K. Uhlmann, ``New extension of the kalman filter to
+  nonlinear systems,'' in \emph{AeroSense'97}.\hskip 1em plus 0.5em minus
+  0.4em\relax International Society for Optics and Photonics, 1997, pp.
+  182--193.
+
+\bibitem{Thrun2000}
+\BIBentryALTinterwordspacing
+S.~Thrun, D.~Fox, and W.~Burgard, ``{Monte carlo localization with mixture
+  proposal distribution},'' \emph{Proceedings of the National Conference on},
+  pp. 859--865, 2000. [Online]. Available:
+  \url{http://www.aaai.org/Papers/AAAI/2000/AAAI00-132.pdf}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Koval2011}
+M.~C. Koval, N.~S. Pollard, and S.~S. Srinivasa, ``{Pre- and Post-Contact
+  Policy Decomposition for Planar Contact Manipulation Under Uncertainty},''
+  pp. 1--27, 2011.
+
+\bibitem{Koval2013}
+M.~C. Koval, M.~R. Dogar, N.~S. Pollard, and S.~S. Srinivasa, ``{Pose
+  estimation for contact manipulation with manifold particle filters},''
+  \emph{IEEE International Conference on Intelligent Robots and Systems}, no.
+  Section 3, pp. 4541--4548, 2013.
+
+\bibitem{Petrovskaya2011}
+\BIBentryALTinterwordspacing
+A.~Petrovskaya and O.~Khatib, ``{Global Localization of Objects via Touch},''
+  \emph{IEEE Transactions on Robotics}, vol.~27, no.~3, pp. 569--585, 2011.
+  [Online]. Available:
+  \url{http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=5784199}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Felzenszwalb2004}
+\BIBentryALTinterwordspacing
+P.~F. Felzenszwalb and D.~P. Huttenlocher, ``{Distance transforms of sampled
+  functions},'' \emph{Cornell Computing and Information Science Technical
+  Report TR20041963}, vol.~4, pp. 1--15, 2004. [Online]. Available:
+  \url{http://ecommons.library.cornell.edu/handle/1813/5663}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Silverman1986}
+B.~W. Silverman, ``{Density Estimation for Statistics and Data Analysis},''
+  \emph{Biometrical Journal}, vol.~30, no.~7, 1986.
+
+\bibitem{sheather2004density}
+S.~J. Sheather \emph{et~al.}, ``Density estimation,'' \emph{Statistical
+  Science}, vol.~19, no.~4, pp. 588--597, 2004.
+
+\bibitem{Fox2003}
+D.~Fox, ``{Adapting the sample size in particle filters through KLD
+  Sampling},'' \emph{Intl Jour of Robotics Research}, vol.~22, no.~12, pp.
+  985--1004, 2003.
+
+\bibitem{Hebert2013}
+P.~Hebert, T.~Howard, N.~Hudson, J.~Ma, and J.~W. Burdick, ``{The next best
+  touch for model-based localization},'' \emph{Proceedings - IEEE International
+  Conference on Robotics and Automation}, pp. 99--106, 2013.
+
+\bibitem{Hsiao2010}
+\BIBentryALTinterwordspacing
+K.~Hsiao and L.~P. Kaelbling, ``{Task-Driven Tactile Exploration},''
+  \emph{Proceedings of Robotics Science and Systems}, 2010. [Online].
+  Available:
+  \url{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.165.9204{\&}rep=rep1{\&}type=pdf}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Javdani2013}
+S.~Javdani, M.~Klingensmith, J.~A. Bagnell, N.~S. Pollard, and S.~S. Srinivasa,
+  ``{Efficient touch based localization through submodularity},''
+  \emph{Proceedings - IEEE International Conference on Robotics and
+  Automation}, pp. 1828--1835, 2013.
+
+\bibitem{Javdani2014}
+S.~Javdani, A.~Krause, Y.~Chen, and J.~A. Bagnell, ``{Near Optimal Bayesian
+  Active Learning for Decision Making},'' vol.~33, 2014.
+
+\bibitem{Pahk1996}
+H.~J. Pahk and W.~J. Ahn, ``{Advanced manufacturing Technology},'' vol.~3, pp.
+  442--449, 1996.
+
+\bibitem{Xiong2004}
+Z.~Xiong, M.~Y. Wang, S.~Member, and Z.~Li, ``{A Near-Optimal Probing Strategy
+  for Workpiece Localization},'' vol.~20, no.~4, pp. 668--676, 2004.
+
+\bibitem{Yau1992}
+\BIBentryALTinterwordspacing
+H.-T. Yau and C.-H. Menq, ``{An automated dimensional inspection environment
+  for manufactured parts using coordinate measuring machines},''
+  \emph{International Journal of Production Research}, vol.~30, no.~7, pp.
+  1517--1536, 1992. [Online]. Available:
+  \url{http://www.informaworld.com/openurl?genre=article{\&}doi=10.1080/00207549208948105{\&}magic=crossref||D404A21C5BB053405B1A640AFFD44AE3}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Fox1998}
+D.~Fox, W.~Burgard, and S.~Thrun, ``{Active Markov localization for mobile
+  robots},'' \emph{Robotics and Autonomous Systems}, vol.~25, no. 3-4, pp.
+  195--207, 1998.
+
+\bibitem{Petrovskaya2007}
+A.~Petrovskaya and A.~Y. Ng, ``{Probabilistic mobile manipulation in dynamic
+  environments, with application to opening doors},'' \emph{IJCAI International
+  Joint Conference on Artificial Intelligence}, pp. 2178--2184, 2007.
+
+\bibitem{Stachniss2005}
+C.~Stachniss, G.~Grisetti, and W.~Burgard, ``{Information Gain-based
+  Exploration Using Rao-Blackwellized Particle Filters.}'' \emph{Robotics:
+  Science and Systems}, pp. 65--72, 2005.
+
+\end{thebibliography}

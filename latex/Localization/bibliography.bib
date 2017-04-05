@@ -1,0 +1,195 @@
+@inproceedings{del2012control,
+	title={Control of contact forces: The role of tactile feedback for contact localization},
+	author={Del Prete, Andrea and Nori, Francesco and Metta, Giorgio and Natale, Lorenzo},
+	booktitle={Intelligent Robots and Systems (IROS), 2012 IEEE/RSJ International Conference on},
+	pages={4048--4053},
+	year={2012},
+	organization={IEEE}
+}
+@inproceedings{hammond2012soft,
+	title={Soft tactile sensor arrays for micromanipulation},
+	author={Hammond, Frank L and Kramer, Rebecca K and Wan, Qian and Howe, Robert D and Wood, Robert J},
+	booktitle={Intelligent Robots and Systems (IROS), 2012 IEEE/RSJ International Conference on},
+	pages={25--32},
+	year={2012},
+	organization={IEEE}
+}
+@inproceedings{fishel2012sensing,
+	title={Sensing tactile microvibrations with the BioTac—Comparison with human sensitivity},
+	author={Fishel, Jeremy A and Loeb, Gerald E},
+	booktitle={Biomedical Robotics and Biomechatronics (BioRob), 2012 4th IEEE RAS \& EMBS International Conference on},
+	pages={1122--1127},
+	year={2012},
+	organization={IEEE}
+}
+@inproceedings{rajaraman2013automated,
+	title={Automated workpiece localization for robotic welding},
+	author={Rajaraman, Mabaran and Dawson-Haggerty, Michael and Shimada, Kenji and Bourne, David},
+	booktitle={Automation Science and Engineering (CASE), 2013 IEEE International Conference on},
+	pages={681--686},
+	year={2013},
+	organization={IEEE}
+}
+@inproceedings{Saund2017,
+abstract = {Performing detailed work on objects requires precise localization using accurate sensors. Currently humans aid machines in localization either by direct operation, or implicitly by designing a sequence of actions a robot follows. Our approach to automate localization is to reason over many potential actions, perform the best information gathering action, and then use the measurement obtained to update a non-Gaussian belief. We propose a method for autonomous localization of objects with initial 6DOF uncertainty capable of reasoning about and performing accurate measurements with arbitrary error models. We modify a particle filter to
+handle the accurate measurements produced by tactile or laser sensors. We then show how the expected information gain of the proposed measurement can be calculated efficiently from these particles. We performed experiments, both in simulation and on hardware, that show our method is both fast and accurate.},
+author = {Saund, Brad and Chen, Shiyuan and Simmons, Reid},
+booktitle = {Robotics and Automation (ICRA), 2017 IEEE International Conference on},
+organization = {IEEE},
+year = {in press},
+title = {{Touch Based Localization of Parts for High Precision Manufacturing [PREPRINT]}},
+}
+@article{kalman1960new,
+	title={A new approach to linear filtering and prediction problems},
+	author={Kalman, Rudolph Emil and others},
+	journal={Journal of basic Engineering},
+	volume={82},
+	number={1},
+	pages={35--45},
+	year={1960}
+}
+@article{kalman1961new,
+	title={New results in linear filtering and prediction theory},
+	author={Kalman, Rudolph E and Bucy, Richard S},
+	journal={Journal of basic engineering},
+	volume={83},
+	number={3},
+	pages={95--108},
+	year={1961}
+}
+@inproceedings{julier1997new,
+	title={New extension of the Kalman filter to nonlinear systems},
+	author={Julier, Simon J and Uhlmann, Jeffrey K},
+	booktitle={AeroSense'97},
+	pages={182--193},
+	year={1997},
+	organization={International Society for Optics and Photonics}
+}
+@article{sheather2004density,
+	title={Density estimation},
+	author={Sheather, Simon J and others},
+	journal={Statistical Science},
+	volume={19},
+	number={4},
+	pages={588--597},
+	year={2004},
+	publisher={Institute of Mathematical Statistics}
+}
+
+@article{Felzenszwalb2004,
+abstract = {This paper provides linear-time algorithms for solving a class of minimization problems in- volving a cost function with both local and spatial terms. These problems can be viewed as a generalization of classical distance transforms of binary images, where the binary image is replaced by an arbitrary sampled function. Alternatively they can be viewed in terms of the minimum convolution of two functions, which is an important operation in grayscale mor- phology. A useful consequence of our techniques is a simple, fast method for computing the Euclidean distance transform of a binary image. The methods are also applicable to Viterbi decoding, belief propagation and optimal control.},
+author = {Felzenszwalb, Pedro F. and Huttenlocher, Daniel P.},
+doi = {10.4086/toc.2012.v008a019},
+issn = {1557-2862},
+journal = {Cornell Computing and Information Science Technical Report TR20041963},
+keywords = {dynamic programming,euclidean distance transform,minimum convolution},
+pages = {1--15},
+title = {{Distance transforms of sampled functions}},
+url = {http://ecommons.library.cornell.edu/handle/1813/5663},
+volume = {4},
+year = {2004}
+}
+@article{Fox2003,
+author = {Fox, Dieter},
+journal = {Intl Jour of Robotics Research},
+keywords = {non-linear,particle filters,robot localization},
+number = {12},
+pages = {985--1004},
+title = {{Adapting the sample size in particle filters through KLD Sampling}},
+volume = {22},
+year = {2003}
+}
+@article{Hebert2013,
+abstract = {This paper introduces a tactile or contact method whereby an autonomous robot equipped with suitable sensors can choose the next sensing action involving touch in order to accurately localize an object in its environment. The method uses an information gain metric based on the uncertainty of the object's pose to determine the next best touching action. Intuitively, the optimal action is the one that is the most informative. The action is then carried out and the state of the object's pose is updated using an estimator. The method is further extended to choose the most informative action to simultaneously localize and estimate the object's model parameter or model class. Results are presented both in simulation and in experiment on the DARPA Autonomous Robotic Manipulation Software (ARM-S) robot. {\textcopyright} 2013 IEEE.},
+author = {Hebert, Paul and Howard, Thomas and Hudson, Nicolas and Ma, Jeremy and Burdick, Joel W.},
+doi = {10.1109/ICRA.2013.6630562},
+isbn = {9781467356411},
+issn = {10504729},
+journal = {Proceedings - IEEE International Conference on Robotics and Automation},
+pages = {99--106},
+title = {{The next best touch for model-based localization}},
+year = {2013}
+}
+
+@article{Koval2011,
+abstract = {We consider the problem of using real-time feedback from contact sensors to create closed-loop pushing actions. To do so, we formulate the problem as a partially observable Markov decision process (POMDP) with a transition model based on a physics simulator and a reward function that drives the robot towards a successful grasp. We demonstrate that it is intractable to solve the full POMDP with traditional techniques and introduce a novel decomposition of the policy into pre- and post- contact stages to reduce the computational complexity. Our method uses an offline point-based solver on a variable-resolution discretization of the state space to solve for a post-contact policy as a pre-computation step. Then, at runtime, we use an A* search to compute a pre-contact trajectory. We prove that the value of the resulting policy is within a bound of the value of the optimal policy and give intuition about when it performs well. Additionally, we show the policy produced by our algorithm achieves a successful grasp more quickly and with higher probability than a baseline policy.},
+author = {Koval, Michael C and Pollard, Nancy S and Srinivasa, Siddhartha S},
+pages = {1--27},
+title = {{Pre- and Post-Contact Policy Decomposition for Planar Contact Manipulation Under Uncertainty}},
+year = {2011}
+}
+@article{Koval2013,
+abstract = {We investigate the problem of using contact sensors to estimate the pose of an object during planar pushing by a fixed-shape hand. Contact sensors are unique because they inherently discriminate between "contact" and "no-contact" configurations. As a result, the set of object configurations that activates a sensor constitutes a lower-dimensional contact manifold in the configuration space of the object. This causes conventional state estimation methods, such as the particle filter, to perform poorly during periods of contact due to particle starvation. In this paper, we introduce the manifold particle filter as a principled way of solving the state estimation problem when the state moves between multiple manifolds of different dimensionality. The manifold particle filter avoids particle starvation during contact by adaptively sampling particles that reside on the contact manifold from the dual proposal distribution. We describe three techniques, one analytical and two sample-based, of sampling from the dual proposal distribution and compare their relative strengths and weaknesses. We present simulation results that show that all three techniques outperform the conventional particle filter in both speed and accuracy. In addition, we implement the manifold particle filter on a real robot and show that it successfully tracks the pose of a pushed object using commercially available tactile sensors.},
+author = {Koval, Michael C. and Dogar, Mehmet R. and Pollard, Nancy S. and Srinivasa, Siddhartha S.},
+doi = {10.1109/IROS.2013.6697009},
+isbn = {9781467363587},
+issn = {21530858},
+journal = {IEEE International Conference on Intelligent Robots and Systems},
+number = {Section 3},
+pages = {4541--4548},
+title = {{Pose estimation for contact manipulation with manifold particle filters}},
+year = {2013}
+}
+
+@article{Javdani2013,
+abstract = {Many robotic systems deal with uncertainty by performing a sequence of information gathering actions. In this work, we focus on the problem of efficiently constructing such a sequence by drawing an explicit connection to submodularity. Ideally, we would like a method that finds the optimal sequence, taking the minimum amount of time while providing sufficient information. Finding this sequence, however, is generally intractable. As a result, many well-established methods select actions greedily. Surprisingly, this often performs well. Our work first explains this high performance -- we note a commonly used metric, reduction of Shannon entropy, is submodular under certain assumptions, rendering the greedy solution comparable to the optimal plan in the offline setting. However, reacting online to observations can increase performance. Recently developed notions of adaptive submodularity provide guarantees for a greedy algorithm in this online setting. In this work, we develop new methods based on adaptive submodularity for selecting a sequence of information gathering actions online. In addition to providing guarantees, we can capitalize on submodularity to attain additional computational speedups. We demonstrate the effectiveness of these methods in simulation and on a robot.},
+archivePrefix = {arXiv},
+arxivId = {1208.6067},
+author = {Javdani, Shervin and Klingensmith, Matthew and Bagnell, J. Andrew and Pollard, Nancy S. and Srinivasa, Siddhartha S.},
+doi = {10.1109/ICRA.2013.6630818},
+eprint = {1208.6067},
+file = {:C$\backslash$:/Users/Brad/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Javdani et al. - 2013 - Efficient touch based localization through submodularity(2).pdf:pdf},
+isbn = {9781467356411},
+issn = {10504729},
+journal = {Proceedings - IEEE International Conference on Robotics and Automation},
+mendeley-groups = {TouchLocalization,Contact,FineLocalizationIcraRef},
+pages = {1828--1835},
+title = {{Efficient touch based localization through submodularity}},
+year = {2013}
+}
+
+
+@article{Petrovskaya2011,
+abstract = {Humans are capable of manipulating objects based solely on the sense of touch. For robots to achieve the same feat in unstructured environments, global localization of objects via touch is required. Bayesian approaches provide the means to cope with uncertainties of the real world, but the estimation of the Bayesian posterior for the full six degrees of freedom (6-DOF) global localization problem is computationally prohibitive. We propose an efficient Bayesian approach termed Scaling Series. It is capable of solving the full problem reliably in real time. This is a Monte Carlo approach that performs a series of successive refinements coupled with annealing. We also propose an analytical measurement model, which can be computed efficiently at run time for any object represented as a polygonal mesh. Extensive empirical evaluation shows that Scaling Series drastically outperforms prior approaches. We demonstrate general applicability of the approach on five common solid objects, which are rigidly fixed during the experiments. We also consider 6-DOF localization and tracking of free-standing objects that can move during tactile exploration.},
+author = {Petrovskaya, Anna and Khatib, Oussama},
+doi = {10.1109/TRO.2011.2138450},
+isbn = {1552-3098},
+issn = {1552-3098},
+journal = {IEEE Transactions on Robotics},
+keywords = {6-DOF localization,Bayes methods,Bayesian methods,Bayesian posterior estimation,Bayesian state estimation,Computational modeling,Estimation,Measurement uncertainty,Monte Carlo approach,Monte Carlo methods,Robot sensing systems,Uncertainty,force and tactile sensing,free standing object tracking,global objects localization,localization,manipulators,mesh generation,object manipulation,polygonal mesh,scaling series,tactile exploration,tactile sensors,touch sense},
+number = {3},
+pages = {569--585},
+title = {{Global Localization of Objects via Touch}},
+url = {http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=5784199},
+volume = {27},
+year = {2011}
+}
+@article{Silverman1986,
+author = {Silverman, B. W.},
+doi = {10.1002/bimj.4710300745},
+isbn = {978-0-412-24620-3},
+issn = {03233847},
+journal = {Biometrical Journal},
+number = {7},
+title = {{Density Estimation for Statistics and Data Analysis}},
+volume = {30},
+year = {1986}
+}
+@article{Thrun2000,
+abstract = {Monte Carlo localization (MCL) is a Bayesian algorithm for mobile robot localization based on particle filters, which has enjoyed great practical success. This paper points out a limitation of MCL which is counter-intuitive, namely that better sensors can yield worse results. An analysis of this problem leads to the formulation of a new proposal distribution for the Monte Carlo sampling step. Extensive experimental results with physical robots suggest that the new algorithm is significantly more robust and accurate than plain MCL. Obviously, these results transcend beyond mobile robot localization and apply to a range of particle filter applications.},
+author = {Thrun, Sebastian and Fox, D and Burgard, W},
+journal = {Proceedings of the National Conference on},
+pages = {859--865},
+title = {{Monte carlo localization with mixture proposal distribution}},
+url = {http://www.aaai.org/Papers/AAAI/2000/AAAI00-132.pdf},
+year = {2000}
+}
+@article{Thrun2000a,
+author = {Thrun, Sebastian and Wolfram, Burgard and Dieter, Fox},
+doi = {10.1145/504729.504754},
+isbn = {0262201623},
+issn = {00010782},
+pages = {1999--2000},
+title = {{Probabilistic Robotics}},
+year = {2000}
+}

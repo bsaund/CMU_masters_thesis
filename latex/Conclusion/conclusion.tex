@@ -2,6 +2,14 @@
 
 \begin{document}
 
-this is some text
+
+
+This paper introduced the \textit{datum-based particle filter}, which provides a method to localize a task location defined by datums on an object with internal degrees of freedom.
+This method stores the belief as the belief over the poses of multiple rigid sections comprising the object using a particle filter, and selects measurement actions using the metric of information gain.
+Two implementations are described: a high dimensional particle filter capturing the full state, and multiple particle filters coupled through the tolerances between sections.
+The techniques to avoid particle starvation during rigid body localization have been extended to both implementations of the datum-based particle filter. 
+Information gain of a potential measurement action is approximated as a discrete probabilistic decision process over the particles comprising the belief.
+The formulation presented distinguishes between useful information which updates the belief of the target feature, and information which only improves the belief of non-datum sections.
+
 
 \end{document}

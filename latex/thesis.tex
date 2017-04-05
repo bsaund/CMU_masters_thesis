@@ -32,7 +32,48 @@
 \usepackage[backref,pageanchor=true,plainpages=false, pdfpagelabels, bookmarks,bookmarksnumbered,
 %pdfborder=0 0 0,  %removes outlines around hyper links in online display
 ]{hyperref}
-\usepackage{subfigure}
+%% \usepackage{subfigure}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{gensymb} 
+\usepackage{dsfont}
+\usepackage{graphicx}
+\usepackage{float}
+\let\labelindent\relax
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{tabu}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xparse}
+\usetikzlibrary{positioning}
+
+
+\DeclareDocumentCommand{\particles}{ O{} O{} O{}}{^{#2}X_{#1}^{#3}}
+% \particle[time][index][section]
+\DeclareDocumentCommand{\particle}{ O{} O{} O{}}{^{#2}x_{#1}^{#3}}
+\newcommand{\state}{x}
+
+\newcommand{\sampled}{\tilde}
+\newcommand{\subcap}[1]{\textbf{(\subref{#1})}}
+\newcommand{\maction}{\mathcal{M}}
+%% \newcommand{\particles}{\mathcal{P}}
+%% \newcommand{\particle}{x}
+\newcommand{\bin}{b}
+\newcommand{\groups}{L}
+\newcommand{\measurement}{m}
+\newcommand{\measurementSet}{M}
+\newcommand{\totalWeight}{\mathcal{W}}
+\newcommand{\feature}{\mathcal{S}}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\def\BState{\State\hskip-\ALG@thistlm}
 
 % Approximately 1" margins, more space on binding side
 %\usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar]{geometry}
@@ -51,7 +92,7 @@
 \title{ %% {\it \huge Thesis Proposal}\\
 {\bf Planning and Localization Using Contacts}}
 \author{Bradley L. Saund}
-\date{May}
+\date{May 2017}
 \Year{2017}
 \trnumber{}
 
@@ -121,13 +162,13 @@ My advisor is cool.
 \chapter{Introduction}
 \subfile{Introduction/intro.tex}
 
-\chapter{Localization}
+\chapter{Localization using Contacts}
 \subfile{Localization/localization.tex}
 
-\chapter{Planning}
+\chapter{Planning with Contacts for Support}
 \subfile{Planning/planning.tex}
 
-\chapter{Conclusion}
+\chapter{Conclusion and Future Work}
 \subfile{Conclusion/conclusion.tex}
 
 %\appendix

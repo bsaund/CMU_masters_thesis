@@ -1,6 +1,105 @@
-\documentclass[../thesis.tex]{subfiles}
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf} 
+\IEEEoverridecommandlockouts
+\overrideIEEEmargins
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% The following packages can be found on http:\\www.ctan.org
+%\usepackage{graphics} % for pdf, bitmapped graphics files
+%\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{times} % assumes new font selection scheme installed
+%\usepackage{amsmath} % assumes amsmath package installed
+%\usepackage{amssymb}  % assumes amsmath package installed
+
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{gensymb} 
+\usepackage{dsfont}
+\usepackage{graphicx}
+\usepackage{float}
+\let\labelindent\relax
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{tabu}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xparse}
+\usetikzlibrary{positioning}
+%% \usetikzlibrary{bayesnet}
+
+\title{\LARGE \bf
+The Datum Particle Filter: \\Localization for Objects with Coupled Geometric Datums
+}
+
+
+\author{Shiyuan Chen$^{1}$, Brad Saund$^{2}$, Reid Simmons$^{3}$% <-this % stops a space
+\thanks{$^{1}$Shiyuan Chen, $^{2}$Brad Saund, and $^{3}$Reid Simmons are with the Robotics Institute at Carnegie Mellon University}%
+}
+
+% \particles[time][index][section]
+%% \DeclareDocumentCommand{\particles}{ O{} O{} O{}}{^{#2}\mathcal{P}_{#1}^{#3}}
+\DeclareDocumentCommand{\particles}{ O{} O{} O{}}{^{#2}X_{#1}^{#3}}
+% \particle[time][index][section]
+\DeclareDocumentCommand{\particle}{ O{} O{} O{}}{^{#2}x_{#1}^{#3}}
+\newcommand{\state}{x}
+
+\newcommand{\sampled}{\tilde}
+\newcommand{\subcap}[1]{\textbf{(\subref{#1})}}
+\newcommand{\maction}{\mathcal{M}}
+%% \newcommand{\particles}{\mathcal{P}}
+%% \newcommand{\particle}{x}
+\newcommand{\bin}{b}
+\newcommand{\groups}{L}
+\newcommand{\measurement}{m}
+\newcommand{\measurementSet}{M}
+\newcommand{\totalWeight}{\mathcal{W}}
+\newcommand{\feature}{\mathcal{S}}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
 
 \begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+
+%% Automated manufacturing requires high-precision localization of objects, which is currently achieved largely by human aid and the pre-design of fixed set of localization actions for robot arms. 
+%% In this paper, we propose a touch-based localization approach for a potentially large and complex object with multiple datums in a 3D workspace. We use probabilistic methods to reason over the distribution of the estimated object poses in the 6-DOF configuration space under uncertainty. We introduce the \textit{datum-based particle filter} to handle intrinsic tolerances between each datum of the object while updating our belief of the particular target geometric features.
+%% We describe two alternative methods for the particle filter system: one using the full joint belief and the others reasonably simplifying the belief to achieve a better ability to scale.
+%% We present simulation results for both proposed methods to show the advantages of our approaches.
+
+In this paper, we propose a touch-based localization approach for a potentially large and complex object with multiple internal degrees of freedom.
+Should a task only require a partial localization of the object, our method selects the appropriate information gathering actions to register the desired features.
+We use probabilistic methods to reason over the distribution of the estimated object poses in the 6-DOF configuration space.
+We introduce the \textit{datum-based particle filter} to handle intrinsic tolerances between each of the sections of the object.
+We describe two alternative methods for the particle filter system: one using the full joint belief and the other reasonably simplifying the belief to achieve a better ability to scale.
+We present simulation results for both proposed methods to show the advantages of our approaches.
+
+  
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
 
 %% There are two major categories of localization. Visual-based approaches for pose estimation has experienced great improvements, but it is still difficult to achieve industry-standard precision. Particularly, learning-based approaches require large datasets, which makes them less applicable in manufacturing for parts with irregular shapes. For touch-based approaches using tactile sensors, the object is often assumed to be a rigid body. In order to handle objects with complex shape, prior information of the object shape is always required, and most previous work assumes that the geometry (CAD) model will match the real object exactly.
 
@@ -20,14 +119,14 @@ On the other hand, it is usually only necessary to localize a subset of the sect
 
 \begin{figure}
   \centering
-  \begin{subfigure}[b]{0.4\linewidth}
-    \includegraphics[width=\linewidth, clip, trim=8in 6in 8.5in 4in]{./Localization/UnlocalizedBelief}
+  \begin{subfigure}[b]{.9\linewidth}
+    \includegraphics[width=\linewidth, clip, trim=8in 6in 8.5in 4in]{UnlocalizedBelief}
     \caption{Initial belief}
     \label{fig:FullBelief:Unlocalized}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.4\linewidth}
-    \includegraphics[width=\linewidth, clip, trim=7in 7in 10in 4in]{./Localization/LocalizedBelief}
+  \begin{subfigure}[b]{.9\linewidth}
+    \includegraphics[width=\linewidth, clip, trim=7in 7in 10in 4in]{LocalizedBelief}
     \caption{Belief after localization of goal feature (green cylinder)}
     \label{fig:FullBelief:Localized}
   \end{subfigure}
@@ -59,7 +158,7 @@ We also generalize the technique of choosing informative measurement actions to 
 Fully predicting the information gain over the continuous belief is computationally expensive, so similar to other approaches \cite{Javdani2013} our work involves a fast approximation for information gain that takes advantage of the discretized belief from the particle filter (section \ref{sec:information gain}). 
 We demonstrate our method on a simulated part (section \ref{sec:experiment}). 
 
-\section{Current Methods for Localizing Objects Using Contact Sensors}
+\section{Related Work}
 
 %Particle filter has been widely used in localization tasks since its introduction.
 %
@@ -124,7 +223,7 @@ Measurement error exists due to sensor error and robot uncertainty.
 %% For the robot arms and sensors used in manufacturing, the uncertainty added typically ranges from 0.1 to 1mm \cite{Saund2013}. 
 
 
-\subsection{Modeling Part Uncertainty: Problems with the Standard Particle Filter} 
+\subsection{Particle Filter} 
 
 At each time step, the belief is a probability distribution of poses, approximated using a particle filter. 
 This belief distribution is also used to plan measurements actions that maximize the expected information gain. 
@@ -138,8 +237,6 @@ bel(x_{t+1}) \leftarrow \eta \ p(z_t|x_{t+1}) \  bel(x_t)
 \end{align}
 with $\eta$ as a normalization factor. Each new measurement value triggers an update to the belief $bel(x)$. 
 
-\subsection{Rejection Sampling to Overcome Particle Starvation}
-  
 The traditional particle filter uses importance sampling to update particles \cite{Thrun2000}, where samples are drawn based on the process model and weighted by the observation. However, for precise measurements and higher dimensions, the chance that a particle is consistent with the measurement is extremely low, thus few of them will survive during the update \cite{Koval2013}. 
 Alleviating this problem would require an exponential (in the dimension of the state) number of particles to maintain high enough particle density.
 
@@ -219,19 +316,19 @@ The omission of $k$ indicates all necessary particles to represent the belief of
 \begin{figure}
   \centering
   \begin{subfigure}[b]{.9\linewidth}
-    \includegraphics[width=\linewidth, clip, trim=4in 5in 6.5in 4.5in]{./Localization/MainVerticalWithHole}
+    \includegraphics[width=\linewidth, clip, trim=4in 5in 6.5in 4.5in]{MainVerticalWithHole}
     \caption{CAD}
     \label{fig:Overview:CAD}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{.9\linewidth}
-    \includegraphics[width=\linewidth, clip, trim=0.1in 1.5in 0.3in 1.3in]{./Localization/final_result_4_2}
+    \includegraphics[width=\linewidth, clip, trim=0.1in 1.5in 0.3in 1.3in]{final_result_4_2}
     \caption{Update from a measurement on the top datum}
     \label{fig:Overview:belief_top}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{.9\linewidth}
-    \includegraphics[width=\linewidth, clip, trim=0.04in 1.5in 0.35in 1.3in]{./Localization/final_result_4_3}
+    \includegraphics[width=\linewidth, clip, trim=0.04in 1.5in 0.35in 1.3in]{final_result_4_3}
     \caption{Update from another measurement on the right datum}
     \label{fig:Overview:belief_right}
   \end{subfigure}
@@ -449,25 +546,25 @@ Our formulation predicts the information gain on the goal feature for both a mea
 \begin{figure*}
     \hfill
     \begin{subfigure}[b]{0.2\linewidth}
-        \includegraphics[width=\textwidth, clip, trim=4.2in 8.4in 2.5in 1.7in]{./Localization/bins_p1}
+        \includegraphics[width=\textwidth, clip, trim=4.2in 8.4in 2.5in 1.7in]{bins_p1}
         \caption{Part in configuration: particle 1}
         \label{bins:p1}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.2\linewidth}
-        \includegraphics[width=\textwidth, clip, trim=4.2in 8.4in 2.5in 1.7in]{./Localization/bins_p2}
+        \includegraphics[width=\textwidth, clip, trim=4.2in 8.4in 2.5in 1.7in]{bins_p2}
         \caption{Part in configuration: particle 2}
         \label{bins:p2}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.2\linewidth}
-        \includegraphics[width=\textwidth, clip, trim=4.2in 8.4in 2.5in 1.7in]{./Localization/bins_p3}
+        \includegraphics[width=\textwidth, clip, trim=4.2in 8.4in 2.5in 1.7in]{bins_p3}
         \caption{Part in configuration: particle 3}
         \label{bins:p3}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.38\linewidth}
-        \includegraphics[width=\linewidth, clip, trim=1.2in 7in 4.1in 3.7in]{./Localization/bins_sorted}
+        \includegraphics[width=\linewidth, clip, trim=1.2in 7in 4.1in 3.7in]{bins_sorted}
         \label{figure:bins}
         \caption{Binned Measurements}
     \end{subfigure}
@@ -619,19 +716,19 @@ The information gain for each measurement is calculated based on the current est
 \begin{figure}
 \centering
 \begin{tikzpicture}
-  \node (img) {\includegraphics[width=3in, clip, trim=1.5in 3.3in 1.5in 3.3in]{./Localization/translational_error}};
+  \node (img) {\includegraphics[width=3in, clip, trim=1.5in 3.3in 1.5in 3.3in]{translational_error}};
   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
        {Translational Error (cm)};
 \end{tikzpicture}
 \begin{tikzpicture}
-  \node (img) {\includegraphics[width=3in, clip, trim=1.5in 3.3in 1.5in 3.3in]{./Localization/rotational_error}};
+  \node (img) {\includegraphics[width=3in, clip, trim=1.5in 3.3in 1.5in 3.3in]{rotational_error}};
   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
       {Rotational Error (rad)};
   \node[below=of img, node distance=0cm, yshift=1.2cm] 
       {Measurement Number};
 \end{tikzpicture}
 %% \begin{tikzpicture}
-%%   \node (img) {\includegraphics[width=3in, clip, trim=0in 0in 0in 0in]{./Localization/fitted_rate}};
+%%   \node (img) {\includegraphics[width=3in, clip, trim=0in 0in 0in 0in]{fitted_rate}};
 %%   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
 %%       {Fitted Rate (\%)};
 %%   \node[below=of img, node distance=0cm, yshift=1.2cm] 
@@ -659,6 +756,44 @@ Translational error and rotational error are defined between the estimated pose 
 %% When the \textit{fitted rate} equals $100\%$, all particles will result in the case that fitted cylinder will completely pass through the hole at each estimated pose without any intersection.
 From the simulation, the errors of the estimated pose decreases rapidly for both approaches after each new measurement is applied on the system. 
 %% The fitted rate also increases.
+
+\section{Conclusions}
+
+This paper introduced the \textit{datum-based particle filter}, which provides a method to localize a task location defined by datums on an object with internal degrees of freedom.
+This method stores the belief as the belief over the poses of multiple rigid sections comprising the object using a particle filter, and selects measurement actions using the metric of information gain.
+Two implementations are described: a high dimensional particle filter capturing the full state, and multiple particle filters coupled through the tolerances between sections.
+The techniques to avoid particle starvation during rigid body localization have been extended to both implementations of the datum-based particle filter. 
+Information gain of a potential measurement action is approximated as a discrete probabilistic decision process over the particles comprising the belief.
+The formulation presented distinguishes between useful information which updates the belief of the target feature, and information which only improves the belief of non-datum sections.
+
+
+%% \section{Acknowledgments}
+
+%% This material is based upon research supported by (while Dr. Simmons was
+%% serving at) the National Science Foundation.
+
+
+
+
+
+
+
+
+%\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography}
+% \nocite{*}
 
 
 
