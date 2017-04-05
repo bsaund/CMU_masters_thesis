@@ -5,18 +5,18 @@
 %% There are two major categories of localization. Visual-based approaches for pose estimation has experienced great improvements, but it is still difficult to achieve industry-standard precision. Particularly, learning-based approaches require large datasets, which makes them less applicable in manufacturing for parts with irregular shapes. For touch-based approaches using tactile sensors, the object is often assumed to be a rigid body. In order to handle objects with complex shape, prior information of the object shape is always required, and most previous work assumes that the geometry (CAD) model will match the real object exactly.
 
 Many robotic tasks require precisely localizing an object, for which tactile sensing is an appealing sensing modality.
-As motivation, we examine touch localization of a partially manufactured part that requires additional machining operations.
+As motivation, consider touch localization of a partially manufactured part that requires additional machining operations.
 In order to handle objects with complex shape, prior information of the object shape is used, and most previous work assumes that the geometry (CAD) model will match the real object exactly.
 
 
-However, during the manufacturing and assembly processes there are tolerances between different sections of the assembly. A \textit{datum} is defined as a geometric constraint within the object that is used as the reference to define the location of one section of the part with respect to another section. The tolerance is the allowed deviation of the actual manufactured dimensions from the nominal designed dimensions. We assume a part can be divided into precisely manufactured sections, and our method focuses on handling errors due to imprecise machining over large distances and non-critical components, as well as assembly tolerances.
+However, during the manufacturing and assembly processes there are tolerances between different sections of the assembly. A \textit{datum} is defined as a geometric constraint within the object that is used as the reference to define the location of one section of the part with respect to another section. The tolerance is the allowed deviation of the actual manufactured dimensions from the nominal designed dimensions.
+It is assumed a part can be divided into precisely manufactured sections, and the introduced method focuses on handling errors due to imprecise machining over large distances and non-critical components, as well as assembly tolerances.
 %% One example of the tolerance is the distance between two parallel datum planes: the distance could be $1.0 \pm 0.1mm$. 
 
 The introduction of tolerance increases the degrees of freedom (DOFs) of the system, as prior to measurement the true dimensions of the full part are unknown. 
 These internal DOFs can be modeled as transformations with uncertainty between sections of the object.
 For objects with internal tolerances, perfectly localizing a single datum will not necessarily reduce the uncertainty of the full system sufficiently to perform the desired task.
 On the other hand, it is usually only necessary to localize a subset of the sections of an object.
-%% Thus we want to localize each referenced datum individually while reducing the uncertainty of the transformation relations, and ultimately localize the target features. 
 
 \begin{figure}
   \centering
@@ -40,24 +40,24 @@ On the other hand, it is usually only necessary to localize a subset of the sect
 \end{figure}
 
 In this localization problem, the task is to estimate the pose of a goal feature given multiple measurements obtained through probing. 
-%% In 3-dimensional workspace, there are a total of 6DOFs for a rigid body.
-%% Rather than solving a interpolation/fitting problem to compute the best estimate the pose, we keep updating the belief of the probabilistic distribution regarding to the object pose based on the measurements.
 These probing measurements are modeled as a Markov process, where each measurement corresponds to a single action/observation pair. 
 This model eliminates the need to store all of the past measurements. 
-We use a particle filter to numerically store and update the belief \cite{Thrun2000a}.
+A particle filter numerically stores and updates the belief \cite{Thrun2000a}.
 
 Figure \ref{fig:FullBelief} shows a visualization of the initial (\ref{fig:FullBelief:Unlocalized}) and final (\ref{fig:FullBelief:Localized}) beliefs of the poses of the sections of the object.
 The task is to drill a hole, shown as a green cylinder, at a specific location defined by offsets from other sections.
 Internal tolerances prevent simply treating the entire system as a rigid body.
 
 
-This paper first briefly summarizes the framework of our previous work on rigid-body particle filtering for high-precision localization (section \ref{sec:rigid_body}), which overcomes the particle starvation problem and serves as the basis for this paper \cite{Saund2017}. 
-We then introduce the datum-based particle filter to generalize this rigid-body approach for objects with coupled rigid sections (section \ref{sec:datum}).
-We propose two related but different approaches for this problem. The first approach maintains a single particle filter system that stores the full joint distribution of the coupled datums, while the second approach simplifies the relationships by assuming independence between the distribution of the internal transformations and the pose of the sections, and models the system using separate coupled particle filters. 
+This chapter first considers rigid-body particle filtering for high-precision localization (section \ref{sec:rigid_body}), which overcomes the particle starvation problem and serves as the basis for this paper \cite{Saund2017}. 
+The datum-based particle filter is then introduced to generalize this rigid-body approach for objects with coupled rigid sections (section \ref{sec:datum}).
+Two related but different approaches are proposed for this problem.
+The first approach maintains a single particle filter system that stores the full joint distribution of the coupled datums, while the second approach simplifies the relationships by assuming independence between the distribution of the internal transformations and the pose of the sections, and models the system using separate coupled particle filters. 
 
-We also generalize the technique of choosing informative measurement actions to accommodate objects with coupled sections. To achieve this, many potential measurement actions are sampled and the action with the highest expected information gain is selected. 
-Fully predicting the information gain over the continuous belief is computationally expensive, so similar to other approaches \cite{Javdani2013} our work involves a fast approximation for information gain that takes advantage of the discretized belief from the particle filter (section \ref{sec:information gain}). 
-We demonstrate our method on a simulated part (section \ref{sec:experiment}). 
+This chapter then generalizes the technique of choosing informative measurement actions to accommodate objects with coupled sections.
+To achieve this, many potential measurement actions are sampled and the action with the highest expected information gain is selected. 
+Fully predicting the information gain over the continuous belief is computationally expensive, so similar to other approaches \cite{Javdani2013} this work involves a fast approximation for information gain that takes advantage of the discretized belief from the particle filter (section \ref{sec:information gain}). 
+This chapter concludes with demonstrations of the method on a simulated part (section \ref{sec:experiment}). 
 
 \section{Current Methods for Localizing Objects Using Contact Sensors}
 
@@ -71,7 +71,8 @@ We demonstrate our method on a simulated part (section \ref{sec:experiment}).
 %% Humans are capable of localizing objects with complex shape using sense of touch. 
 %% However, for robots, localization using contact sensors is a classic problem, as it requires robots to reason in high-dimensional configuration space. 
 
-Recently, there have been a variety of approaches that allow robots to localize objects solely with contact sensors. Different contact sensors have been explored and developed, including basic binary sensors, 6-axis force and torque sensors \cite{del2012control}, soft tactile sensor arrays \cite{hammond2012soft}, and bio-inspired fingertips \cite{fishel2012sensing}. Localization with laser sensors has also been used in the high-precision CNC localization, where a 3D point cloud is acquired in order to estimate the transformation between the actual and planned pose \cite{rajaraman2013automated}. Our localization approach can be generalized to these sensors which can distinguish between contact and free-of-contact states.
+Recently, there have been a variety of approaches that allow robots to localize objects solely with contact sensors. Different contact sensors have been explored and developed, including basic binary sensors, 6-axis force and torque sensors \cite{del2012control}, soft tactile sensor arrays \cite{hammond2012soft}, and bio-inspired fingertips \cite{fishel2012sensing}. Localization with laser sensors has also been used in the high-precision CNC localization, where a 3D point cloud is acquired in order to estimate the transformation between the actual and planned pose \cite{rajaraman2013automated}.
+The localization approach presented here can be generalized to these sensors which can distinguish between contact and free-of-contact states.
 
 Particle filters have been widely used and developed since their introduction. 
 Unlike some other Bayesian estimation approaches such as Kalman filters \cite{kalman1960new}, extended Kalman filters \cite{kalman1961new} and unscented Kalman filters \cite{julier1997new}, particle filters can easily model non-Gaussian and multi-modal probability distribution. 
@@ -82,7 +83,7 @@ However, particle filters will experience \textit{particle starvation} for measu
 Koval introduced the Manifold Particle Filter to address this issue by implementing different sampling and weighting strategies compared to the traditional particle filters \cite{Koval2011}\cite{ Koval2013}. 
 Instead of sampling particles from the process model and weighting them based on the observation, samples are directly drawn from the contact manifold, given the observation. 
 This provides a fast and robust solution for objects with simple shapes. 
-For complex object geometries, as in our case, direct, efficient sampling from the contact manifold becomes difficult.
+For complex object geometries, as in this case, direct, efficient sampling from the contact manifold becomes difficult.
 
 Petrovskaya tackles particle starvation during touch localization by combined Monte Carlo approaches with annealing as a smoothing technique \cite{Petrovskaya2011}. 
 She introduced Scaling Series algorithms for 6-DOF global tactile localization in both full-constrained and under-constrained scenarios to overcome particle starvation by adjusting particle density depending on the complexity of the posterior. 
@@ -104,17 +105,10 @@ The task is to determine the pose of an object by choosing and performing touch 
 The geometry of the object to be localized is stored in a STL file using a triangular mesh, defined in the \textit{part frame}. The pose of the object can then be defined as the transformation between this \textit{part frame} and the \textit{world frame} of the workspace. 
 The object is assumed to be fixed in the workspace during measurement and localization, thus the configuration will not change during the localization process.
 
-In order to estimate the true distribution of the pose, each particle in the particle filter represents a single potential pose $\particle[][i] \in SE(3)$ of the object. For a rigid body, the pose includes both translational dimensions $(x,y,z)$ and rotational Euler angles $(\alpha, \beta, \gamma)$. We represent the state as a 6D vector $(x,y,z, \alpha, \beta, \gamma)$ in the configuration space. The particle filter updates based on a set of measurements $\measurementSet_t = \{\measurement_1, ..., \measurement_t\}$ made by the robot directly on the object. 
+In order to estimate the true distribution of the pose, each particle in the particle filter represents a single potential pose $\particle[][i] \in SE(3)$ of the object. For a rigid body, the pose includes both translational dimensions $(x,y,z)$ and rotational Euler angles $(\alpha, \beta, \gamma)$. The state is a 6D vector $(x,y,z, \alpha, \beta, \gamma)$ in the configuration space. The particle filter updates based on a set of measurements $\measurementSet_t = \{\measurement_1, ..., \measurement_t\}$ made by the robot directly on the object. 
 
 \subsection{Measurement Model}
 
-%% We implemented our methods on our robot equipped with both high-precision touch probe and 1D laser range finder\cite{Saund2017}. 
-
-% Directly from ICRA 2017 
-%% A touch probe is a spherical tip mounted to a rigid shaft connected to the end effector capable of detecting contact. 
-%% Various designs may implement a touch probe differently, for instance thresholding a value from a force sensor, displacement sensor, a pressure sensitive skin, or joint torque measurements, however the end result is a sensor which returns a binary measurement of whether the probe is in contact with an object. 
-%% We make the assumption that every probe measurement action will involve the probe tip moving along a linear trajectory through space until contact is made, at which point the robot will stop as to not damage the probe. 
-%% 1D laser range finder measures the linear distance between the sensor and the object. It offers faster measurements without requiring contact with the object. 
 
 A measurement action, $\maction$ is defined by a start point $\mathcal{A}_p$ for the probe and a linear trajectory vector $\mathcal{A}_v$ both in $\mathbb{R}^3$. 
 The measurement value $\measurement$ is the distance the probe travels in the direction of $\mathcal{A}_v$ until contact is made. 
@@ -132,7 +126,8 @@ The advantage of using a particle filter over other Bayes estimation methods, su
 
 
 The belief of the state at time $t$ is dependent on the measurements: $bel(x_t) = p(x_t| z_1, \textellipsis, z_t, x_0)$. The measurement model follows a non-linear probabilistic function of the true state: $\measurement_t \sim p(\measurement_t|\state_{actual})$. 
-As in all Bayesian filters, the belief $bel(x_{t+1})$ is calculated recursively as follows\footnote{The full update of a Bayesian filter also includes a process model. Our assumption of a fixed object yields the static process model and this simpler formulation} \cite{Thrun2000}:
+As in all Bayesian filters, the belief $bel(x_{t+1})$ is calculated recursively as follows\footnote{The full update of a Bayesian filter also includes a process model.
+The assumption of a fixed object yields the static process model and this simpler formulation} \cite{Thrun2000}:
 \begin{align}
 bel(x_{t+1}) \leftarrow \eta \ p(z_t|x_{t+1}) \  bel(x_t)
 \end{align}
@@ -143,7 +138,7 @@ with $\eta$ as a normalization factor. Each new measurement value triggers an up
 The traditional particle filter uses importance sampling to update particles \cite{Thrun2000}, where samples are drawn based on the process model and weighted by the observation. However, for precise measurements and higher dimensions, the chance that a particle is consistent with the measurement is extremely low, thus few of them will survive during the update \cite{Koval2013}. 
 Alleviating this problem would require an exponential (in the dimension of the state) number of particles to maintain high enough particle density.
 
-Instead, our approach updates the particles using rejection sampling \cite{Saund2017}. At each update step $t$, the continuous prior belief is estimated using Gaussian Mixture Models by applying a Gaussian kernel to each particle, with the kernel covariance proportional to the covariance of the particle configurations. 
+Instead, the approach used updates the particles using rejection sampling \cite{Saund2017}. At each update step $t$, the continuous prior belief is estimated using Gaussian Mixture Models by applying a Gaussian kernel to each particle, with the kernel covariance proportional to the covariance of the particle configurations. 
 New samples $\particle[t+1][i]$ are then drawn directly from this estimated prior. 
 Using rejection sampling, each sample is accepted with probability $p(z_t|\particle[t+1])$. 
 Sampled configurations with the part boundary far from the measured contact location, and thus inconsistent with the measurement, will have a low probability of being accepted
@@ -189,7 +184,7 @@ The datum based particle filter is introduced to allow updates on the belief of 
 The formulation introduced here treats the overall part as composed of separate, known sections. 
 The problem is to precisely localize some feature which cannot be measured \textit{directly} (e.g. a location to drill a hole) with respect to given datums (other sections). 
 To localize the goal feature, certain datums must be localized in certain dimensions.
-For instance, Figure \ref{fig:Overview:CAD} shows a hole feature referenced to the top and right edges datums of our part.
+For instance, Figure \ref{fig:Overview:CAD} shows a hole feature referenced to the top and right edges datums of the part.
 The true part configuration is shown in gray in \ref{fig:Overview:belief_top} and \ref{fig:Overview:belief_right}.
 In this example, it is necessary to localize the top edge's vertical position and orientation, but not its in-page or horizontal position. 
 Similarly, the right edge only must be localized horizontally.
@@ -199,14 +194,14 @@ Similarly, the right edge only must be localized horizontally.
 
 %% Instead of using a single CAD model for the whole object, separate mesh files are used for each section under the assumption that each physical section will match its CAD model precisely.
 
-We introduce two approaches; the first explicitly represents
+Two approaches are now introduced; the first explicitly represents
 the joint probability distribution between the sections, and the second stores separate,
 independent probability distributions for each section.
 Figures \ref{fig:FullBelief} and \ref{fig:Overview} visualize the independent-state particle filter. The full-state particle filter produces similar images.
-We continue to assume that the measurements will be made by point-based sensors.
+%% We continue to assume that the measurements will be made by point-based sensors.
  %% (touch probe or 1D laser range finder). 
 
-Throughout the rest of this paper we will use the following notation.
+The rest of this chapter uses the following notation.
 $\particles[t][][k]$ is the set of N particles representing the belief of section $k$ at time step $t$.
 Frequently $t$ is omitted when implicit.
 Each particle is a configuration for a single section $\particles[][][k] = \{\particle[][j][k]\}_{j=1}^{N}$.
@@ -325,7 +320,7 @@ If this assumption does not hold, localization can be performed for the whole ob
 	\label{fig:full-state}
 \end{figure}
 
-The first method we present maintains the full joint probability distribution between sections using a single set of full-state particles: $\particles[t] = \{\particle[t][j]\}$. 
+The first method presented maintains the full joint probability distribution between sections using a single set of full-state particles: $\particles[t] = \{\particle[t][j]\}$. 
 %% A Bayesian network is defined where the nodes are sections and the edges are the transformation relationships.
 %% The transformation between sections are defined in a graph, such that sections 
 %% Defining transformations of the sections in a graph is natural. 
@@ -339,7 +334,7 @@ Thus, each particle represents a combination of the poses of all of the sections
 Instead of applying a Gaussian kernel in 6D configuration space as done in section \ref{sec:rigid_body}, the continuous prior is estimated by Gaussian Mixtures in the full $6n$-dimensional configuration space, with the kernel covariance proportional to the covariance of the sampled states. This is achieved by applying kernel density estimation techniques. One popular method for the bandwidth selection is the Silverman's rule-of-thumb estimator\cite{Silverman1986}. Other techniques are discussed in more detail in \cite{sheather2004density}.
 
 
-Although it seems at first that the high dimensional state space will require a prohibitively huge number of particles to approximate the true distribution, in practice, we have not found this to be the case. 
+Although it seems at first that the high dimensional state space will require a prohibitively huge number of particles to approximate the true distribution, in practice, this has been found to not the case. 
 Largely, this is due to the small internal tolerances compared to the uncertainty of the pose of the object as a whole, so particles tend to cluster in a small subset of the full state space. 
 Note that if there were no uncertainty in the transformation between sections, then the system reduces to a single 6 dimensional state space.
 In addition, the Gaussian kernel applied to the particles is capable of creating broad beliefs in specific dimensions\cite{Saund2017}, thus this particle filter is able to model the mixture of precisely localized, and poorly localized dimensions. 
@@ -440,11 +435,11 @@ The above process is repeated until the desired number of particles have been ac
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Predicting Effective Measurement Actions} \label{sec:information gain}
-Performing measurements is expensive, so we choose the measurement action that provides the most \textit{information gain} on the goal feature. 
-We treat each action as a probabilistic decision over a set of particles approximating the belief of the goal feature.
+Performing measurements is expensive, so it is important to choose the measurement action that provides the most \textit{information gain} on the goal feature. 
+Each action is treated as a probabilistic decision over a set of particles approximating the belief of the goal feature.
 This is an approximation for the information gain for the underlying, continuous belief distribution.
 The best measurement may not be on the goal feature, and it may be impossible to even measure the goal feature directly.
-Our formulation predicts the information gain on the goal feature for both a measurement directly on the goal feature, or indirectly for a measurement on datums or other sections of the part.
+This formulation predicts the information gain on the goal feature for both a measurement directly on the goal feature, or indirectly for a measurement on datums or other sections of the part.
 
 \begin{figure*}
     \hfill
@@ -549,7 +544,7 @@ Then the entropy of the bin can be calculated:
 
 Figure \ref{fig:bins} visualizes this binning process. Three measurement actions (arrows) $\maction + \delta_j$ are simulated on three configurations of the part ($\particle[][i] = \text{particle } i$). The intersection between the simulated measurement action and the part determines the measurement value $\measurement_{i,j}$. These measurement values are sorted into bins.
 
-Adaptations are made to this process to accommodate our two representations as described next:
+Adaptations are made to this process to accommodate the two representations as described next:
 
 
 \subsection{Information for Full-State Representation}
@@ -596,12 +591,12 @@ Measurements $m_{i,j}$ calculated using $\particles[][][\feature]$ are used to c
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments} \label{sec:experiment}
 
-We validated both the full-state representation approach and independent-state representation approach in simulation. 
+The following experiments validate both the full-state representation approach and independent-state representation approach in simulation. 
 The software was implemented in ROS using C++. 
-In our experiments, we simulated a specific task which is common in manufacturing: localizing a target location, defined by datums, to drill a hole on an object. 
+These experiment simulate a specific task which is common in manufacturing: localizing a target location, defined by datums, to drill a hole on an object. 
 %PLACEHOLDERS for picture for datum visualization
 The datum-based particle filter was simulated on a structural component used in aircraft. This is the same object as used in the original rigid-body particle filter paper\cite{Saund2017}, with adaptations made to allow internal degrees of freedom.
-The object is composed of 5 precisely manufactured sections, and tolerance between sections was determined by engineering drawings (for precisely defined features), and our guesses (for loosely defined relationships). 
+The object is composed of 5 precisely manufactured sections, and tolerance between sections was determined by engineering drawings (for precisely defined features), and educated guesses (for loosely defined relationships). 
 %% The tolerance is modeled by a distribution over $SE(3)$ transforms, as described in Section \ref{sec:datum}. 
 
 \subsection{Measurement Selection}
@@ -610,12 +605,14 @@ The target hole is localized by measuring its referenced datums.
 Specifically, the pose of the hole feature (green cylinder) in figure \ref{fig:FullBelief} is defined by an offset distance from the top and right sections shown in figure \ref{fig:Overview:CAD}, and the axis of the hole is orthogonal to the front plane. 
 %% Since the task is to localize the position to drill the hole, measurements are allowed only on the given 5 sections. 
 The hole does not exist yet, and thus cannot be measured directly.
-In order to localize the hole location precisely without direct measurement on the hole, we assume that the transformations between the target location and its defining datum sections have very small uncertainty along some dimensions, e.g. the vertical distance between the center of the hole and the top plane.
+In order to localize the hole location precisely without direct measurement on the hole, it is assumed that the transformations between the target location and its defining datum sections have very small uncertainty along some dimensions, e.g. the vertical distance between the center of the hole and the top plane.
 
 At each step, the measurement is simulated using ray-mesh intersection algorithms\cite{Saund2017}. 
 %% Each measurement is assumed to have a small measurement error (0.2mm). 
 Potential measurement actions are sampled in the workspace. 
-The information gain for each measurement is calculated based on the current estimated pose of each section. In our experiments, for each measurement performed we evaluated candidate actions until we had modeled 500 actions with non-zero information gain. Only the measurement action with the largest expected information gain is ``performed'' in simulation and used to update the belief. 
+The information gain for each measurement is calculated based on the current estimated pose of each section.
+For each measurement performed, candidate actions are evaluated until 500 actions with non-zero information gain have been modeled.
+Only the measurement action with the largest expected information gain is ``performed'' in simulation and used to update the belief. 
 \begin{figure}
 \centering
 \begin{tikzpicture}
@@ -646,7 +643,7 @@ The information gain for each measurement is calculated based on the current est
 
 \subsection{Simulation Results}
 
-We evaluated our two proposed approaches with similar settings. 
+Both proposed approaches are compared in similar settings.
 A total of 20 measurements are simulated during each trial. 
 For the full-state representation, a maximum of 800 particles are used. For the independent-state representation, a maximum of 500 particles are used for each section.
 The simulation uses 5 mesh models for different sections. 
