@@ -14,13 +14,8 @@ Modeling contacts
 \end{figure}
 
 
-\subsection{Spring Model}
-\subsection{}
 
 
-\section{Discrete Selection of Contact Locations}
-\subsection{Walking}
-\subsection{Grasping}
 
 \section{Trajectory Optimization}
 
@@ -63,10 +58,25 @@ L(s) &= L_{Contact Violation} + L_{u} \\
 $L_{Object Penetration}$ and $L_{Goal}$ are straightforward, while the interplay between $L_{Contact Violation}$ and $L_u$ provide the interesting structure allowing the optimization to find paths which use supporting contacts.
 
 
+
+
 \subsubsection{Cost $L_{Contact Violation}$}
 Each section of the robot able to make contact has an associated variable $c_t > 0$ at each time step. $c$ intuitively represents the strength of the contact forces. Since if the robot is not physically in contact with the world there will not be a contact force the cost $L_{Contact Violation}$ is introduced to penalize non-zero values of $c$ when the robot is not in contact. 
 $$L_{Contact Violation} = \sum_t{\sum_i{c_{t,i} d_{t,i}}}$$
-Non-zero values for $c$ are intentionally allowed when the robot is not in contact with the environment even though this is not physically realistic as this makes the cost function smooth. However when optimizing $c_{t,i}$ will tend towards 0 unless the robot is in contact. 
+Non-zero values for $c$ are intentionally allowed when the robot is not in contact with the environment even though this is not physically realistic as this makes the cost function smooth. However when optimizing $c_{t,i}$ will tend towards 0 unless the robot is in contact.
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.7\linewidth]{./Planning/ContactArms.png}
+  \caption{Arm configuration and simulated (not realistic) contact forces for a variety of arm configurations and continuous contact varibles}
+  \label{fig:ContactArms}
+\end{figure}
+
+Figure \ref{fig:ContactArms} shows a robot arm in a variety of configurations and with several values of contact variables.
+The transparent configurations are physically infeasible and suffer a $L_{Contact Violation}$ cost.
+To ensure the final optimized trajectory is feasible, the cost is weighted highly towards the end of optimization, thus the optimization will not converge on any of the transparent configurations.
+
 
 \subsubsection{Cost $L_u$}
 
@@ -78,7 +88,15 @@ f, u &= argmin_{\tilde{f}, \tilde{u}} ||J^T\tilde{f} + \tilde{u} - \tau_{Free}||
 
 The input control regularization $R$ is chosen based on the desired penalization of joint inputs. The contact force regularization $W$ is dependant on the values of $c$, with 
 $$W_{j,j} = \frac{1}{c_{i,t}^2 + 1}$$
-If $c$ is large then the robot is in contact, the force regularization is small, so the contact force can be large. If $c$ is small the robot is not near any contact location, the force regularization is large, thus the contact force is heavily penalized and will be small. 
+If $c$ is large then the robot is in contact, the force regularization is small, so the contact force can be large. If $c$ is small the robot is not near any contact location, the force regularization is large, thus the contact force is heavily penalized and will be small.
+
+Figure \ref{fig:ContactArms} shows a robot arm in a variety of configurations and with several values of contact variables.
+The red arrows indicate the simulated contact force.
+If the contact variable is large, a large force can be applied to reduce joint torques even when there is no physical contact.
+This serves to reduce the cost due to joint torques.
+The competing cost $L_{Contact Violation}$ prevents this contact variable from growing too large for infeasible contacts.
+
+
 
 
 \subsection{Other Cost Terms}

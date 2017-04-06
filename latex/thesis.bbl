@@ -1,9 +1,16 @@
-\begin{thebibliography}{22}
+\begin{thebibliography}{58}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ahmadzadeh and Tel(2005)]{Ahmadzadeh2005}
+Seyed~Reza Ahmadzadeh and Postal~Code Tel.
+\newblock {Modeling of Hyper-Redundant Manipulators Dynamics and Design of
+  Fuzzy Controller for the System}.
+\newblock pages 248--253, 2005.
+\newblock \doi{10.1109/KIMAS.2005.1427089}.
 
 \bibitem[Akenine-M{\"{o}}llser(2001)]{Akenine-Mollser2001}
 Tomas Akenine-M{\"{o}}llser.
@@ -27,12 +34,62 @@ Dmitry Berenson, Siddhartha~S. Srinivasa, Dave Ferguson, and James~J. Kuffner.
 \newblock ISSN 1050-4729.
 \newblock \doi{10.1109/ROBOT.2009.5152399}.
 
+\bibitem[Book(1994)]{Book1994}
+W.J. Book.
+\newblock {Bracing micro/macro manipulators control}.
+\newblock \emph{Proceedings of the 1994 IEEE International Conference on
+  Robotics and Automation}, pages 2362--2368, 1994.
+\newblock ISSN 10504729.
+\newblock \doi{10.1109/ROBOT.1994.350933}.
+\newblock URL
+  \url{http://ieeexplore.ieee.org/xpls/abs{\_}all.jsp?arnumber=350933$\backslash$nhttp://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=350933}.
+
+\bibitem[Bretl(2006)]{Bretl2006}
+T.~Bretl.
+\newblock {Motion Planning of Multi-Limbed Robots Subject to Equilibrium
+  Constraints: The Free-Climbing Robot Problem}.
+\newblock \emph{The International Journal of Robotics Research}, 25\penalty0
+  (4):\penalty0 317--342, 2006.
+\newblock ISSN 0278-3649.
+\newblock \doi{10.1177/0278364906063979}.
+\newblock URL \url{http://rms.ae.illinois.edu/papers/Bretl2006.pdf}.
+
+\bibitem[Burdick(1994)]{J1994}
+Joel~W. Burdick.
+\newblock {Robotic endoscopy}, aug 1994.
+\newblock URL \url{https://www.google.com/patents/US5337732}.
+
+\bibitem[Chirikjian and Burdick(1994{\natexlab{a}})]{Chirikjian1994}
+Gregory~S. Chirikjian and Joel~W. Burdick.
+\newblock {Hyper-redundant manipulator}.
+\newblock \emph{IEEE Robotics and Automation Magazine}, 1\penalty0
+  (4):\penalty0 22--29, 1994{\natexlab{a}}.
+\newblock ISSN 10709932.
+\newblock \doi{10.1109/100.388263}.
+
+\bibitem[Chirikjian and Burdick(1994{\natexlab{b}})]{Chirikjian1994a}
+Gregory~S. Chirikjian and Joel~W. Burdick.
+\newblock {Modal approach to hyper-redundant manipulator kinematics}.
+\newblock \emph{IEEE Transactions on Robotics and Automation}, 10\penalty0
+  (3):\penalty0 343--354, 1994{\natexlab{b}}.
+\newblock ISSN 1042296X.
+\newblock \doi{10.1109/70.294209}.
+
 \bibitem[Choukroun et~al.(2006)Choukroun, Oshman, Member, Conference, Angeles,
   and Oshman]{Choukroun2006}
 D~Choukroun, Y~Oshman, Senior Member, Control Conference, Los Angeles, and
   Y~Oshman.
 \newblock {Novel Quaternion Kalman Filter}.
 \newblock 42\penalty0 (1), 2006.
+
+\bibitem[Deits and Tedrake(2015)]{Deits2015}
+Robin Deits and Russ Tedrake.
+\newblock {Footstep planning on uneven terrain with mixed-integer convex
+  optimization}.
+\newblock \emph{IEEE-RAS International Conference on Humanoid Robots},
+  2015-February:\penalty0 279--286, 2015.
+\newblock ISSN 21640580.
+\newblock \doi{10.1109/HUMANOIDS.2014.7041373}.
 
 \bibitem[Del~Prete et~al.(2012)Del~Prete, Nori, Metta, and
   Natale]{del2012control}
@@ -41,6 +98,14 @@ Andrea Del~Prete, Francesco Nori, Giorgio Metta, and Lorenzo Natale.
   localization.
 \newblock In \emph{Intelligent Robots and Systems (IROS), 2012 IEEE/RSJ
   International Conference on}, pages 4048--4053. IEEE, 2012.
+
+\bibitem[Enner et~al.(2013)Enner, Rollinson, and Choset]{Enner2013}
+Florian Enner, David Rollinson, and Howie Choset.
+\newblock {Motion estimation of snake robots in straight pipes}.
+\newblock \emph{Proceedings - IEEE International Conference on Robotics and
+  Automation}, pages 5168--5173, 2013.
+\newblock ISSN 10504729.
+\newblock \doi{10.1109/ICRA.2013.6631316}.
 
 \bibitem[Felzenszwalb and Huttenlocher(2004)]{Felzenszwalb2004}
 Pedro~F. Felzenszwalb and Daniel~P. Huttenlocher.
@@ -64,6 +129,39 @@ Dieter Fox.
 \newblock \emph{Intl Jour of Robotics Research}, 22\penalty0 (12):\penalty0
   985--1004, 2003.
 
+\bibitem[Fox et~al.(1998)Fox, Burgard, and Thrun]{Fox1998}
+Dieter Fox, Wolfram Burgard, and Sebastian Thrun.
+\newblock {Active Markov localization for mobile robots}.
+\newblock \emph{Robotics and Autonomous Systems}, 25\penalty0 (3-4):\penalty0
+  195--207, 1998.
+\newblock ISSN 09218890.
+\newblock \doi{10.1016/S0921-8890(98)00049-9}.
+
+\bibitem[Gabiccini et~al.(2015)Gabiccini, Artoni, Pannocchia, and
+  Gillis]{Gabiccini2015}
+Marco Gabiccini, Alessio Artoni, Gabriele Pannocchia, and Joris Gillis.
+\newblock {A Computational Framework for Environment-Aware Robotic Manipulation
+  Planning}.
+\newblock \emph{International Symposium on Robotics Research (ISRR)}, 2015.
+
+\bibitem[Gong et~al.(2014)Gong, Tesch, Rollinson, and Choset]{Gong2014}
+Chaohui Gong, Matthew Tesch, David Rollinson, and Howie Choset.
+\newblock {Snakes on an Inclined Plane: Learning an Adaptive Sidewinding Motion
+  for Changing Slopes}.
+\newblock \emph{IEEE/RSJ International Conference on Intelligent Robots and
+  Systems (IROS)}, \penalty0 (Iros):\penalty0 1114--1119, 2014.
+\newblock ISSN 21530866.
+\newblock \doi{10.1109/IROS.2014.6942697}.
+
+\bibitem[Greenfield et~al.(2005)Greenfield, Rizzi, and Choset]{Greenfield2005}
+Aaron Greenfield, Alfred~A. Rizzi, and Howie Choset.
+\newblock {Dynamic ambiguities in frictional rigid-body systems with
+  application to climbing via bracing}.
+\newblock \emph{Proceedings - IEEE International Conference on Robotics and
+  Automation}, 2005\penalty0 (April):\penalty0 1947--1952, 2005.
+\newblock ISSN 10504729.
+\newblock \doi{10.1109/ROBOT.2005.1570398}.
+
 \bibitem[Hammond et~al.(2012)Hammond, Kramer, Wan, Howe, and
   Wood]{hammond2012soft}
 Frank~L Hammond, Rebecca~K Kramer, Qian Wan, Robert~D Howe, and Robert~J Wood.
@@ -80,6 +178,24 @@ Paul Hebert, Thomas Howard, Nicolas Hudson, Jeremy Ma, and Joel~W. Burdick.
 \newblock ISSN 10504729.
 \newblock \doi{10.1109/ICRA.2013.6630562}.
 
+\bibitem[Hollis and Hammer(1992)]{Hollis1992}
+R.L. Hollis and R.~Hammer.
+\newblock {Real and virtual coarse-fine robot bracing strategies for precision
+  assembly}.
+\newblock \emph{Proceedings 1992 IEEE International Conference on Robotics and
+  Automation}, pages 767--774, 1992.
+\newblock \doi{10.1109/ROBOT.1992.220276}.
+\newblock URL
+  \url{http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=220276}.
+
+\bibitem[Hsiao and Kaelbling(2010)]{Hsiao2010}
+Kaijen Hsiao and Leslie~Pack Kaelbling.
+\newblock {Task-Driven Tactile Exploration}.
+\newblock \emph{Proceedings of Robotics Science and Systems}, 2010.
+\newblock ISSN 2330765X.
+\newblock URL
+  \url{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.165.9204{\&}rep=rep1{\&}type=pdf}.
+
 \bibitem[Javdani et~al.(2013)Javdani, Klingensmith, Bagnell, Pollard, and
   Srinivasa]{Javdani2013}
 Shervin Javdani, Matthew Klingensmith, J.~Andrew Bagnell, Nancy~S. Pollard, and
@@ -89,6 +205,48 @@ Shervin Javdani, Matthew Klingensmith, J.~Andrew Bagnell, Nancy~S. Pollard, and
   Automation}, pages 1828--1835, 2013.
 \newblock ISSN 10504729.
 \newblock \doi{10.1109/ICRA.2013.6630818}.
+
+\bibitem[Javdani et~al.(2014)Javdani, Krause, Chen, and Bagnell]{Javdani2014}
+Shervin Javdani, Andreas Krause, Yuxin Chen, and J~Andrew Bagnell.
+\newblock {Near Optimal Bayesian Active Learning for Decision Making}.
+\newblock 33, 2014.
+
+\bibitem[Julier and Uhlmann(1997)]{julier1997new}
+Simon~J Julier and Jeffrey~K Uhlmann.
+\newblock New extension of the kalman filter to nonlinear systems.
+\newblock In \emph{AeroSense'97}, pages 182--193. International Society for
+  Optics and Photonics, 1997.
+
+\bibitem[Kalakrishnan et~al.(2011)Kalakrishnan, Chitta, Theodorou, Pastor, and
+  Schaal]{Kalakrishnan2011}
+Mrinal Kalakrishnan, Sachin Chitta, Evangelos Theodorou, Peter Pastor, and
+  Stefan Schaal.
+\newblock {STOMP: Stochastic trajectory optimization for motion planning}.
+\newblock \emph{Proceedings - IEEE International Conference on Robotics and
+  Automation}, pages 4569--4574, 2011.
+\newblock ISSN 10504729.
+\newblock \doi{10.1109/ICRA.2011.5980280}.
+
+\bibitem[Kalman and Bucy(1961)]{kalman1961new}
+Rudolph~E Kalman and Richard~S Bucy.
+\newblock New results in linear filtering and prediction theory.
+\newblock \emph{Journal of basic engineering}, 83\penalty0 (3):\penalty0
+  95--108, 1961.
+
+\bibitem[Kalman et~al.(1960)]{kalman1960new}
+Rudolph~Emil Kalman et~al.
+\newblock A new approach to linear filtering and prediction problems.
+\newblock \emph{Journal of basic Engineering}, 82\penalty0 (1):\penalty0
+  35--45, 1960.
+
+\bibitem[Karavas et~al.(2012)Karavas, Tsagarakis, and Caldwell]{Karavas2012}
+Nikos~C. Karavas, Nikos~G. Tsagarakis, and Darwin~G. Caldwell.
+\newblock {Design, modeling and control of a series elastic actuator for an
+  assistive knee exoskeleton}.
+\newblock \emph{Proceedings of the IEEE RAS and EMBS International Conference
+  on Biomedical Robotics and Biomechatronics}, pages 1813--1819, 2012.
+\newblock ISSN 21551774.
+\newblock \doi{10.1109/BioRob.2012.6290757}.
 
 \bibitem[Koval et~al.(2011)Koval, Pollard, and Srinivasa]{Koval2011}
 Michael~C Koval, Nancy~S Pollard, and Siddhartha~S Srinivasa.
@@ -106,6 +264,29 @@ Michael~C. Koval, Mehmet~R. Dogar, Nancy~S. Pollard, and Siddhartha~S.
 \newblock ISSN 21530858.
 \newblock \doi{10.1109/IROS.2013.6697009}.
 
+\bibitem[LaValle(1998)]{LaValle1998}
+S~M LaValle.
+\newblock {Rapidly-Exploring Random Trees: A New Tool for Path Planning}.
+\newblock \emph{In}, 129:\penalty0 98--11, 1998.
+\newblock \doi{10.1.1.35.1853}.
+\newblock URL
+  \url{http://scholar.google.com/scholar?hl=en{\&}btnG=Search{\&}q=intitle:Rapidly-exploring+random+trees:+A+new+tool+for+path+planning{\#}0}.
+
+\bibitem[Lew and Book(1993)]{Lew1993}
+JY~Lew and W.J. Book.
+\newblock {Hybrid control of flexible manipulators with multiple contact}.
+\newblock \emph{[1993] Proceedings IEEE International Conference on Robotics
+  and Automation}, pages 242--247, 1993.
+\newblock \doi{10.1109/ROBOT.1993.292153}.
+\newblock URL
+  \url{http://ieeexplore.ieee.org/xpls/abs{\_}all.jsp?arnumber=292153$\backslash$nhttp://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=292153}.
+
+\bibitem[Mircea and Dorian(2008)]{Mircea2008}
+Ivanescu Mircea and Cojocaru Dorian.
+\newblock {Hyper Redundant Manipulators}.
+\newblock \emph{Advanced Strategies for Robot Manipulators}, pages 27--60,
+  2008.
+
 \bibitem[Mordatch et~al.(2012)Mordatch, Todorov, and
   Popovi{\'{c}}]{Mordatch2012}
 Igor Mordatch, Emanuel Todorov, and Zoran Popovi{\'{c}}.
@@ -115,6 +296,20 @@ Igor Mordatch, Emanuel Todorov, and Zoran Popovi{\'{c}}.
   2012.
 \newblock ISSN 07300301.
 \newblock \doi{10.1145/2185520.2335394}.
+
+\bibitem[Pahk and Ahn(1996)]{Pahk1996}
+Heui~Jae Pahk and Woo~Jung Ahn.
+\newblock {Advanced manufacturing Technology}.
+\newblock 3:\penalty0 442--449, 1996.
+
+\bibitem[Parietti and Asada(2014)]{Parietti2014}
+Federico Parietti and H.~Harry Asada.
+\newblock {Supernumerary Robotic Limbs for aircraft fuselage assembly: Body
+  stabilization and guidance by bracing}.
+\newblock \emph{Proceedings - IEEE International Conference on Robotics and
+  Automation}, pages 1176--1183, 2014.
+\newblock ISSN 10504729.
+\newblock \doi{10.1109/ICRA.2014.6907002}.
 
 \bibitem[Petrovskaya and Khatib(2011)]{Petrovskaya2011}
 Anna Petrovskaya and Oussama Khatib.
@@ -126,6 +321,24 @@ Anna Petrovskaya and Oussama Khatib.
 \newblock URL
   \url{http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=5784199}.
 
+\bibitem[Petrovskaya and Ng(2007)]{Petrovskaya2007}
+Anna Petrovskaya and Andrew~Y. Ng.
+\newblock {Probabilistic mobile manipulation in dynamic environments, with
+  application to opening doors}.
+\newblock \emph{IJCAI International Joint Conference on Artificial
+  Intelligence}, pages 2178--2184, 2007.
+\newblock ISSN 10450823.
+
+\bibitem[Posa et~al.(2013)Posa, Cantu, and Tedrake]{Posa2013}
+M.~Posa, C.~Cantu, and R.~Tedrake.
+\newblock {A direct method for trajectory optimization of rigid bodies through
+  contact}.
+\newblock \emph{The International Journal of Robotics Research}, 33\penalty0
+  (1):\penalty0 69--81, 2013.
+\newblock ISSN 0278-3649.
+\newblock \doi{10.1177/0278364913506757}.
+\newblock URL \url{http://ijr.sagepub.com/content/33/1/69.short}.
+
 \bibitem[Rajaraman et~al.(2013)Rajaraman, Dawson-Haggerty, Shimada, and
   Bourne]{rajaraman2013automated}
 Mabaran Rajaraman, Michael Dawson-Haggerty, Kenji Shimada, and David Bourne.
@@ -133,12 +346,39 @@ Mabaran Rajaraman, Michael Dawson-Haggerty, Kenji Shimada, and David Bourne.
 \newblock In \emph{Automation Science and Engineering (CASE), 2013 IEEE
   International Conference on}, pages 681--686. IEEE, 2013.
 
+\bibitem[Ratliff et~al.(2009)Ratliff, Zucker, and Bagnell]{Ratliff2009}
+Nathan Ratliff, Matt Zucker, and J~Andrew Bagnell.
+\newblock {CHOMP : Gradient Optimization Techniques for Efficient Motion
+  Planning}.
+\newblock pages 489--494, 2009.
+
+\bibitem[Rollinson et~al.(2013)Rollinson, Ford, Brown, and
+  Choset]{Rollinson2013}
+David Rollinson, Steven Ford, Ben Brown, and Howie Choset.
+\newblock {Design and Modeling of a Series Elastic Element for Snake Robots}.
+\newblock \emph{Volume 1: Aerial Vehicles; Aerospace Control; Alternative
+  Energy; Automotive Control Systems; Battery Systems; Beams and Flexible
+  Structures; Biologically-Inspired Control and its Applications; Bio-Medical
+  and Bio-Mechanical Systems; Biomedical Robots and}, page V001T08A002, 2013.
+\newblock \doi{10.1115/DSCC2013-3875}.
+\newblock URL
+  \url{http://proceedings.asmedigitalcollection.asme.org/proceeding.aspx?doi=10.1115/DSCC2013-3875}.
+
 \bibitem[Saund et~al.(in press)Saund, Chen, and Simmons]{Saund2017}
 Brad Saund, Shiyuan Chen, and Reid Simmons.
 \newblock {Touch Based Localization of Parts for High Precision Manufacturing
   [PREPRINT]}.
 \newblock In \emph{Robotics and Automation (ICRA), 2017 IEEE International
   Conference on}. IEEE, in press.
+
+\bibitem[Saund and DeVlieg(2013)]{Saund2013}
+Bradley Saund and Russell DeVlieg.
+\newblock {High accuracy articulated robots with CNC control systems}.
+\newblock \emph{SAE International Journal of Aerospace}, 6\penalty0
+  (2):\penalty0 1--6, 2013.
+\newblock ISSN 19463855.
+\newblock \doi{10.4271/2013-01-2292}.
+\newblock URL \url{http://www.sae.org/technical/papers/2013-01-2292}.
 
 \bibitem[Sheather et~al.(2004)]{sheather2004density}
 Simon~J Sheather et~al.
@@ -159,6 +399,24 @@ Rangaprasad~Arun Srivatsan, Gillian~T Rosen, D~Feroze~Naina Mohamed, and Howie
   Kalman filter}.
 \newblock \penalty0 (3).
 
+\bibitem[Stachniss et~al.(2005)Stachniss, Grisetti, and Burgard]{Stachniss2005}
+Cyrill Stachniss, G~Grisetti, and W~Burgard.
+\newblock {Information Gain-based Exploration Using Rao-Blackwellized Particle
+  Filters.}
+\newblock \emph{Robotics: Science and Systems}, pages 65--72, 2005.
+\newblock ISSN 2330765X.
+\newblock URL
+  \url{http://pdf.aminer.org/000/685/672/information{\_}gain{\_}based{\_}exploration{\_}using{\_}rao{\_}blackwellized{\_}particle{\_}filters.pdf}.
+
+\bibitem[Tesch et~al.(2009)Tesch, Lipkin, Brown, Hatton, Peck, Rembisz, and
+  Choset]{Tesch2009}
+Matthew Tesch, Kevin Lipkin, Isaac Brown, Ross Hatton, Aaron Peck, Justine
+  Rembisz, and Howie Choset.
+\newblock {Parameterized and Scripted Gaits for Modular Snake Robots}.
+\newblock \emph{Advanced Robotics}, 23\penalty0 (9):\penalty0 1131--1158, 2009.
+\newblock ISSN 0169-1864.
+\newblock \doi{10.1163/156855309X452566}.
+
 \bibitem[Thrun et~al.(2000{\natexlab{a}})Thrun, Fox, and Burgard]{Thrun2000}
 Sebastian Thrun, D~Fox, and W~Burgard.
 \newblock {Monte carlo localization with mixture proposal distribution}.
@@ -173,5 +431,34 @@ Sebastian Thrun, Burgard Wolfram, and Fox Dieter.
 \newblock pages 1999--2000, 2000{\natexlab{b}}.
 \newblock ISSN 00010782.
 \newblock \doi{10.1145/504729.504754}.
+
+\bibitem[Tonneau(2016)]{Tonneau}
+S.~et~al. Tonneau.
+\newblock {An efficient acyclic contact planner for multiped robots}.
+\newblock \emph{The International Journal of Robotics Research}, pages 1--11,
+  2016.
+
+\bibitem[Xiong et~al.(2004)Xiong, Wang, Member, and Li]{Xiong2004}
+Zhenhua Xiong, Michael~Yu Wang, Senior Member, and Zexiang Li.
+\newblock {A Near-Optimal Probing Strategy for Workpiece Localization}.
+\newblock 20\penalty0 (4):\penalty0 668--676, 2004.
+
+\bibitem[Yamada et~al.(2007)Yamada, Mori, and Hirose]{Yamada2007}
+Hiroya Yamada, Makoto Mori, and Shigeo Hirose.
+\newblock {Stabilization of the head of an undulating snake-like robot}.
+\newblock \emph{IEEE International Conference on Intelligent Robots and
+  Systems}, pages 3566--3571, 2007.
+\newblock \doi{10.1109/IROS.2007.4399390}.
+
+\bibitem[Yau and Menq(1992)]{Yau1992}
+Hong-Tzong Yau and Chia-Hsiang Menq.
+\newblock {An automated dimensional inspection environment for manufactured
+  parts using coordinate measuring machines}.
+\newblock \emph{International Journal of Production Research}, 30\penalty0
+  (7):\penalty0 1517--1536, 1992.
+\newblock ISSN 0020-7543.
+\newblock \doi{10.1080/00207549208948105}.
+\newblock URL
+  \url{http://www.informaworld.com/openurl?genre=article{\&}doi=10.1080/00207549208948105{\&}magic=crossref||D404A21C5BB053405B1A640AFFD44AE3}.
 
 \end{thebibliography}

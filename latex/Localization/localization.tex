@@ -64,7 +64,9 @@ This chapter concludes with demonstrations of the method on a simulated part (se
 
 \section{Rigid-Body Object Localization}\label{sec:rigid_body}
 
-The datum-based particle filter described later relies heavily on the framework and methods developed for rigid-body localization developed in \cite{Saund2017}, and this section provides an overview of the relevant details. 
+During my thesis I collaborated heavily with Shiyuan Chen on the task of autonomous localization.
+The rigid body particle filter developed in this section is mostly his work.
+The datum-based particle filter described later relies heavily on the framework and methods developed for rigid-body localization, and this section provides an overview of the relevant details \cite{Saund2016}.
 The task is to determine the pose of an object by choosing and performing touch measurements, given the geometry of the object and prior belief over the distribution of poses.
 
 The geometry of the object to be localized is stored in a STL file using a triangular mesh, defined in the \textit{part frame}. The pose of the object can then be defined as the transformation between this \textit{part frame} and the \textit{world frame} of the workspace. 
@@ -482,7 +484,11 @@ If this assumption does not hold, localization can be performed for the whole ob
 	\label{fig:full-state}
 \end{figure}
 
-The first method presented maintains the full joint probability distribution between sections using a single set of full-state particles: $\particles[t] = \{\particle[t][j]\}$. 
+During my thesis I collaborated heavily with Shiyuan Chen for the task of autonomous localization.
+In the work on datum-based localization we had alternative approaches. Shiyuan mainly focused on the full-state approach described in this section, while I focused on the independent-state approach described next.
+Thus much of the credit for the work in this section belongs to Shiyuan.
+
+The full-state method presented maintains the full joint probability distribution between sections using a single set of full-state particles: $\particles[t] = \{\particle[t][j]\}$. 
 %% A Bayesian network is defined where the nodes are sections and the edges are the transformation relationships.
 %% The transformation between sections are defined in a graph, such that sections 
 %% Defining transformations of the sections in a graph is natural. 
@@ -492,6 +498,7 @@ The first method presented maintains the full joint probability distribution bet
 %% However, for non-parametric continuous distribution, it is difficult to apply belief propagation approaches to update the whole graph given an observation on a section. 
 %% Instead, for the object in 3D workspace with $n$ sections being tracked, we explicitly maintain a full $6n$-dimensional state space. 
 Thus, each particle represents a combination of the poses of all of the sections (see Fig. \ref{fig:full-state}), which is drawn from the prior joint distribution $bel(\particle[0])$.
+
 
 Instead of applying a Gaussian kernel in 6D configuration space as done in section \ref{sec:rigid_body}, the continuous prior is estimated by Gaussian Mixtures in the full $6n$-dimensional configuration space, with the kernel covariance proportional to the covariance of the sampled states. This is achieved by applying kernel density estimation techniques. One popular method for the bandwidth selection is the Silverman's rule-of-thumb estimator\cite{Silverman1986}. Other techniques are discussed in more detail in \cite{sheather2004density}.
 

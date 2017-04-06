@@ -51,20 +51,37 @@ Repeated entry---line 124 of file nsfBib.bib
  : @article{Petrovskaya2011
  :                         ,
 I'm skipping whatever remains of this entry
+Repeated entry---line 152 of file nsfBib.bib
+ : @article{Saund2013
+ :                   ,
+I'm skipping whatever remains of this entry
+Database file #4: BracingBib.bib
+Repeated entry---line 19 of file BracingBib.bib
+ : @article{Berenson2009a
+ :                       ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 75 of file BracingBib.bib
+ : @article{Atkeson2015
+ :                     ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 173 of file BracingBib.bib
+ : @article{Mordatch2012
+ :                      ,
+I'm skipping whatever remains of this entry
 Warning--I didn't find a database entry for "DarpaRoboticsVideo"
-Warning--I didn't find a database entry for "Book1994"
-Warning--I didn't find a database entry for "Lew1993"
-Warning--I didn't find a database entry for "Hollis1992"
-Warning--I didn't find a database entry for "Greenfield2005"
-Warning--I didn't find a database entry for "Bretl2006"
-Warning--I didn't find a database entry for "Tonneau"
+Warning--empty journal in Ahmadzadeh2005
 Warning--empty journal in Atkeson2015
 Warning--empty journal in Choukroun2006
+Warning--there's a number but no volume in Gong2014
+Warning--empty journal in Javdani2014
 Warning--empty journal in Koval2011
 Warning--there's a number but no volume in Koval2013
+Warning--empty journal in Pahk1996
+Warning--empty journal in Ratliff2009
 Warning--empty journal in Srivatsan
 Warning--there's a number but no volume in Srivatsan
 Warning--empty year in Srivatsan
 Warning--empty year in Srivatsan
 Warning--empty journal in Thrun2000a
-(There were 12 error messages)
+Warning--empty journal in Xiong2004
+(There were 16 error messages)
