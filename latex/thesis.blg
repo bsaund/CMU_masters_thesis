@@ -1,0 +1,70 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: thesis.aux
+The style file: plainnat.bst
+Database file #1: FineLocalizationBib.bib
+Database file #2: DatumBib.bib
+Repeated entry---line 79 of file DatumBib.bib
+ : @article{Felzenszwalb2004
+ :                          ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 92 of file DatumBib.bib
+ : @article{Fox2003
+ :                 ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 102 of file DatumBib.bib
+ : @article{Hebert2013
+ :                    ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 114 of file DatumBib.bib
+ : @article{Koval2011
+ :                   ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 121 of file DatumBib.bib
+ : @article{Koval2013
+ :                   ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 134 of file DatumBib.bib
+ : @article{Javdani2013
+ :                     ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 152 of file DatumBib.bib
+ : @article{Petrovskaya2011
+ :                         ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 167 of file DatumBib.bib
+ : @article{Silverman1986
+ :                       ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 178 of file DatumBib.bib
+ : @article{Thrun2000
+ :                   ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 187 of file DatumBib.bib
+ : @article{Thrun2000a
+ :                    ,
+I'm skipping whatever remains of this entry
+Database file #3: nsfBib.bib
+Repeated entry---line 92 of file nsfBib.bib
+ : @article{Koval2011
+ :                   ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 124 of file nsfBib.bib
+ : @article{Petrovskaya2011
+ :                         ,
+I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for "DarpaRoboticsVideo"
+Warning--I didn't find a database entry for "Book1994"
+Warning--I didn't find a database entry for "Lew1993"
+Warning--I didn't find a database entry for "Hollis1992"
+Warning--I didn't find a database entry for "Greenfield2005"
+Warning--I didn't find a database entry for "Bretl2006"
+Warning--I didn't find a database entry for "Tonneau"
+Warning--empty journal in Atkeson2015
+Warning--empty journal in Choukroun2006
+Warning--empty journal in Koval2011
+Warning--there's a number but no volume in Koval2013
+Warning--empty journal in Srivatsan
+Warning--there's a number but no volume in Srivatsan
+Warning--empty year in Srivatsan
+Warning--empty year in Srivatsan
+Warning--empty journal in Thrun2000a
+(There were 12 error messages)

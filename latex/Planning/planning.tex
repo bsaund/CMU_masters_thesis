@@ -17,31 +17,6 @@ Modeling contacts
 \subsection{Spring Model}
 \subsection{}
 
-\section{Bracing}
-In path planning for robotic arms any contact with the environment is often considered a collision and thus valid paths have no interaction with the environment.
-However environmental contacts can reduce joint torques, damp vibrations, and stabilize an arm.
-Despite these benefits contacts are usually avoided because they bring algorithmic complexity during the planning stage and physical danger to the robot and environment if executed improperly.
-The increased planning complexity comes from the contact configurations being a measure-zero manifold in the robot configuration space, rendering naive planning in configuration space ineffective. 
-
-The benefits of bracing have been studied since the 1990s.
-Lew and Book proposed bracing a micro/macro manipulator with small precise arm mounted on the end of a long course arm and demonstrated bracing of the macro arm against multiple locations of the environment can damp vibration caused by the micro arm \cite{Book1994} \cite{Lew1993}.
-Hollis and Hammer explored a similar micro/macro robot design and demonstrated $1 \mu m$ accuracy, well over an order of improvement compared to their unbraced manipulator \cite{Hollis1992}.
-Both of these works did not address the planning problem as both contact locations and robot trajectories were manually specified.
-
-Sampling based planners and Trajectory Optimization are two common approaches to path planning, however the measure-zero manifold of contact configurations poses problems to both planning techniques.
-Sampling based planners will never sample directly on this manifold, and extending a contact configuration to a new sampled point will immediately leave the contact manifold.
-Berenson developed a variation of an RRT planner capable of handling measure-zero manifolds by projecting invalid path extensions onto the valid configuration space \cite{Berenson2009a}.
-The method of projection must be provided by the user.
-
-
-Trajectory Optimization needs a smooth gradient of a cost function and in a naive implementation the benefits of contact will only be realized in a measure-zero domain surrounded by obstacle penetration and no contact regions.
-Softening contacts is commonly used in trajectory optimization to produce a gradient for obstacle avoidance, but produces local minima when used for attraction.
-Mordatch designed a cost function that continuously models both the benefit and cost of adding contacts and is able to produce trajectories which add and break contacts \cite{Mordatch2012}. 
-
-Rather than solving for a trajectory and contact locations simultaneously some approaches have separated these two problems.
-Given a sequence of contact modes for each link, Greenfield computed joint torques to produce desired dynamic behavior and applied this to a climbing snake robot \cite{Greenfield2005}.
-Bretl et al. \cite{Bretl2006} developed algorithms for climbing robots that first select contact locations then create collision free trajectories for the robot's limbs between these contact locations.
-Tonneau et al \cite{Tonneau} approaches from the opposite direction and first generates a trajectory then considers a discrete set of contacts close to that trajectory.
 
 \section{Discrete Selection of Contact Locations}
 \subsection{Walking}

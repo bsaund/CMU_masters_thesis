@@ -59,41 +59,6 @@ To achieve this, many potential measurement actions are sampled and the action w
 Fully predicting the information gain over the continuous belief is computationally expensive, so similar to other approaches \cite{Javdani2013} this work involves a fast approximation for information gain that takes advantage of the discretized belief from the particle filter (section \ref{sec:information gain}). 
 This chapter concludes with demonstrations of the method on a simulated part (section \ref{sec:experiment}). 
 
-\section{Current Methods for Localizing Objects Using Contact Sensors}
-
-%Particle filter has been widely used in localization tasks since its introduction.
-%
-%%PLACE HOLDER
-%Particle filters, touch measurements, and maximal information gain measurement selection have all been used in localization tasks. 
-%In particular the recent DARPA ARM-S competition led to progress with robotic arms localizing and grasping objects. 
-
-% Touch is considered one of the most accurate ways of perception. 
-%% Humans are capable of localizing objects with complex shape using sense of touch. 
-%% However, for robots, localization using contact sensors is a classic problem, as it requires robots to reason in high-dimensional configuration space. 
-
-Recently, there have been a variety of approaches that allow robots to localize objects solely with contact sensors. Different contact sensors have been explored and developed, including basic binary sensors, 6-axis force and torque sensors \cite{del2012control}, soft tactile sensor arrays \cite{hammond2012soft}, and bio-inspired fingertips \cite{fishel2012sensing}. Localization with laser sensors has also been used in the high-precision CNC localization, where a 3D point cloud is acquired in order to estimate the transformation between the actual and planned pose \cite{rajaraman2013automated}.
-The localization approach presented here can be generalized to these sensors which can distinguish between contact and free-of-contact states.
-
-Particle filters have been widely used and developed since their introduction. 
-Unlike some other Bayesian estimation approaches such as Kalman filters \cite{kalman1960new}, extended Kalman filters \cite{kalman1961new} and unscented Kalman filters \cite{julier1997new}, particle filters can easily model non-Gaussian and multi-modal probability distribution. 
-For touch localization, contact sensors yield a highly non-linear measurement model, and the belief can frequently become multi-modal when multiple configurations are all consistent with the measurement. 
-These properties make particle filter a popular approach for touch localization tasks. 
-
-However, particle filters will experience \textit{particle starvation} for measurements with very low uncertainty and objects with a high dimensional configuration space \cite{Thrun2000}. 
-Koval introduced the Manifold Particle Filter to address this issue by implementing different sampling and weighting strategies compared to the traditional particle filters \cite{Koval2011}\cite{ Koval2013}. 
-Instead of sampling particles from the process model and weighting them based on the observation, samples are directly drawn from the contact manifold, given the observation. 
-This provides a fast and robust solution for objects with simple shapes. 
-For complex object geometries, as in this case, direct, efficient sampling from the contact manifold becomes difficult.
-
-Petrovskaya tackles particle starvation during touch localization by combined Monte Carlo approaches with annealing as a smoothing technique \cite{Petrovskaya2011}. 
-She introduced Scaling Series algorithms for 6-DOF global tactile localization in both full-constrained and under-constrained scenarios to overcome particle starvation by adjusting particle density depending on the complexity of the posterior. 
-Multiple iterations through the measurement data are used and the precision of the belief is scaled from low to high in order to avoid unnecessarily precise estimates in unlikely regions of belief space. 
-
-
-All of the work mentioned so far assumes the prior information of the object geometry matches the real piece perfectly. 
-Hebert et al. \cite{Hebert2013} solve a touch localization problem using a Bayes filter where an object may have additional unknown parameters describing the shape, such as a screw driver with an unknown length handle.
-Measurement actions are selected using joint information gain over the object's pose and these internal parameters.
-%% To the best of our knowledge, our proposed method is the first one that handles localization problems for object with coupled datums.
 
 
 
