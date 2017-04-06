@@ -91,9 +91,77 @@ While a team of people may include workers on both the inside and outside, large
 
 
 
-\section{Contribution}
+\section{Approach}
+The work in this thesis address two separate problems. The first is the task of localizing an object through measurements made using contact measurement.
+The second is the task of planning a trajectory for a robotic arm that is too long to support its own cantilevered weight, and so must rest on the environment for support.
+Unifying the two problems is the challenges associated with contacts.
 
-\section{Thesis Outline}
+\subsection{Localization}
+
+\begin{figure}
+\centering
+    \begin{subfigure}[b]{.5\linewidth}
+      \includegraphics[width=\linewidth, clip, trim=9in 3in 0in 1in]{./Introduction/Overview2}
+        \caption{}
+        \label{fig:Rigid:Overview_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.5\linewidth}
+      \includegraphics[width=\linewidth, clip, trim=1.5in 1.5in 1.5in 1.3in]{./Introduction/Particle_Intersection}
+        \caption{}
+        \label{fig:Rigid:Overview_2}
+    \end{subfigure}
+%% \includegraphics[width=2.5in, clip, trim=9in 3in 0in 1in]{Overview2}
+%% \includegraphics[width=2.5in, clip, trim=0in 4in 12in 2in]{Overview2}
+\caption{\subcap{fig:Rigid:Overview_1}: The robot performing a touch measurement}\\
+\subcap{fig:Rigid:Overview_2}: The belief of the part location and measurement
+\label{fig:Rigid:Overview}
+\end{figure}
+
+The in localization task the robot must esxtimates the pose $X$ of an object based on a set of measurements $Z_t = \{z_1, ..., z_t\}$ made by probing the object.
+The robot chooses where to probe, and the measurements are a function of the object and chosen measurement action.
+A triangular mesh describes the object geometry and a frame is attached to this mesh. 
+The state $X$ is the $SE(3)$ transformation from a fixed world frame to this part frame. 
+This is a 6-dimensional state stored as position $(x,y,z)$ and orientation angles $(\alpha, \beta, \gamma)$. 
+Initially it is assumed the geometry is rigid, thus the state can be fully described as the $SE(3)$ configuration of a frame attached to the part \ref{sec:rigid_body}.
+Later, this is generalized to parts with internal uncertainty \ref{sec:datum}.
+A further assume is that the part is fixed in space relative to a world frame and that probing actions do not perturb the state. 
+
+Rather than calculating a single best estimate of the pose, a probability distribution represents the uncertainty in knowledge.
+Estimating the probability distribution is important both for choosing effective measurements and knowing when the part is localized sufficiently. 
+For feasibility, this probabilistic belief is represented numerically by a list of points drawn from the true distribution called \textit{particles}. 
+A measurement updates the belief using a \textit{particle filter} \cite{Thrun2000a}.
+
+However particle filters behave poorly both when the dimensionallity of the system grows large and when measurements become precise \cite{Koval2013}. 
+In the problems considered there is a large initial uncertainty, and achieving high tolerance performance necessitates measurements with low uncertainty.
+Updating the belief after performing such a measurement will eliminate most particles, leaving a poor representation of the posterior. This problem is called particle starvation.
+
+This thesis first presents a solution to particle starvation during touch localization (section \ref{sec:rigid_body}) using a particle filter with an alternate update procedure that is able to combine accurate measurements with the prior. 
+This particle filter is then generalized to parts with internal uncertainty (section \ref{sec:datum}).
+
+To minimize the time taken to localize the part, the robot should choose informative measurement actions.
+To achieve this, many actions are sampled and the one with the highest expected \textit{information gain} is selected. 
+Fully predicting this is also computationally expensive, thus previous methods using this metric introduce delays during which the robot pauses between measurements and yet still only samples a small number of actions.
+This approach involves a fast approximation for information gain that takes advantage of the discretized belief from the particle filter (section \ref{sec:information gain}). 
+This enables the sampling hundreds of potential measurement actions in a few seconds. 
+
+
+
+%% At any time step we have a belief of the state $bel(x_t) = p(x_t| Z_t)$. 
+%% Measurements are a non-linear probabilistic function of the true state: $z_t \sim p(z_t|X)$. 
+%% As in all Bayesian filters, the belief $bel(x_{t+1})$ is calculated recursively as follows \footnote{The full update of a Bayesian filter also includes a process model. Our assumption of a fixed part yields the static process model and this simpler formulation}:
+%% \begin{align}
+%% bel(x_{t+1}) \leftarrow \eta \ p(z_t|x_t) \  bel(x_t)
+%% \end{align}
+%% with $\eta$ as a normalization factor. Each new measurement value triggers an update to the belief $bel(x)$. 
+
+Figure \ref{fig:Rigid:Overview} shows the experimental setup.
+A 7-DOF robotic arm equiped with a touch probe performs measurements on an object \subcap{fig:Rigid:Overview_1}.
+These measurements are used to update the belief \subcap{fig:Rigid:Overview_2}. The belief is the used to determine good information gathering future measurement actions.
+
+
+\subsection{Planning}
+
 
 
 
