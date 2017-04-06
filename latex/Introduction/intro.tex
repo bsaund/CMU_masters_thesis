@@ -118,7 +118,7 @@ Unifying the two problems is the challenges associated with contacts.
 \label{fig:Rigid:Overview}
 \end{figure}
 
-The in localization task the robot must esxtimates the pose $X$ of an object based on a set of measurements $Z_t = \{z_1, ..., z_t\}$ made by probing the object.
+In the localization task the robot must esxtimates the pose $X$ of an object based on a set of measurements $Z_t = \{z_1, ..., z_t\}$ made by probing the object.
 The robot chooses where to probe, and the measurements are a function of the object and chosen measurement action.
 A triangular mesh describes the object geometry and a frame is attached to this mesh. 
 The state $X$ is the $SE(3)$ transformation from a fixed world frame to this part frame. 
@@ -160,8 +160,34 @@ A 7-DOF robotic arm equiped with a touch probe performs measurements on an objec
 These measurements are used to update the belief \subcap{fig:Rigid:Overview_2}. The belief is the used to determine good information gathering future measurement actions.
 
 
-\subsection{Planning}
+\subsection{Motion Planning}
+The motion planning task considered here involves planning trajectories for a robotic arm through an environment.
+The robot arm begins at initial joint angles and the goal is to apply torques on the joints to move the end effector of the robot to some specified location in the workspace.
+When planning, the robot arm kinematics and dynamics, joint torque limits, and the environment are known.
+Of particular interest is the dynamics model, as it models contact forces at specified locations on the robot.
 
+When not in contact with the environment the robot dynamics obey the manipulator arm equation \cite{murray1994mathematical}.
+However, when in contact, additional forces are applied to the arm obeying a spring model: The force is proportional to the penetraion distance, in the direction pushing the arm out of the environment.
+To maintain stability in the model, the simulated environment is kept squishy with a spring constant significantly lower than the physical reality.
+
+In the tasks considered in this thesis, the robot is not capable of reaching the goal point without using contact points, thus the motion planner must make use of contacts.
+To ensure this the arm used is long and thin, the torque limit is low, and goal positions are chosen far from the base of the arm.
+Thus the motors alone are not able to overcome the weight of the cantilevered robot arm.
+
+Two approaches are used to plan: trajectory optimization and a sample-based planner.
+In the trajectory optimization framework used a function determines the cost of a trajectory, and an initial trajectory is iteratively improved using gradient descent until a local optimum is achieved.
+The obvious choice for a cost function would penalize not reaching the goal and penalize joint torques, either through soft or hard constraints.
+However due to the local nature of contacts, potentially useful contacts that are not yet made have no influence on the cost function, and these solutions will never be discovered.
+The solution is an augmentation of the dynamics model, allowing contact forces at a distance.
+This provides a much better conditioned cost function, at the expense of accurately modeling the world.
+Towards the end of optimization the model parameters are altered to enforce a realistic solution.
+
+When initialized well, this optimization approach produces trajectories that keep joint torques low by making and breaking contacts.
+However, the cost function is still littered with non-optimal local minimia, and escaping these proves difficult.
+Thus a sampled based planner is employed to generate trajectories that can either directly be used, or that serve as a decent initialization for the optimization approach.
+Again the thin contact manifold presents problems.
+Sampled based planners rely on generating trajectories to connect probabilistically sampled configurations, but the thin contact manifold renders naive approaches useless.
+The solution used augments the extension function of a sampled based planner, causing extensions to make progress towards their goal while staying on the contact manifold as necessary.
 
 
 
