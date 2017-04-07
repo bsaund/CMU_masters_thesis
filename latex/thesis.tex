@@ -109,7 +109,7 @@ Arun Srivatsan
 % copyright notice generated automatically from Year and author.
 % permission added if \permission{} given.
 
-\keywords{}
+%% \keywords{}
 
 \maketitle
 
@@ -123,7 +123,17 @@ Arun Srivatsan
 %% into different files and input them into this file...
 
 \begin{abstract}
-A short summary.
+  Contacting the world can provide stability, support, and sensory information, however most robots avoid contact whenever possible.
+  Contacts present a danger of large forces and challenging computational issues, but enabling robots to reason about contacts extends the extent to which robots can perceive and act in the world.
+  Computational issues arise due to the local nature of contacts, yielding subspaces of intersection thin manifolds.
+
+  This thesis explores both localization and planning where contacts are required.
+  Several common techniques in robotics are adapted to better handle the local effects of contact.
+  A particle filter is augmented to update from a precise measurement that would ordinarily eliminate most particles.
+  An efficient information gain metric is defined using these particles to predict useful future measurements.
+  A new dynamics model and associated cost function are created for a robotic arm, which although are not faithful to real dynamics, are conditioned well for use in existing planning methods.
+  This artificial but useful dynamics model is shown in both trajectory optimization and sampled-based planning.
+  
 \end{abstract}
 
 \begin{acknowledgments}
@@ -173,13 +183,13 @@ A short summary.
 \chapter{Introduction}
 \subfile{Introduction/intro.tex}
 
-\chapter{Related Work}
+\chapter{Related Work} \label{chap:related_work}
 \subfile{RelatedWork/relatedWork.tex}
 
-\chapter{Localization using Contacts}
+\chapter{Localization using Contacts} \label{chap:localization}
 \subfile{Localization/localization.tex}
 
-\chapter{Planning with Contacts for Support}
+\chapter{Planning with Contacts for Support} \label{chap:planning}
 \subfile{Planning/planning.tex}
 
 \chapter{Conclusion and Future Work}

@@ -4,12 +4,47 @@
 
 
 
-This paper introduced the \textit{datum-based particle filter}, which provides a method to localize a task location defined by datums on an object with internal degrees of freedom.
-This method stores the belief as the belief over the poses of multiple rigid sections comprising the object using a particle filter, and selects measurement actions using the metric of information gain.
-Two implementations are described: a high dimensional particle filter capturing the full state, and multiple particle filters coupled through the tolerances between sections.
-The techniques to avoid particle starvation during rigid body localization have been extended to both implementations of the datum-based particle filter. 
-Information gain of a potential measurement action is approximated as a discrete probabilistic decision process over the particles comprising the belief.
-The formulation presented distinguishes between useful information which updates the belief of the target feature, and information which only improves the belief of non-datum sections.
+%% This paper introduced the \textit{datum-based particle filter}, which provides a method to localize a task location defined by datums on an object with internal degrees of freedom.
+%% This method stores the belief as the belief over the poses of multiple rigid sections comprising the object using a particle filter, and selects measurement actions using the metric of information gain.
+%% Two implementations are described: a high dimensional particle filter capturing the full state, and multiple particle filters coupled through the tolerances between sections.
+%% The techniques to avoid particle starvation during rigid body localization have been extended to both implementations of the datum-based particle filter. 
+%% Information gain of a potential measurement action is approximated as a discrete probabilistic decision process over the particles comprising the belief.
+%% The formulation presented distinguishes between useful information which updates the belief of the target feature, and information which only improves the belief of non-datum sections.
+
+This thesis has explored the challenges and benefits of contacts in two robotics problems.
+Contacts can provide accurate sensory information and aid in robot motion, but the local nature of contact forces adds difficulties.
+Specifically considered were a localization problem using a touch probe, and a planning problem using contacts for support.
+Chapter \ref{chap:related_work} reviewed existing methods for localization and planning using contacts.
+
+In localization, touch probing yields accurate measurements about the location of the surface of a part.
+However, only a thin manifold of configurations are consisent with the measurement, which presents challenges when using this measurement to update the belief of the object.
+Chapter \ref{chap:localization} first reviewed work done in collaboration with Shiyuan Chen \cite{Saund2016} on designing a particle filter capable of updating using contact measurement.
+It then extends this particle filter to parts with internal degrees of freedom, where the goal is to localize a specific section defined by datums.
+This chapter describes how to use the particles to define an information gain metric that can be calculated efficiently, and this metric is used to select informative probing actions.
+
+In motion planning, contact forces can reduce joint torques in a cantilevered robotic arm.
+However, utilizing contacts involves discovering and traversing a thin manifold through configuration space, which presents difficulties for common methods of planning.
+Chapter \ref{chap:planning} describes approaches for trajectory optimization and samples based planners for handling the effects of contacts.
+The heart of the approach is a dynamics model that can provide unrealistically optimistic contact forces at a distance, and thereby providing useful gradient information to a cost function.
+The degree to which forces at a distance can be used is controllable, enabling the enforcement of realistic final trajectories.
+
+There is a plethora of future directions for this work.
+Perhaps most obviously, these two approaches can be combined on the same robot.
+The same contacts that can be used for planning can also be used for planning, augmenting the planning cost function further to encourage informative contact locations.
+Progress can still be made independently.
+
+This thesis demonstrated the localization approach on only a single part in practice, and only a limited set in simulation.
+The datum based particle filter can be applied to a wide variety of environments consisting of objects with bayesian linked poses.
+It's power is the ability to focus on only the information gathering actions that aid a task.
+In addition, through collaborators we have identified a practical application in need of the approach described involving a robot in a manufacturing setting.
+
+Obvious extensions exist to the planning methods describes. The sample based planner will yield only feasible trajectories, not optimal trajectories.
+The methods of RRT* can be used to produce better trajectories for initializing the optimization.
+In addition, when the trajectory optimization fails the current solution is a random restart.
+However, this new optimization result in convergence to the same local minima.
+The same approaches employed in section \ref{sec:sample_planning} can be used to avoid repeated exploration of the same region.
+Finally, the dynamics model and cost function used were constructed specifically for contacts, but the methods used may be extended to other challenges in robotics.
+
 
 
 \end{document}

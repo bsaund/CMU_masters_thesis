@@ -1,6 +1,6 @@
 \backcite {Atkeson2015}{{1}{1}{figure.caption.3}}
-\backcite {Thrun2000a}{{5}{1.2.1}{figure.caption.6}}
-\backcite {Koval2013}{{5}{1.2.1}{figure.caption.6}}
+\backcite {Thrun2000a}{{4}{1.2.1}{figure.caption.6}}
+\backcite {Koval2013}{{4}{1.2.1}{figure.caption.6}}
 \backcite {murray1994mathematical}{{5}{1.2.2}{subsection.1.2.2}}
 \backcite {Thrun2000a}{{7}{2.1.1}{subsection.2.1.1}}
 \backcite {Thrun2000}{{7}{2.1.1}{subsection.2.1.1}}
@@ -47,5 +47,4 @@
 \backcite {Saund2017}{{28}{3.4}{section.3.4}}
 \backcite {Saund2017}{{29}{3.4.1}{subsection.3.4.1}}
 \backcite {Mordatch2012}{{31}{4}{chapter.4}}
-\backcite {murray1994mathematical}{{31}{4.1}{section.4.1}}
-\backcite {Mordatch2012}{{32}{4.2}{figure.caption.18}}
+\backcite {murray1994mathematical}{{31}{4.1}{figure.caption.17}}

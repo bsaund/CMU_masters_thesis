@@ -21,7 +21,7 @@ The problem formulation includes a function that assigns a cost to each trajecto
 Typically a trajectory is penalized for large joint torques and for not reaching the goal, however that formulation provides insufficient gradient information when contacts are involved.
 The more accurate dynamics model is augmented, making it less accurate but better conditioned for optimization.
 
-Section \ref{sec:sample_planning} describes a sampled-based planner capable of using contact forces.
+Section \ref{sec:sample_planning} describes a sampled-based planner capable of using contact forces, and again alterations are made to handle the thin contact manifold.
 
 
 
@@ -32,6 +32,14 @@ Section \ref{sec:sample_planning} describes a sampled-based planner capable of u
 %% \section{Related Work}
 \section{Robot Dynamics} \label{sec:robot_dynamics}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=.7\linewidth]{./Planning/sphere_approxmation.png}
+  \caption{The visually accurate robot model (left) and the spherical approximation (right)}
+  \label{fig:sphere_approxiamtion}
+\end{figure}
+
+
 When not in contact with the environment the robot model follows the manipulator arm equation \cite{murray1994mathematical}:
 \begin{align}
   M(\theta)\ddot \theta + C(\theta, \dot\theta)\dot\theta + N(\theta, \dot\theta) = \tau
@@ -41,7 +49,7 @@ $N$ includes both gravity and frictional terms.
 In practice $M, C,$ and $N$ do not need precise estimation, because closed loop controllers on the robot can compensate for errors.
 
 The robot arm has defined sections which may be in contact with the environment.
-For simplicity in calculations, these contact sections are approximated by spheres.
+For simplicity in calculations, these contact sections are approximated by spheres, shown in Figure \ref{fig:sphere_approximation}.
 The environment is modeled as a triangular mesh, and contact occurs when a contact section intersection the mesh.
 The contact force is determined by a spring model, and so the magnitude is proportional to the penetration distance with direction pushing the section out of the environment.
 The physical robot and environment are both constructed of metal, so while a large spring constant provides a more accurate model this also causes numerical instabilities.
@@ -51,13 +59,6 @@ Each trajectory is simulated as a series of discrete time steps, and a large spr
 
 
 
-\begin{figure}
-  \centering
-  \includegraphics[width=.5\linewidth]{./Planning/thin_manifold.pdf}
-  
-  \caption{Illustration of valid configuration space for an arm potentially supported by contacts}
-  \label{fig:ThinManifold}
-\end{figure}
 
 
 
@@ -87,19 +88,50 @@ Each trajectory is simulated as a series of discrete time steps, and a large spr
 \end{figure}
 
 
-Trajectories for a robotic arm are created through trajectory optimization. The key approach used here is softening of contacts through the introduction of auxiliary variables which drastically smooth the cost function used at the expense of increasing the dimensionality of the state space. The formulation used in the paper follows from Mordatch's work \cite{Mordatch2012}.
+Trajectories for a robotic arm are created through trajectory optimization.
+A trajectory $s$ is a discrete list of robot states $s_t$ at increasing points in time.
+A state contains both the joint angles and joint velocities, though for sufficiently slow trajectories the velocities may be ignored.
+To transition between timesteps, joint torques are calculated through inverse dynamics.
 
-A trajectory $s$ is a series of robot states $s_t$ at increasing points in time. Each state $s_t$ contains the joint configuration $\theta_t$ as well as an auxiliary continuous variable $c_t$ for each section of the robotic arm allowed to make contact with the environment. The variables $c_t$ regulate the magnitude of the normal and frictional contact forces and will be describe in detail later in this document. At first these $c$ variables seem unnecessary as the forward kinematics specified by the joint angles $\theta$ determine the locations of the robot, and therefore determine the contacts between the robot and the environment. However slight changes in these joint configurations result in slight motion of the robot which may result in huge changes in contact forces. Additionally without artificial terms in the cost function to model contact, the cost function is blind to potential contacts that may be close and useful.
+Since the trajectory requires maintaining low joint torques and reaching a goal point, it seems natural to define a cost function the penalizes joint torque and the distance from the goal:
+\begin{align}
+  L(s) = \sum ||\tau_{joint}||^2 + Cost_{task}
+\end{align}
+Figure \ref{fig:naive_cost} shows such a cost function for a single state for a simple robot arm with one movable base joint and one contact section on the end effector, with a goal position with the robot leaning to the right.
+For simplicity, the dynamic forces are ignored and the only forces considered are gravity and contact.
+Although the minimum of this cost function uses contact to reduce joint torque while reaching the goal, this cost function is poorly conditioned for gradient descent optimization.
+Nearly all initializations will result in convergence to the local minimum with the wide basin of attraction at $\theta=0.1$.
+Thus this cost function is augmented to be better suited for optimization.
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{./Planning/naive_cost}
+  \caption{Naive cost function, with sharp changes around contact locations}
+  \label{fig:naive_cost}
+\end{figure}
+%% The formulation used in the paper follows from Mordatch's work \cite{Mordatch2012}.
+
+
+
+
 
 \subsection{Auxiliary Variables}
+The key approach used here is softening of contacts through the introduction of auxiliary variables which drastically smooth the cost function, at the expense of increasing the dimensionality of the state space.
+Appended to each state $s_t$ is a set of auxiliary continuous variables $c_t$, one for each section of the robotic arm allowed to make contact with the environment.
+The variables $c_t$ regulate the magnitude of the normal and frictional contact forces and will be described in detail.
+%% These $c$ variables seem unnecessary as the forward kinematics specified by the joint angles $\theta$ determine the locations of the robot, and therefore determine the contacts between the robot and the environment.
+Without this augmentations, slight changes in these joint configurations result in slight motion of the robot which may result in huge changes in contact forces.
+Additionally without artificial terms in the cost function to model contact, the cost function is blind to potential contacts that may be close and useful.
 
-\subsection{Cost Function}
+
+\subsection{Smoothing the Cost Function}
 The optimal solution $s^*$ is computed by minimizing the cost function of the form
 
-\begin{align*}
+\begin{align}
 L(s) &= L_{Contact Violation} + L_{u} \\
 &+ L_{Object Penetration} + L_{Goal}   
-\end{align*}
+\end{align}
     
 $L_{Object Penetration}$ and $L_{Goal}$ are straightforward, while the interplay between $L_{Contact Violation}$ and $L_u$ provide the interesting structure allowing the optimization to find paths which use supporting contacts.
 
@@ -107,9 +139,18 @@ $L_{Object Penetration}$ and $L_{Goal}$ are straightforward, while the interplay
 
 
 \subsubsection{Cost $L_{Contact Violation}$}
-Each section of the robot able to make contact has an associated variable $c_t > 0$ at each time step. $c$ intuitively represents the strength of the contact forces. Since if the robot is not physically in contact with the world there will not be a contact force the cost $L_{Contact Violation}$ is introduced to penalize non-zero values of $c$ when the robot is not in contact. 
+Each section of the robot able to make contact has an associated variable $c_t > 0$ at each time step. $c$ intuitively represents the strength of the contact forces.
+Since if the robot is not physically in contact with the world there will not be a contact force the cost $L_{Contact Violation}$ is introduced to penalize non-zero values of $c$ when the robot is not in contact. 
 $$L_{Contact Violation} = \sum_t{\sum_i{c_{t,i} d_{t,i}}}$$
-Non-zero values for $c$ are intentionally allowed when the robot is not in contact with the environment even though this is not physically realistic as this makes the cost function smooth. However when optimizing $c_{t,i}$ will tend towards 0 unless the robot is in contact.
+Non-zero values for $c$ are intentionally allowed when the robot is not in contact with the environment even though this is not physically realistic as this makes the cost function smooth.
+However when optimizing $c_{t,i}$ will tend towards 0 unless the robot is in contact.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.3\linewidth]{./Planning/contact_distance.png}
+  \caption{Contact distance for the end effector section}
+  \label{fig:contact_distance}
+\end{figure}
 
 
 \begin{figure}
@@ -119,18 +160,35 @@ Non-zero values for $c$ are intentionally allowed when the robot is not in conta
   \label{fig:ContactArms}
 \end{figure}
 
+Figure \ref{fig:contact_distance} shows the contact distance for a section of a robotic arm. Since this distance is substantial, the magnitude of the associated contact variable will determine the contribution to cost. 
+
 Figure \ref{fig:ContactArms} shows a robot arm in a variety of configurations and with several values of contact variables.
 The transparent configurations are physically infeasible and suffer a $L_{Contact Violation}$ cost.
-To ensure the final optimized trajectory is feasible, the cost is weighted highly towards the end of optimization, thus the optimization will not converge on any of the transparent configurations.
+To ensure the final optimized trajectory is feasible, the contact violation cost is weighted highly towards the end of optimization, thus the optimization will not converge on any of the transparent configurations.
+
+
 
 
 \subsubsection{Cost $L_u$}
 
-The cost $L_u$ penalizes the input torque necessary to follow the trajectory specified. With no contacts these inputs could be calculated directly from the arm inverse dynamics. As discussed the physical contact forces are extremely sensitive to robot configuration, so to soften the forces we instead compute the contact forces that minimize the joint torque. When the trajectory is executed on the robot the joint controller will take responsibility for finding the slight adjustments in configuration to reach the desired contact forces. The path planner does not have to worry about the minute adjustments for a model that will not match reality to that detail anyway. Instead this path planner just needs to estimate the best contact forces possibly, according to the the following quadratic programming problem:
-\begin{align*}
+\begin{figure}
+  \centering
+  \includegraphics[width=.7\linewidth]{./Planning/augmented_cost.png}
+  \caption{The cost function for the arm in Figure \ref{fig:naive_cost}, augmented with the auxiallary contact variable}
+  \label{fig:augmented_cost}
+\end{figure}
+
+
+The cost $L_u$ penalizes the input torque necessary to follow the trajectory specified.
+%% With no contacts these inputs could be calculated directly from the arm inverse dynamics.
+As discussed the physical contact forces are extremely sensitive to robot configuration, so to soften the forces we instead compute the contact forces that minimize the joint torque.
+When the trajectory is executed on the robot the joint controller will take responsibility for finding the slight adjustments in configuration to reach the desired contact forces.
+The path planner does not have to worry about the minute adjustments for a model that will not match reality to that detail anyway.
+Instead this path planner just needs to estimate the best contact forces possibly, according to the the following quadratic programming problem:
+\begin{align}
 f, u &= argmin_{\tilde{f}, \tilde{u}} ||J^T\tilde{f} + \tilde{u} - \tau_{Free}|| \\
 &+ \tilde{f}^T W \tilde{f} + \tilde{u}^T R \tilde{u}
-\end{align*}
+\end{align}
 
 The input control regularization $R$ is chosen based on the desired penalization of joint inputs. The contact force regularization $W$ is dependent on the values of $c$, with 
 $$W_{j,j} = \frac{1}{c_{i,t}^2 + 1}$$
@@ -143,29 +201,76 @@ This serves to reduce the cost due to joint torques.
 The competing cost $L_{Contact Violation}$ prevents this contact variable from growing too large for infeasible contacts.
 
 
+Figure \ref{fig:augmented_cost} shows this augmented cost function for the arm in Figure \ref{fig:naive_cost}.
+The dimensionallity of this cost function has increased, yet now there is a strictly descending path from the local minima of the naive cost function, $\theta=0.1$, to the global minima.
+The basin of attraction for the global minima has increased dramatically.
+
+
 
 
 \subsubsection{Other Cost Terms}
-$L_{Obstacle}$ penalizes penetration of the robot into the environment which is calculated using the robot forward kinematics and then collision detection.
+$L_{Obstacle}$ penalizes penetration of the robot into the environment which is calculated using the robot forward kinematics.
+For simplicity, the same simplified spherical model is resued here.
+This addition is necessary since the artificial contact model created by $L_u$ and $L_{ContactViolation}$ no longer ensures obstacle penetration produces high joint torques.
 
-$L_{Goal}$ is a penalty on the last robot state $s_T$ on the distance of the robot end effector from the goal location.
+\begin{align}
+  L_{Obstacle} = \sum d_{ObstaclePenetration}
+\end{align}
+
+$L_{Goal}$ is a penalty on the distance from the robot end effector at the last state $s_T$ to the goal location.
+\begin{align}
+  L_{Goal} = ||EndEffector_T - goal||
+\end{align}
+
+
+\subsection{Initialization Challenges}
+Although the cost function augmentation described above greatly improves the conditioning of the cost function with respect to contacts, in practical problems this cost function is still plagued with local minima.
+As a simple example, consider the situation in Figure \ref{fig:local_min}, where most initial trajectories will result in the arm never reaching the goal ``X''.
+
+Straightfoward initialization techniques include random initialization with random restarts, and linear joint angle interpolation between starting configuration and a configuration that achieves the goal.
+These initializations work well in open environments, but poorly in confined spaces.
+Thus a sample based planner is employed to provide a diversity of good initializations.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{./Planning/Local.jpg}    
+  \end{subfigure}
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{./Planning/global.jpg}    
+  \end{subfigure}
+  \caption{Trajectory optimization finding a local minimum (left) and the global minimum (right) for an arm attempting to reach the blue ``X''}
+  \label{fig:local_min}
+\end{figure}
+
+
+
 
 
 
 
 
 \section{Sample Based Planning} \label{sec:sample_planning}
-\subsection{RRTs and their variants}
+%% \subsection{RRTs and their variants}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.5\linewidth]{./Planning/thin_manifold.pdf}
+  
+  \caption{Illustration of valid configuration space for an arm potentially supported by contacts}
+  \label{fig:ThinManifold}
+\end{figure}
+
 \subsection{Adaptation to Encourage Contacts}
 Given:
-\begin{align*}
+\begin{align}
     &X \in \mathbb{R}^d:     &&\text{d-dimensional configuration space}\\
     &X_{obs} \subset X:      &&\text{obstacles in the configuration space}\\
     &X_{free} = X \setminus X_{obs}:   &&\text{free space}\\
     &x_{start} \in X_{free}:  &&\text{starting configuration}\\
     &X_{goal} \subset X_{free}: &&\text{set of goal configurations}\\
     &policy: X \times X \rightarrow TX &&\text{policy to goal, maps to tangent space (velocity).  Previous formulation was wrong, as need to be able to follow the policy to an arbitrary point in X, not just a goal configuration}
-\end{align*}
+\end{align}
 
 The goal is to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \in X_{goal}$.
 
@@ -220,8 +325,8 @@ Similarly augmenting an RRT with a reactive policy can assist in navigating narr
 \end{figure}
 
 
-\section{Experiments}
-\subsection{Simulation and Robot Model}
-\subsection{Robot Snakes on a Plane}
+%% \section{Experiments}
+%% \subsection{Simulation and Robot Model}
+%% \subsection{Robot Snakes on a Plane}
 
 \end{document}
