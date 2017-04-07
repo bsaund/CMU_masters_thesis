@@ -8,7 +8,7 @@ Before performing operations on parts for manufacturing, it is crucial that the 
 While there are many methods of localizing a part, this work uses a touch probe to actively gain information through measurements on the part surface.
 Though it is possible to ignore uncertainty in some tasks, the problems addressed in this work provide capabilities by explicitly reasoning over the belief distribution of the part's state.
 One approach, the particle filter, maintains this distribution through a finite set of samples.
-A second appraoch, the Kalman filter, maintains an analytic expression for the belief distribution.
+A second approach, the Kalman filter, maintains an analytic expression for the belief distribution.
 Both approaches require adaptations for use in contact localization.
 
 %% This localization can be provided by fixturing, human vision, computer vision, ranged sensors, touch probes, and other methods.
@@ -124,11 +124,11 @@ Both of these works did not address the planning problem as both contact locatio
 Given a sequence of contact modes for each link, Greenfield computed joint torques to produce desired dynamic behavior and applied this to a climbing snake robot \cite{Greenfield2005}.
 Bretl et al. \cite{Bretl2006} developed algorithms for climbing robots that first select contact locations then create collision free trajectories for the robot's limbs between these contact locations.
 
-The recent Darpa Robotics Challenge showcased state of the art walking robots.
+The recent DARPA Robotics Challenge showcased state of the art walking robots.
 Rather than solving for a trajectory and contact locations simultaneously some approaches have separated these two problems.
-The dominant planning architectures heirachically separated stages of contact planning.
-Highest, and slowest, in the heirachy a planner decides the path for a simplified model of the robot through the workspace using heuristic costs.
-Lower down in the heirarchy, a footstep planner determines the contact locations for feet to best achieve the higher level trajectory.
+The dominant planning architectures hierarchically separated stages of contact planning.
+Highest, and slowest, in the hierarchy a planner decides the path for a simplified model of the robot through the workspace using heuristic costs.
+Lower down in the hierarchy, a footstep planner determines the contact locations for feet to best achieve the higher level trajectory.
 Still further down, another planner determines joint trajectories to move the feet into the requested footstep locations while maintaining stability.  \cite{Deits2015} \cite{Atkeson2015}
 Tonneau et al \cite{Tonneau} approaches from the opposite direction and first generates a trajectory then considers a discrete set of contacts close to that trajectory.
 
@@ -153,7 +153,7 @@ To grow these graphs a new point in configuration space is sampled, and the clos
 \end{algorithmic}
 \end{algorithm}
 
-In the most basic implementation, the Extend function contructs a linearly trajectory in configuration space from $x_{nearest}$ towards $x_{sample}$, and terminates the extension either when $x_{sample}$ is reached or the trajectory enters an invalid region. \cite{LaValle1998}
+In the most basic implementation, the Extend function constructs a linearly trajectory in configuration space from $x_{nearest}$ towards $x_{sample}$, and terminates the extension either when $x_{sample}$ is reached or the trajectory enters an invalid region. \cite{LaValle1998}
 This extension step requires augmentation to be useful in planning with contacts.
 Sampling based planners will never sample directly on the measure-zero contact manifold, and linearly extending a contact configuration to a new sampled point will immediately leave the contact manifold, immediately entering an invalid region in configuration space, producing no progress.
 
@@ -182,36 +182,36 @@ In CBiRRT the method of projection must be provided by the user.
 In contract to sampling based planners, trajectory optimization addresses the path planning problem by incrementally improving an initial trajectory.
 Trajectory optimization uses a cost function to assign a cost to every trajectory.
 Iteratively the trajectory is adjusted to reduce the cost.
-While a large class of work focuses on trajectory optimzation with unknown dynamics, in this thesis it is assumed the dynamics are known, and the guiding approach is to assume the dynamics are locally linear and perform updates to the parameters of the trajectory based on the gradient of the cost function.
+While a large class of work focuses on trajectory optimization with unknown dynamics, in this thesis it is assumed the dynamics are known, and the guiding approach is to assume the dynamics are locally linear and perform updates to the parameters of the trajectory based on the gradient of the cost function.
 This approach will converge to local, but not necessarily global, minimal cost trajectories.
 Contact forces present an initial challenge, as the assumption of locally linear dynamics no longer holds.5
 
 Deits et. al. handles the foot placement contacts for walking robots through mixed-integer optimization \cite{Deits2015}.
 In a path for a walking robot there are an integer number of footstep placements, but the trajectories of the feet and robot are continuous.
-One approach is to fix the number of footsteps and run a purely continous optimization over the trajectories.
-This continous optimization is then repeated for each integer number of footsteps considered plausible.
+One approach is to fix the number of footsteps and run a purely continuous optimization over the trajectories.
+This continuous optimization is then repeated for each integer number of footsteps considered plausible.
 To reduce the number of optimization, their approach assigns a cost to each footstep allowing for faster pruning.
 This approach works because the integer parameter is relatively simple, i.e. once the right foot steps the only next contact to consider is the left foot.
 
 
-Both Posa et. al. \cite{Posa2013} and Mordatch et. al. \cite{Mordatch2012}  handle the discontinous contacts by smoothing.
+Both Posa et. al. \cite{Posa2013} and Mordatch et. al. \cite{Mordatch2012}  handle the discontinuous contacts by smoothing.
 Both formulations assume a given set of locations on the robot which are allowed to make contact with the given environment.
 Both works write the cost of a trajectory as a function of both joint torques and contact forces, thus the contact forces are a slack variable, and treated as parameters of the trajectory.
-Of course in reality a robot cannot choose the contact force applied, as the force is generated by electron repultion as a function of the distance between the environment and the robot.
+Of course in reality a robot cannot choose the contact force applied, as the force is generated by electron repulsion as a function of the distance between the environment and the robot.
 However, this inaccurate physics model smooths the cost function and allows the robot to discover the benefits of contacts.
 Additional constraints are imposed to ensure the final trajectory is physically feasible.
 
 
-Posa et. al. is primarily concerned with large impact forces, and writes the problem as a contrained optimization.
+Posa et. al. is primarily concerned with large impact forces, and writes the problem as a constrained optimization.
 At each iteration the optimizer alters both the joint torques and the desired contact forces to improve the cost.
 However this optimization problem has a set of complementarity constraints which enforce that each section of the robot is either in contact and can receive a contact force, or it not in contact.
 
 Mordatch et. al. designed a cost function that continuously models both the benefit and cost of adding contacts and is able to produce trajectories which add and break contacts.
-This formulates the problem as a purely unconstrained optimization, with all physical contraints being added to the cost function.
-The parameters of this cost function are both the joint torques and a set of continous ``contact'' slack variables, one for each section of the robot that is allowed to make contact.
-For each section, the contact variable can be intuitively be thought of as tradeoff between the benefits and the challenges of making contact with the environment.
+This formulates the problem as a purely unconstrained optimization, with all physical constraints being added to the cost function.
+The parameters of this cost function are both the joint torques and a set of continuous ``contact'' slack variables, one for each section of the robot that is allowed to make contact.
+For each section, the contact variable can be intuitively be thought of as trade off between the benefits and the challenges of making contact with the environment.
 Increasing the contact variable increases the cost as a function of the distance between the robot section and the environment.
-Increasing the contact variable decreases the cost as it allows contact forces to compensate when joint toruqes would be necessary.
+Increasing the contact variable decreases the cost as it allows contact forces to compensate when joint torques would be necessary.
 Again, of course in reality there is no partial contact.
 If a section of a robot is some distance away from the environment, no contact force is applied.
 However this formulation of force at a distance makes the benefit of adding a contact visible to the gradient of the cost function.

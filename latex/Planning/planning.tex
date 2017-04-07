@@ -45,7 +45,7 @@ Modeling contacts
 
 Trajectories for a robotic arm are created through trajectory optimization. The key approach used here is softening of contacts through the introduction of auxiliary variables which drastically smooth the cost function used at the expense of increasing the dimensionality of the state space. The formulation used in the paper follows from Mordatch's work \cite{Mordatch2012}.
 
-A trajectory $s$ is a series of robot states $s_t$ at increasing points in time. Each state $s_t$ contains the joint configuration $\theta_t$ as well as an axillary continuous variable $c_t$ for each section of the robotic arm allowed to make contact with the environment. The variables $c_t$ regulate the magnitude of the normal and frictional contact forces and will be describe in detail later in this document. At first these $c$ variables seem unnecessary as the forward kinematics specified by the joint angles $\theta$ determine the locations of the robot, and therefore determine the contacts between the robot and the environment. However slight changes in these joint configurations result in slight motion of the robot which may result in huge changes in contact forces. Additionally without artificial terms in the cost function to model contact, the cost function is blind to potential contacts that may be close and useful. 
+A trajectory $s$ is a series of robot states $s_t$ at increasing points in time. Each state $s_t$ contains the joint configuration $\theta_t$ as well as an auxiliary continuous variable $c_t$ for each section of the robotic arm allowed to make contact with the environment. The variables $c_t$ regulate the magnitude of the normal and frictional contact forces and will be describe in detail later in this document. At first these $c$ variables seem unnecessary as the forward kinematics specified by the joint angles $\theta$ determine the locations of the robot, and therefore determine the contacts between the robot and the environment. However slight changes in these joint configurations result in slight motion of the robot which may result in huge changes in contact forces. Additionally without artificial terms in the cost function to model contact, the cost function is blind to potential contacts that may be close and useful. 
 
 \subsubsection{Cost Function}
 The optimal solution $s^*$ is computed by minimizing the cost function of the form
@@ -69,7 +69,7 @@ Non-zero values for $c$ are intentionally allowed when the robot is not in conta
 \begin{figure}
   \centering
   \includegraphics[width=.7\linewidth]{./Planning/ContactArms.png}
-  \caption{Arm configuration and simulated (not realistic) contact forces for a variety of arm configurations and continuous contact varibles}
+  \caption{Arm configuration and simulated (not realistic) contact forces for a variety of arm configurations and continuous contact variables}
   \label{fig:ContactArms}
 \end{figure}
 
@@ -86,7 +86,7 @@ f, u &= argmin_{\tilde{f}, \tilde{u}} ||J^T\tilde{f} + \tilde{u} - \tau_{Free}||
 &+ \tilde{f}^T W \tilde{f} + \tilde{u}^T R \tilde{u}
 \end{align*}
 
-The input control regularization $R$ is chosen based on the desired penalization of joint inputs. The contact force regularization $W$ is dependant on the values of $c$, with 
+The input control regularization $R$ is chosen based on the desired penalization of joint inputs. The contact force regularization $W$ is dependent on the values of $c$, with 
 $$W_{j,j} = \frac{1}{c_{i,t}^2 + 1}$$
 If $c$ is large then the robot is in contact, the force regularization is small, so the contact force can be large. If $c$ is small the robot is not near any contact location, the force regularization is large, thus the contact force is heavily penalized and will be small.
 
@@ -104,7 +104,7 @@ $L_{Obstacle}$ penalizes penetration of the robot into the environment which is 
 
 $L_{Goal}$ is a penalty on the last robot state $s_T$ on the distance of the robot end effector from the goal location.
 
-\subsubsection{Auxillary Variables}
+\subsubsection{Auxiliary Variables}
 
 
 
