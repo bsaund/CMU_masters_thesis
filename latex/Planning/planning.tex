@@ -2,9 +2,55 @@
 
 \begin{document}
 
+To reach into confined spaces robot arms must be thin, long, and maneuverable.
+A thin robot may have small actuators with limited torque such that the joints cannot support the weight of the outstretch cantilevered arm.
+However confined spaces are filled with places to rest for support, and contact forces can compensate for low joint torque. 
+Robot motion planners that take advantage of support enable new capabilities for long thin arms.
+
+This chapter considers motion planning for a robot arm that may experience contact forces.
+The motion planner's goal is to output a trajectory of joint torques that will start with the robot arm in an initial configuration in joint space, and end with the end effector in a specified location.
+Each joint can only apply a limited torque, and the trajectory must respect these limits.
+The arm experiences forces due to gravity, inertial, friction, and also interaction with the environment.
+This dynamics model is described in detail in section \ref{sec:robot_dynamics}.
+Contact forces can be helpful by balancing out gravity, or detrimental by blocking a desired motion.
+Contact forces prove difficult due to their large but local effect.
+
+
+Section \ref{sec:trajectory_optimization} describes a solution to the motion planning task that uses trajectory optimization and is strongly based on Contact Invariant Optimization \cite{Mordatch2012}.
+The problem formulation includes a function that assigns a cost to each trajectory, and uses the gradient of this cost function to incrementally improve the trajectory.
+Typically a trajectory is penalized for large joint torques and for not reaching the goal, however that formulation provides insufficient gradient information when contacts are involved.
+The more accurate dynamics model is augmented, making it less accurate but better conditioned for optimization.
+
+Section \ref{sec:sample_planning} describes a sampled-based planner capable of using contact forces.
+
+
+
+
+
+
+
 %% \section{Related Work}
-\section{Contact Forces}
-Modeling contacts
+\section{Robot Dynamics} \label{sec:robot_dynamics}
+
+When not in contact with the environment the robot model follows the manipulator arm equation \cite{murray1994mathematical}:
+\begin{align}
+  M(\theta)\ddot \theta + C(\theta, \dot\theta)\dot\theta + N(\theta, \dot\theta) = \tau
+\end{align}
+$M$ and $C$ are determined through the robot's known mass characteristics.
+$N$ includes both gravity and frictional terms.
+In practice $M, C,$ and $N$ do not need precise estimation, because closed loop controllers on the robot can compensate for errors.
+
+The robot arm has defined sections which may be in contact with the environment.
+For simplicity in calculations, these contact sections are approximated by spheres.
+The environment is modeled as a triangular mesh, and contact occurs when a contact section intersection the mesh.
+The contact force is determined by a spring model, and so the magnitude is proportional to the penetration distance with direction pushing the section out of the environment.
+The physical robot and environment are both constructed of metal, so while a large spring constant provides a more accurate model this also causes numerical instabilities.
+Each trajectory is simulated as a series of discrete time steps, and a large spring constant will result in giant forces for even the slight penetration this discretization introduces.
+
+%% Figure \ref{fig:ThinManifold} illustrates the region of 
+
+
+
 \begin{figure}
   \centering
   \includegraphics[width=.5\linewidth]{./Planning/thin_manifold.pdf}
@@ -17,7 +63,7 @@ Modeling contacts
 
 
 
-\section{Trajectory Optimization}
+\section{Trajectory Optimization} \label{sec:trajectory_optimization}
 
 \begin{figure}
   \centering
@@ -40,14 +86,14 @@ Modeling contacts
   \label{fig:TrajectoryOptimization}
 \end{figure}
 
-\subsection{Methods for Finding the Minimum Cost Trajectory}
-\subsection{Smoothing the Contacts to Discover Contacts}
 
 Trajectories for a robotic arm are created through trajectory optimization. The key approach used here is softening of contacts through the introduction of auxiliary variables which drastically smooth the cost function used at the expense of increasing the dimensionality of the state space. The formulation used in the paper follows from Mordatch's work \cite{Mordatch2012}.
 
-A trajectory $s$ is a series of robot states $s_t$ at increasing points in time. Each state $s_t$ contains the joint configuration $\theta_t$ as well as an auxiliary continuous variable $c_t$ for each section of the robotic arm allowed to make contact with the environment. The variables $c_t$ regulate the magnitude of the normal and frictional contact forces and will be describe in detail later in this document. At first these $c$ variables seem unnecessary as the forward kinematics specified by the joint angles $\theta$ determine the locations of the robot, and therefore determine the contacts between the robot and the environment. However slight changes in these joint configurations result in slight motion of the robot which may result in huge changes in contact forces. Additionally without artificial terms in the cost function to model contact, the cost function is blind to potential contacts that may be close and useful. 
+A trajectory $s$ is a series of robot states $s_t$ at increasing points in time. Each state $s_t$ contains the joint configuration $\theta_t$ as well as an auxiliary continuous variable $c_t$ for each section of the robotic arm allowed to make contact with the environment. The variables $c_t$ regulate the magnitude of the normal and frictional contact forces and will be describe in detail later in this document. At first these $c$ variables seem unnecessary as the forward kinematics specified by the joint angles $\theta$ determine the locations of the robot, and therefore determine the contacts between the robot and the environment. However slight changes in these joint configurations result in slight motion of the robot which may result in huge changes in contact forces. Additionally without artificial terms in the cost function to model contact, the cost function is blind to potential contacts that may be close and useful.
 
-\subsubsection{Cost Function}
+\subsection{Auxiliary Variables}
+
+\subsection{Cost Function}
 The optimal solution $s^*$ is computed by minimizing the cost function of the form
 
 \begin{align*}
@@ -99,16 +145,16 @@ The competing cost $L_{Contact Violation}$ prevents this contact variable from g
 
 
 
-\subsection{Other Cost Terms}
+\subsubsection{Other Cost Terms}
 $L_{Obstacle}$ penalizes penetration of the robot into the environment which is calculated using the robot forward kinematics and then collision detection.
 
 $L_{Goal}$ is a penalty on the last robot state $s_T$ on the distance of the robot end effector from the goal location.
 
-\subsubsection{Auxiliary Variables}
 
 
 
-\section{Sample Based Planning}
+
+\section{Sample Based Planning} \label{sec:sample_planning}
 \subsection{RRTs and their variants}
 \subsection{Adaptation to Encourage Contacts}
 Given:
