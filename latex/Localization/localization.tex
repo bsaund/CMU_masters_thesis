@@ -833,15 +833,91 @@ Measurements $m_{i,j}$ calculated using $\particles[][][\feature]$ are used to c
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments} \label{sec:experiment}
 
+Experiments were performed in simulation and on a physical system to validate the particle filter and measurement selection process for a rigid body.
+Futher experiments performed in simulation  validate the Datum Particle Filter and measurement selection for parts with internal uncertainty.
+
+
+%% The tolerance is modeled by a distribution over $SE(3)$ transforms, as described in Section \ref{sec:datum}.
+
+\begin{table}
+\centering
+%% \vspace{3em}
+\resizebox{\textwidth}{!}{\begin{tabular}{| c | c | c | c | c | c | c |}
+    \hline
+    & Measurement    & Init. Position & Init. Angular & Final Position & Final Angular & Average \\
+    & Error (cm)    & Uncertainty (cm) & Uncertainty (rad) & Error (cm) & Error (rad) & Computation (s)\\
+    \hline
+    Physical Robot & 0.05 & 3 & 0.08 & 0.22 $\pm 0.09$ & 0.0047 $\pm 0.002$ & 7.0 $\pm 0.3$\\
+    \rowcolor[gray]{.8}
+    Simulation of Robot  & 0.05 & 3 & 0.08 & 0.17 $\pm 0.09$ & 0.005 $\pm 0.003$ & 7.0 $\pm 0.3$\\
+    Simulation of Accurate Robot & 0.01 & 3 & 0.08 & 0.03 $\pm$ 0.02 & 0.0004 $\pm 0.0002$ & 7.8 $\pm 0.3\\
+    \hline
+  \end{tabular}}
+  \captionof{table}{Results of Experiments}
+  \label{table:Results}
+\end{table}
+
+
+
+\subsection{Robot Results for a Rigid Body}
+For validating the approach for a rigid body, a robot equiped with a touch probe was used to localize a model part from an airplane.
+The touch probe consisted of a 0.6mm spherical tip mounted to a 100mm rod attached to a 6-D JR3 force/torque sensor. 
+Although contacts in any direction were possible, the sensor was significantly more accurate with the contact force parallel to the shaft, and measurements actions were always chosen to place the contact force in this direction. 
+Under these conditions our sensor exhibited a 1mm repeatability. 
+
+
+After selecting from the set of candidate actions the robot executed the measurement action by first following a trajectory to the start point $\mathcal{A}_p$, designed to avoid collision with the part. 
+The end effector was then controlled to move in a straight line in the direction of the measurement vector $\mathcal{A}_v$ until contact was detected. 
+To improve measurement accuracy a double-touch was implemented: the robot first moved the probe tip at a higher velocity (1cm/s) until contact, backed off slightly, then probed at a much slower velocity (2mm/s). 
+The robot then retreated to a safe point while the particle filter updated and the next action was selected. 
+
+
+We performed 15 localization trials with identical initial beliefs and true part location. Figure \ref{fig:OnRobot} shows the translational and rotational error of the mean of the belief distribution compared with our best measurement of the true state, averaged over all trials. The error bars show one standard deviation.
+Summaries are shown in Table \ref{table:Results}.
+
+\begin{figure}
+  \centering
+  %% \begin{subfigure}[b]{.48\linewidth}
+
+    \begin{tikzpicture}
+      \node (img) {\includegraphics[width=.5\linewidth]{./Localization/On_Robot_Trans}};
+      \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+           {Translational Error (cm)};
+    \end{tikzpicture}
+  %% \end{subfigure}
+  %% \hfill
+  %% \begin{subfigure}[b]{.48\linewidth}
+
+    \begin{tikzpicture}
+      \node (img) {\includegraphics[width=.5\linewidth]{./Localization/On_Robot_Ang}};
+      \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+           {Rotational Error (rad)};
+    \node[below=of img, node distance=0cm, yshift=1.2cm] 
+         {Measurement Number};
+
+    \end{tikzpicture}
+  %% \end{subfigure}
+  %% \begin{tikzpicture}
+  %%   \node (img) {\includegraphics[width=3in, clip, trim=0in 0in 0in 0in]{diff_rot_method}};
+  %%   \node[below=of img, node distance=0cm, yshift=1.2cm] 
+  %%        {Measurement Number};
+  %%   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+
+  %% \end{tikzpicture}
+
+  \caption{Translational and rotational error during localization on the physical robot}
+  \label{fig:OnRobot}
+\end{figure}
+
+\subsection{Simulation Results for the Datum Particle Filter}
 The following experiments validate both the full-state representation approach and independent-state representation approach in simulation. 
 The software was implemented in ROS using C++. 
 These experiment simulate a specific task which is common in manufacturing: localizing a target location, defined by datums, to drill a hole on an object. 
 %PLACEHOLDERS for picture for datum visualization
 The datum-based particle filter was simulated on a structural component used in aircraft. This is the same object as used in the original rigid-body particle filter paper\cite{Saund2017}, with adaptations made to allow internal degrees of freedom.
 The object is composed of 5 precisely manufactured sections, and tolerance between sections was determined by engineering drawings (for precisely defined features), and educated guesses (for loosely defined relationships). 
-%% The tolerance is modeled by a distribution over $SE(3)$ transforms, as described in Section \ref{sec:datum}. 
 
-\subsection{Measurement Selection}
+\subsubsection{Measurement Selection}
 
 The target hole is localized by measuring its referenced datums. 
 Specifically, the pose of the hole feature (green cylinder) in figure \ref{fig:FullBelief} is defined by an offset distance from the top and right sections shown in figure \ref{fig:Overview:CAD}, and the axis of the hole is orthogonal to the front plane. 
@@ -883,7 +959,7 @@ Only the measurement action with the largest expected information gain is ``perf
   \label{fig:Simulation}
 \end{figure}
 
-\subsection{Simulation Results}
+\subsubsection{Simulation Results}
 
 Both proposed approaches are compared in similar settings.
 A total of 20 measurements are simulated during each trial. 
