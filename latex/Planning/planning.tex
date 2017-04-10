@@ -36,7 +36,7 @@ Section \ref{sec:sample_planning} describes a sampled-based planner capable of u
   \centering
   \includegraphics[width=.7\linewidth]{./Planning/sphere_approxmation.png}
   \caption{The visually accurate robot model (left) and the spherical approximation (right)}
-  \label{fig:sphere_approxiamtion}
+  \label{fig:sphere_approximation}
 \end{figure}
 
 
@@ -88,12 +88,11 @@ Each trajectory is simulated as a series of discrete time steps, and a large spr
 \end{figure}
 
 
-Trajectories for a robotic arm are created through trajectory optimization.
-A trajectory $s$ is a discrete list of robot states $s_t$ at increasing points in time.
-A state contains both the joint angles and joint velocities, though for sufficiently slow trajectories the velocities may be ignored.
-To transition between timesteps, joint torques are calculated through inverse dynamics.
+Trajectories for a robotic arm can be created through trajectory optimization, a process that progressively improves the cost of a trajectory.
+A trajectory $s$ is a discrete list of robot states $s_t$ at increasing points in time, where the state contains both the joint angles and joint velocities, though for sufficiently slow trajectories the velocities may be ignored.
+To transition between timesteps, joint torques are calculated through inverse dynamics, and these torques must remain below the actuator torque limit.
 
-Since the trajectory requires maintaining low joint torques and reaching a goal point, it seems natural to define a cost function the penalizes joint torque and the distance from the goal:
+Since the trajectory requires both maintaining low joint torques and reaching a goal point, it seems natural to define a cost function the penalizes joint torque and the distance from the goal:
 \begin{align}
   L(s) = \sum ||\tau_{joint}||^2 + Cost_{task}
 \end{align}
@@ -130,7 +129,7 @@ The optimal solution $s^*$ is computed by minimizing the cost function of the fo
 
 \begin{align}
 L(s) &= L_{Contact Violation} + L_{u} \\
-&+ L_{Object Penetration} + L_{Goal}   
+&+ L_{Object Penetration} + L_{Goal}    \label{eq:cost}
 \end{align}
     
 $L_{Object Penetration}$ and $L_{Goal}$ are straightforward, while the interplay between $L_{Contact Violation}$ and $L_u$ provide the interesting structure allowing the optimization to find paths which use supporting contacts.
@@ -252,16 +251,31 @@ Thus a sample based planner is employed to provide a diversity of good initializ
 
 \section{Sample Based Planning} \label{sec:sample_planning}
 %% \subsection{RRTs and their variants}
+It is possible to solve planning problems using a sample based planner, but once again the thin contact manifold causes challenges.
+Sample based planners probabilistically sample configurations to explore the feasible space, and through sufficent exploration seek to find the desired trajectories.
+Specifically, this section employs the RRT algorithm, described in Algorithm \ref{alg:RRT}.
+The basic RRT algorithm maintains a tree of trajectories (edges) to configurations (nodes), and grows this tree by ending to randomly sampled configuration.
+As discussed in Section \ref{sec:related:RRT}, the basic linear extension fails when the only allowable space for the trajectory to grow is a thin manifold, as in the case of a supporting contact.
+
+Figure \ref{fig:thin_manifold} illustrates this contact manifold.
+In this example, in some regions of configuration space a contact is not needed to support the arm, and trajectories may progress in any direction.
+The thin ribbon shows the manifold in configuration space where the arm makes contact with the environment. In the left region the contact is not needed and a trajectory is free to break the contact.
+However, the arm is able to reach the right region only by using the support of a contact force.
+In cases where the configuration must remain on this manifold, linearly extending towards a randomly sampled point will quickly cause the trajectory to leave the manifold, and make little progress in extending the tree.
+
+
 
 \begin{figure}
   \centering
   \includegraphics[width=.5\linewidth]{./Planning/thin_manifold.pdf}
   
   \caption{Illustration of valid configuration space for an arm potentially supported by contacts}
-  \label{fig:ThinManifold}
+  \label{fig:thin_manifold}
 \end{figure}
 
 \subsection{Adaptation to Encourage Contacts}
+This section describes the policyRRT algorithm, which by using a policy to guide the path extension is able to follow the contact manifold.
+
 Given:
 \begin{align}
     &X \in \mathbb{R}^d:     &&\text{d-dimensional configuration space}\\
@@ -269,10 +283,10 @@ Given:
     &X_{free} = X \setminus X_{obs}:   &&\text{free space}\\
     &x_{start} \in X_{free}:  &&\text{starting configuration}\\
     &X_{goal} \subset X_{free}: &&\text{set of goal configurations}\\
-    &policy: X \times X \rightarrow TX &&\text{policy to goal, maps to tangent space (velocity).  Previous formulation was wrong, as need to be able to follow the policy to an arbitrary point in X, not just a goal configuration}
+    &policy: X \times X \rightarrow TX &&\text{Map from and initial and goal state to a motion}
 \end{align}
 
-The goal is to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \in X_{goal}$.
+The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \in X_{goal}$.
 
 
 \begin{algorithm}
@@ -310,22 +324,74 @@ The goal is to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \in X_{go
 \end{algorithmic}
 \end{algorithm}
 
-In many environments, it is relatively easy to compute a reactive policy that can make forwards progress towards a goal while avoiding collision with obstacles, such as a potential field approach, but such policies are prone to getting stuck in local minima/dead ends.  PolicyRRT is a variant of RRT that seeks to combine the efficient, goal directed trajectory generation of reactive policies with the ability of RRT to find paths around local minima/dead ends.  PolicyRRT fundamentally behaves like a standard RRT by growing a tree by iteratively extending towards a randomly sampled configuration from the nearest point in a search tree $T$.  PolicyRRT uses the reactive policy to move towards the random sample, potentially enabling the planner to avoid collisions with obstacles during the extension.  When PolicyRRT is successful in extending towards the sample (does not collide with an obstacle and does not get stuck in a local minima) it then follows the policy to extend towards the goal.  To avoid oversampling regions associated with local minima, when PolicyRRT extends towards a point from some vertex $v \in T$ PolicyRRT halts extension when the trajectory leaves the Voronoi cell of $v$.  Extension is also halted once the policy ceases to make progress (reaches a local minima) or exceeds a maximum number of iterations (only when extending towards $x_{rand}$?)
+As motivation for this approach, in many environments it is relatively easy to compute a reactive policy that can make forwards progress towards a goal while avoiding collision with obstacles, such as a potential field approach, but such policies are prone to getting stuck in local minima/dead ends.
+PolicyRRT is a variant of RRT that seeks to combine the efficient, goal directed trajectory generation of reactive policies with the ability of RRT to find paths around local minima/dead ends.
+PolicyRRT fundamentally behaves like a standard RRT by growing a tree by iteratively extending towards a randomly sampled configuration from the nearest point in a search tree $T$.
+PolicyRRT uses the reactive policy to move towards the random sample, potentially enabling the planner to avoid collisions with obstacles during the extension.
+When PolicyRRT is successful in extending towards the sample (does not collide with an obstacle and does not get stuck in a local minima) it then follows the policy to extend towards the goal.
+To avoid oversampling regions associated with local minima, when PolicyRRT extends towards a point from some vertex $v \in T$ PolicyRRT halts extension when the trajectory leaves the Voronoi cell of $v$.
+Extension is also halted once the policy ceases to make progress (reaches a local minima) or exceeds a maximum number of iterations.
+%% (only when extending towards $x_{rand}$?)
 
-PolicyRRT is beneficial when a policy that would yield a path all the way from $x_{start}$ and $x_{goal}$ is difficult to find but finding a policy that can make some progress while avoiding obstacles, but may get stuck in local minima is relatively easy. An example of such a policy is a \textbf{potential field}: a cost function is constructed by placing attractors at the goals and repulsions at obstacles and the policy is to the gradient of this cost.  Potential fields are generally much simpler to compute than the minima-free navigation functions, but cannot be guaranteed to produce a path.  Augmenting the gradient descent policy with an RRT can help find paths out of any local minima.
+%% PolicyRRT is beneficial when a policy that would yield a path all the way from $x_{start}$ and $x_{goal}$ is difficult to find but finding a policy that can make some progress while avoiding obstacles, but may get stuck in local minima is relatively easy.
+%% An example of such a policy is a \textbf{potential field}: a cost function is constructed by placing attractors at the goals and repulsions at obstacles and the policy is to follow the gradient of this cost.
+%% Potential fields are generally much simpler to compute than the minima-free navigation functions, but cannot be guaranteed to produce a path.
+%% Augmenting the gradient descent policy with an RRT can help find paths out of any local minima.
 
-Similarly augmenting an RRT with a reactive policy can assist in navigating narrow passages.  Because the policy will naturally flow through corridors PolicyRRT no longer requires drawing samples inside the narrow corridor itself, as drawing a sample from the far side may suffice to draw the policy through the corridor.
 
 \begin{figure}
   \centering
   \includegraphics[width=.5\linewidth]{./Planning/extend.pdf}
   
-  \caption{Illustration of Gradient RRT extension on the contact manifold}
-  \label{fig:Extend}
+  \caption{Illustration of Policy RRT extension on the contact manifold}
+  \label{fig:extend}
+\end{figure}
+
+%% For configuration spaces where there is a thin contact manifold, The cost function constructed for trajectory optimiztaion, Eq. \ref{eq:cost}.
+
+
+%% For the path planning problem with contact, the 
+
+%% Similarly augmenting an RRT with a reactive policy can assist in navigating narrow passages.
+%% Because the policy will naturally flow through corridors PolicyRRT no longer requires drawing samples inside the narrow corridor itself, as drawing a sample from the far side may suffice to draw the policy through the corridor.
+
+The policy used in this algorithm should incorperate knowledge of the value of regions of configuration space to guide the extension function.
+For the long arm planning with contact problem discussed in this chapter, the policy must direct the trajectory to maintain contact when necessary so the extension will be productive, but must allow the arm to break current and make new contacts for sufficiently exploration.
+Fortunately, the gradient of the cost function use in the previous section for trajectory optimization (Eq. \ref{eq:cost}) has exactly these properties.
+%% The 
+%% By setting the goal configuration as the configuration randomly sampled by the RRT, the gradient of this cost function will direct the arm to explore towards this sample
+Figure \ref{fig:extend} illustrates both the linear extension and this policy extension towards a randomly sampled goal configuration.
+Leaving the contact manifold around these configurations causes large torques as the contact forces are removed, however because of the augmentation done in section \ref{sec:trajectory_optimization}, the gradient remains smooth so the policy pushes the arm back toward the support configurations.
+
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{.48\linewidth}
+    \includegraphics[width=\linewidth]{./Planning/simulated_snake_in_wing.png}
+  \end{subfigure}
+  \begin{subfigure}[b]{.48\linewidth}
+    \includegraphics[width=\linewidth]{./Planning/real_snake_in_wing.png}
+  \end{subfigure}
+  
+  \caption{Simulated (left) and actual (right) snake arm robots executing motions planned in a model of an airplane wing section}
+  \label{fig:extend}
 \end{figure}
 
 
-%% \section{Experiments}
+
+
+
+
+
+\section{Experiments}
+Trajectories were generated for a 16-DOF snake robot arm in a model of a wing section by combining the approaches shown above.
+The initial configuration and goal position for the end effector were chosen manual and contained goal positions at the corners of the available volume so that the arm must maintain contact for support.
+
+First, the policyRRT of section \ref{sec:sample_planning} was used to generate a trajectory a for the arm to a goal position while avoiding collisions between the robot and the wing, however ignoring the torque limits of the joints.
+This trajectory was used as an initialization for the trajectory optimization approach of section \ref{sec:trajectory_optimization}
+
+
+
 %% \subsection{Simulation and Robot Model}
 %% \subsection{Robot Snakes on a Plane}
 

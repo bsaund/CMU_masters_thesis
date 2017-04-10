@@ -32,6 +32,7 @@
 \backcite {Thrun2000a}{{13}{3}{figure.caption.8}}
 \backcite {Saund2017}{{13}{3}{figure.caption.8}}
 \backcite {Javdani2013}{{14}{3}{figure.caption.8}}
+\backcite {Saund2017}{{14}{3.1}{section.3.1}}
 \backcite {Thrun2000}{{15}{3.1.2}{subsection.3.1.2}}
 \backcite {Koval2013}{{15}{3.1.2}{subsection.3.1.2}}
 \backcite {Felzenszwalb2004}{{16}{3.1.4}{subsection.3.1.4}}
@@ -48,3 +49,4 @@
 \backcite {Saund2017}{{29}{3.4.1}{subsection.3.4.1}}
 \backcite {Mordatch2012}{{31}{4}{chapter.4}}
 \backcite {murray1994mathematical}{{31}{4.1}{figure.caption.17}}
+\backcite {Saund2017}{{43}{5}{chapter.5}}

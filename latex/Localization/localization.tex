@@ -66,7 +66,7 @@ This chapter concludes with demonstrations of the method on a simulated part (se
 
 During my thesis I collaborated heavily with Shiyuan Chen on the task of autonomous localization.
 The rigid body particle filter developed in this section is mostly his work.
-The datum-based particle filter described later relies heavily on the framework and methods developed for rigid-body localization, and this section provides an overview of the relevant details \cite{Saund2016}.
+The datum-based particle filter described later relies heavily on the framework and methods developed for rigid-body localization, and this section provides an overview of the relevant details \cite{Saund2017}.
 The task is to determine the pose of an object by choosing and performing touch measurements, given the geometry of the object and prior belief over the distribution of poses.
 
 The geometry of the object to be localized is stored in a STL file using a triangular mesh, defined in the \textit{part frame}. The pose of the object can then be defined as the transformation between this \textit{part frame} and the \textit{world frame} of the workspace. 
@@ -169,7 +169,7 @@ The voxel map is then mapped to a binary-valued 3D array $f(q)$, where each valu
 Instead, the computation of the voxel map and distance field is relative to the object frame, where the object is assumed fixed during the entire localization. 
 Each measurement $M_t$ in the workspace is then transformed into the part frame, where the transform $T(x_{t+1})$ comes from the pose of the sampled state $x_{t+1}$. 
 Therefore, by transforming back to the object frame, all measurements on this same object can share the same distance field, where the minimal unsigned distance $dist_u(M_t,S)$ between each measurement $M_t$ and the object $S(x_{t+1})$ can be obtained directly: 
-\begin{align}\label{eq:9}
+\begin{align}\label{eq:unsigned}
 dist_u(M_t,S(x_{t+1})) = D_f(T(x_{t+1})^{-1}M_t)
 \end{align}
 
@@ -177,9 +177,9 @@ dist_u(M_t,S(x_{t+1})) = D_f(T(x_{t+1})^{-1}M_t)
 %% Signed distance $dist(M_t,S(x_t)$ between the probe and the object can be obtained from unsigned distance, as shown in Eq. \ref{eq:5}, by checking whether the voxel is inside or outside of the object. 
 %% For the manifold shape object, ray-casting is applied from the corresponding voxel in a certain direction: if the number of intersections between the ray and mesh is odd, the voxel is inside of the object; otherwise, it's outside.
 
-The signed distance $dist(M_t,S(x_t))$ between the probe and the object can be obtained from the unsigned distance, as shown in Eq. \ref{eq:10}, by checking whether the voxel is inside or outside of the object. 
+The signed distance $dist(M_t,S(x_t))$ between the probe and the object can be obtained from the unsigned distance, as shown in Eq. \ref{eq:signed}, by checking whether the voxel is inside or outside of the object. 
 For the manifold shape object, ray-casting is applied from the corresponding voxel in a certain direction: the voxel is inside of the object only if the number of intersections between the ray and mesh is odd
-\begin{align}\label{eq:10}
+\begin{align}\label{eq:signed}
 dist(M_t,S(x_t) = \left\{
 \begin{array}{ll}
 dist_u(M_t,S(x_t) - r_p, & \text{if }M_t\notin S\\
@@ -267,7 +267,7 @@ where $\chi_{k-1, 1-\delta}^2$ is the upper $1-\delta$ quantile of $\chi^2$-dist
 
 %% Therefore, the number of particles $n$ can be adjusted according to the number $k$ of bins with support, as shown in Eq. \ref{eq:17}. The bins are implemented as a multidimensional grid with fixed size in the configuration space. During sampling, the number $k$ of occupied bins is counted simultaneously whenever the newly sampled state falls into an empty bin. The current sample size is counted and each increment of $k$ will result in an update of the desired sample size $n$. When the actual number of particles reaches the desired value or a predefined minimal limit, whichever is smaller, the sampling process finishes.
 
-Therefore, the number of particles $n$ can be adjusted according to the number $k$ of bins with support, as shown in Eq. \ref{eq:9}. The bins are implemented as a multidimensional grid with fixed size in the configuration space. During sampling, the number $k$ of occupied bins is counted whenever the newly sampled state falls into an empty bin. The current sample size is counted and each increment of $k$ will result in an update of desired sample size $n$. When the actual number of particles reaches the desired value or a predefined maximal limit, whichever is smaller, the sampling process finishes.
+Therefore, the number of particles $n$ can be adjusted according to the number $k$ of bins with support, as shown in Eq. \ref{eq:unsigned}. The bins are implemented as a multidimensional grid with fixed size in the configuration space. During sampling, the number $k$ of occupied bins is counted whenever the newly sampled state falls into an empty bin. The current sample size is counted and each increment of $k$ will result in an update of desired sample size $n$. When the actual number of particles reaches the desired value or a predefined maximal limit, whichever is smaller, the sampling process finishes.
 
 
 
