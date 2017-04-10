@@ -5,22 +5,22 @@
 To reach into confined spaces robot arms must be thin, long, and maneuverable.
 A thin robot may have small actuators with limited torque such that the joints cannot support the weight of the outstretch cantilevered arm.
 However confined spaces are filled with places to rest for support, and contact forces can compensate for low joint torque. 
-Robot motion planners that take advantage of support enable new capabilities for long thin arms.
+Robot motion planners that take advantage of support extend the reach and improve stability for long thin arms.
 
 This chapter considers motion planning for a robot arm that may experience contact forces.
-The motion planner's goal is to output a trajectory of joint torques that will start with the robot arm in an initial configuration in joint space, and end with the end effector in a specified location.
+The motion planner's goal is to output a trajectory of joint torques that will move the robot from an initial configuration to a configuration with the end effector in a specified location.
+%% start with the robot arm in an initial configuration in joint space, and end with the end effector in a specified location.
 Each joint can only apply a limited torque, and the trajectory must respect these limits.
-The arm experiences forces due to gravity, inertial, friction, and also interaction with the environment.
-This dynamics model is described in detail in section \ref{sec:robot_dynamics}.
+The arm experiences forces due to gravity, inertial, friction, and also interaction with the environment, and this dynamics model is described in detail in section \ref{sec:robot_dynamics}.
 Contact forces can be helpful by balancing out gravity, or detrimental by blocking a desired motion.
 Contact forces prove difficult due to their large but local effect.
 
 
 Section \ref{sec:trajectory_optimization} describes a solution to the motion planning task that uses trajectory optimization and is strongly based on Contact Invariant Optimization \cite{Mordatch2012}.
-The problem formulation includes a function that assigns a cost to each trajectory, and uses the gradient of this cost function to incrementally improve the trajectory.
-Typically a trajectory is penalized for large joint torques and for not reaching the goal, however that formulation provides insufficient gradient information when contacts are involved.
-The more accurate dynamics model is augmented, making it less accurate but better conditioned for optimization.
-
+%% The problem formulation includes a function that assigns a cost to each trajectory, and uses the gradient of this cost function to incrementally improve the trajectory.
+%% Typically a trajectory is penalized for large joint torques and for not reaching the goal, however that formulation provides insufficient gradient information when contacts are involved.
+%% dynamics model is augmented, making it less accurate but better conditioned for optimization.
+To better conidition the problem for optimization, the dynamics are augmented to create smooth gradients around contacts.
 Section \ref{sec:sample_planning} describes a sampled-based planner capable of using contact forces, and again alterations are made to handle the thin contact manifold.
 
 
@@ -51,7 +51,7 @@ In practice $M, C,$ and $N$ do not need precise estimation, because closed loop 
 The robot arm has defined sections which may be in contact with the environment.
 For simplicity in calculations, these contact sections are approximated by spheres, shown in Figure \ref{fig:sphere_approximation}.
 The environment is modeled as a triangular mesh, and contact occurs when a contact section intersection the mesh.
-The contact force is determined by a spring model, and so the magnitude is proportional to the penetration distance with direction pushing the section out of the environment.
+The contact force is determined by a spring model, and so the magnitude is proportional to the penetration distance, and pushing the section out of the environment.
 The physical robot and environment are both constructed of metal, so while a large spring constant provides a more accurate model this also causes numerical instabilities.
 Each trajectory is simulated as a series of discrete time steps, and a large spring constant will result in giant forces for even the slight penetration this discretization introduces.
 
@@ -97,10 +97,10 @@ Since the trajectory requires both maintaining low joint torques and reaching a 
   L(s) = \sum ||\tau_{joint}||^2 + Cost_{task}
 \end{align}
 Figure \ref{fig:naive_cost} shows such a cost function for a single state for a simple robot arm with one movable base joint and one contact section on the end effector, with a goal position with the robot leaning to the right.
-For simplicity, the dynamic forces are ignored and the only forces considered are gravity and contact.
+For simplicity, in this figure the inertial forces are ignored and the only forces considered are gravity and contact.
 Although the minimum of this cost function uses contact to reduce joint torque while reaching the goal, this cost function is poorly conditioned for gradient descent optimization.
 Nearly all initializations will result in convergence to the local minimum with the wide basin of attraction at $\theta=0.1$.
-Thus this cost function is augmented to be better suited for optimization.
+To effectively use trajectoy optimization for this task, this cost function is augmented to be better suited for optimization.
 
 
 \begin{figure}
@@ -116,16 +116,16 @@ Thus this cost function is augmented to be better suited for optimization.
 
 
 \subsection{Auxiliary Variables}
-The key approach used here is softening of contacts through the introduction of auxiliary variables which drastically smooth the cost function, at the expense of increasing the dimensionality of the state space.
+The key approach used here is softening of contacts through the introduction of auxiliary variables, which drastically smooth the cost function at the expense of increasing the dimensionality of the state space.
 Appended to each state $s_t$ is a set of auxiliary continuous variables $c_t$, one for each section of the robotic arm allowed to make contact with the environment.
-The variables $c_t$ regulate the magnitude of the normal and frictional contact forces and will be described in detail.
+The variables $c_t$ regulate the magnitude of the normal and frictional contact forces and will be described in detail in the next section.
 %% These $c$ variables seem unnecessary as the forward kinematics specified by the joint angles $\theta$ determine the locations of the robot, and therefore determine the contacts between the robot and the environment.
 Without this augmentations, slight changes in these joint configurations result in slight motion of the robot which may result in huge changes in contact forces.
 Additionally without artificial terms in the cost function to model contact, the cost function is blind to potential contacts that may be close and useful.
 
 
 \subsection{Smoothing the Cost Function}
-The optimal solution $s^*$ is computed by minimizing the cost function of the form
+A local optimal trajectory $s^*$ is computed by minimizing the cost function of the form
 
 \begin{align}
 L(s) &= L_{Contact Violation} + L_{u} \\
@@ -252,15 +252,14 @@ Thus a sample based planner is employed to provide a diversity of good initializ
 \section{Sample Based Planning} \label{sec:sample_planning}
 %% \subsection{RRTs and their variants}
 It is possible to solve planning problems using a sample based planner, but once again the thin contact manifold causes challenges.
-Sample based planners probabilistically sample configurations to explore the feasible space, and through sufficent exploration seek to find the desired trajectories.
-Specifically, this section employs the RRT algorithm, described in Algorithm \ref{alg:RRT}.
+Sample based planners probabilistically sample configurations to explore the feasible space, and through sufficent exploration seek to find the trajectories to a goal while obeying constraints.
+Specifically, this section employs the RRT, described in Algorithm \ref{alg:RRT}.
 The basic RRT algorithm maintains a tree of trajectories (edges) to configurations (nodes), and grows this tree by ending to randomly sampled configuration.
 As discussed in Section \ref{sec:related:RRT}, the basic linear extension fails when the only allowable space for the trajectory to grow is a thin manifold, as in the case of a supporting contact.
 
 Figure \ref{fig:thin_manifold} illustrates this contact manifold.
 In this example, in some regions of configuration space a contact is not needed to support the arm, and trajectories may progress in any direction.
-The thin ribbon shows the manifold in configuration space where the arm makes contact with the environment. In the left region the contact is not needed and a trajectory is free to break the contact.
-However, the arm is able to reach the right region only by using the support of a contact force.
+The thin ribbon shows the manifold in configuration space where the arm makes contact with the environment. In the left region the contact is not needed and a trajectory is free to break the contact, however, the arm is able to reach the right region only by using the support of a contact force.
 In cases where the configuration must remain on this manifold, linearly extending towards a randomly sampled point will quickly cause the trajectory to leave the manifold, and make little progress in extending the tree.
 
 
@@ -311,9 +310,9 @@ The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \i
 \State $x_{prev} \leftarrow x_{begin}$
 \State $x_{new} \leftarrow $ policy($x_{prev}, x_{end}$)
 \State $i \leftarrow 0$
-\WhileNoDo{MovingTowardsGoal($x_{new}, T_{new}$) \textbf{and}}
-\StatexIndent[2] Nearest($T, x_{new}$) == $x_{begin}$ \textbf{and}
-\StatexIndent[2] i $<$ iterLimit
+\While{MovingTowardsGoal($x_{new}, T_{new}$) \textbf{and}
+  \StatexIndent[2] Nearest($T, x_{new}$) == $x_{begin}$ \textbf{and}
+  \StatexIndent[2] i $<$ iterLimit}
 \algorithmicdo
 \State $T_{new} \leftarrow $ AddNode($x_{new}, x_{prev}, T_{new}$)
 \State $x_{prev} \leftarrow x_{new}$ 
@@ -324,7 +323,7 @@ The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \i
 \end{algorithmic}
 \end{algorithm}
 
-As motivation for this approach, in many environments it is relatively easy to compute a reactive policy that can make forwards progress towards a goal while avoiding collision with obstacles, such as a potential field approach, but such policies are prone to getting stuck in local minima/dead ends.
+As motivation for this approach, in many environments it is relatively easy to compute a reactive policy that can make forwards progress towards a goal while avoiding collision with obstacles, such as a potential field approach, but such policies are prone to getting stuck in local minima.
 PolicyRRT is a variant of RRT that seeks to combine the efficient, goal directed trajectory generation of reactive policies with the ability of RRT to find paths around local minima/dead ends.
 PolicyRRT fundamentally behaves like a standard RRT by growing a tree by iteratively extending towards a randomly sampled configuration from the nearest point in a search tree $T$.
 PolicyRRT uses the reactive policy to move towards the random sample, potentially enabling the planner to avoid collisions with obstacles during the extension.

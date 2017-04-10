@@ -6,7 +6,7 @@
 
 Before performing operations on parts for manufacturing, it is crucial that the position and orientation of that part are known to within some tolerance.
 While there are many methods of localizing a part, this work uses a touch probe to actively gain information through measurements on the part surface.
-Though it is possible to ignore uncertainty in some tasks, the problems addressed in this work provide capabilities by explicitly reasoning over the belief distribution of the part's state.
+Though it is possible to ignore uncertainty in some tasks, the this work explicitly reasons over the belief distribution of the part's state to address more challening tasks.
 One approach, the particle filter, maintains this distribution through a finite set of samples.
 A second approach, the Kalman filter, maintains an analytic expression for the belief distribution.
 Both approaches require adaptations for use in contact localization.
@@ -25,12 +25,12 @@ Both approaches require adaptations for use in contact localization.
 Particle filters, touch measurements, and maximal information gain measurement selection have all been used in localization tasks. 
 Since their introduction particle filters have been popular due to their ease of implementation and ability to model complex distributions, process models, and measurement models \cite{Thrun2000a}. 
 However, for a measurement with low uncertainty there exists only a thin manifold of states consistent with that measurement, yielding a low probability of any particle existing on that manifold, leading to particle starvation \cite{Thrun2000}.
-Particle starvation is described in detail in Chapter \ref{sec:pfilterProblems}.
+Handling particle starvation is described in detail in Chapter \ref{sec:pfilterProblems}.
 
 To address particle starvation, Koval introduced the Manifold Particle Filter, using different sampling methods depending on the volume of the space consistent with a measurement \cite{Koval2011, Koval2013}. 
 This allows a quick update of the belief when the contact sensor is not in contact with the part, and only requires addressing the harder thin manifold update problem when contact is made. 
 Koval used multiple methods when updating from measurements when on this thin manifold, and shows that rejection sampling requires the fewest restrictions on prior knowledge of the environment, but naive rejection sampling is time consuming.
-His efficient methods require direct sampling from the contact manifold, which is not feasibly for a complex part.
+His efficient methods require direct sampling from the contact manifold, which is not feasible for a complex part.
 
 Petrovskaya focused on global localization of objects via touch \cite{Petrovskaya2011} and introduced the Series Scaling algorithm to overcome particle starvation. 
 The Series Scaling algorithm adaptively alters the particle density depending on the complexity of the posterior. 
@@ -116,7 +116,7 @@ The increased planning complexity is due to the contact configurations being a m
 
 \subsection{Bracing, Climbing, and Walking}
 The benefits of bracing have been studied since the 1990s.
-Lew and Book proposed bracing a micro/macro manipulator with small precise arm mounted on the end of a long course arm and demonstrated bracing of the macro arm against multiple locations of the environment can damp vibration caused by the micro arm \cite{Book1994} \cite{Lew1993}.
+Lew and Book proposed bracing a micro/macro manipulator with small precise arm mounted on the end of a long coarse arm and demonstrated bracing of the macro arm against multiple locations of the environment can damp vibration caused by the micro arm \cite{Book1994} \cite{Lew1993}.
 Hollis and Hammer explored a similar micro/macro robot design and demonstrated $1 \mu m$ accuracy, well over an order of improvement compared to their unbraced manipulator \cite{Hollis1992}.
 Both of these works did not address the planning problem as both contact locations and robot trajectories were manually specified.
 
@@ -129,7 +129,7 @@ Rather than solving for a trajectory and contact locations simultaneously some a
 The dominant planning architectures hierarchically separated stages of contact planning.
 Highest, and slowest, in the hierarchy a planner decides the path for a simplified model of the robot through the workspace using heuristic costs.
 Lower down in the hierarchy, a footstep planner determines the contact locations for feet to best achieve the higher level trajectory.
-Still further down, another planner determines joint trajectories to move the feet into the requested footstep locations while maintaining stability.  \cite{Deits2015} \cite{Atkeson2015}
+Still further down, another planner determines joint trajectories to move the feet into the requested footstep locations while maintaining stability  \cite{Deits2015} \cite{Atkeson2015}.
 Tonneau et al \cite{Tonneau} approaches from the opposite direction and first generates a trajectory then considers a discrete set of contacts close to that trajectory.
 
 
@@ -180,11 +180,10 @@ In CBiRRT the method of projection must be provided by the user.
 
 \subsection{Trajectory Optimization}
 In contract to sampling based planners, trajectory optimization addresses the path planning problem by incrementally improving an initial trajectory.
-Trajectory optimization uses a cost function to assign a cost to every trajectory.
-Iteratively the trajectory is adjusted to reduce the cost.
+Trajectory optimization uses a cost function to assign a cost to every trajectory, and an initial trajectory is repeatedly adjusted to reduce this cost.
 While a large class of work focuses on trajectory optimization with unknown dynamics, in this thesis it is assumed the dynamics are known, and the guiding approach is to assume the dynamics are locally linear and perform updates to the parameters of the trajectory based on the gradient of the cost function.
 This approach will converge to local, but not necessarily global, minimal cost trajectories.
-Contact forces present an initial challenge, as the assumption of locally linear dynamics no longer holds.5
+Contact forces present an initial challenge, as the assumption of locally linear dynamics no longer holds.
 
 Deits et. al. handles the foot placement contacts for walking robots through mixed-integer optimization \cite{Deits2015}.
 In a path for a walking robot there are an integer number of footstep placements, but the trajectories of the feet and robot are continuous.
@@ -195,25 +194,24 @@ This approach works because the integer parameter is relatively simple, i.e. onc
 
 
 Both Posa et. al. \cite{Posa2013} and Mordatch et. al. \cite{Mordatch2012}  handle the discontinuous contacts by smoothing.
-Both formulations assume a given set of locations on the robot which are allowed to make contact with the given environment.
+Both formulations assume a given set of locations on the robot are allowed to make contact with the given environment.
 Both works write the cost of a trajectory as a function of both joint torques and contact forces, thus the contact forces are a slack variable, and treated as parameters of the trajectory.
 Of course in reality a robot cannot choose the contact force applied, as the force is generated by electron repulsion as a function of the distance between the environment and the robot.
 However, this inaccurate physics model smooths the cost function and allows the robot to discover the benefits of contacts.
 Additional constraints are imposed to ensure the final trajectory is physically feasible.
 
 
-Posa et. al. is primarily concerned with large impact forces, and writes the problem as a constrained optimization.
+Posa et. al. \cite{Posa2013} is primarily concerned with large impact forces, and writes the problem as a constrained optimization.
 At each iteration the optimizer alters both the joint torques and the desired contact forces to improve the cost.
 However this optimization problem has a set of complementarity constraints which enforce that each section of the robot is either in contact and can receive a contact force, or it not in contact.
 
-Mordatch et. al. designed a cost function that continuously models both the benefit and cost of adding contacts and is able to produce trajectories which add and break contacts.
+Mordatch et. al. \cite{Mordatch2012} designed a cost function that continuously models both the benefit and cost of adding contacts and is able to produce trajectories which add and break contacts.
 This formulates the problem as a purely unconstrained optimization, with all physical constraints being added to the cost function.
 The parameters of this cost function are both the joint torques and a set of continuous ``contact'' slack variables, one for each section of the robot that is allowed to make contact.
 For each section, the contact variable can be intuitively be thought of as trade off between the benefits and the challenges of making contact with the environment.
 Increasing the contact variable increases the cost as a function of the distance between the robot section and the environment.
-Increasing the contact variable decreases the cost as it allows contact forces to compensate when joint torques would be necessary.
-Again, of course in reality there is no partial contact.
-If a section of a robot is some distance away from the environment, no contact force is applied.
+Increasing the contact variable decreases the cost as it allows contact forces to compensate for joint torques.
+Of course in reality there is no partial contact, as if a section of a robot is some distance away from the environment, no contact force is applied.
 However this formulation of force at a distance makes the benefit of adding a contact visible to the gradient of the cost function.
 To ensure the final trajectory is feasible, the cost of physically infeasible partial contacts is increased dramatically towards the end of the optimization. 
 

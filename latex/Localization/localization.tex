@@ -49,7 +49,7 @@ The task is to drill a hole, shown as a green cylinder, at a specific location d
 Internal tolerances prevent simply treating the entire system as a rigid body.
 
 
-This chapter first considers rigid-body particle filtering for high-precision localization (section \ref{sec:rigid_body}), which overcomes the particle starvation problem and serves as the basis for this chapter \cite{Saund2017}. 
+This chapter first considers rigid-body particle filtering for high-precision localization (section \ref{sec:rigid_body}), which overcomes the particle starvation problem \cite{Saund2017}. 
 The datum-based particle filter is then introduced to generalize this rigid-body approach for objects with coupled rigid sections (section \ref{sec:datum}).
 Two related but different approaches are proposed for this problem.
 The first approach maintains a single particle filter system that stores the full joint distribution of the coupled datums, while the second approach simplifies the relationships by assuming independence between the distribution of the internal transformations and the pose of the sections, and models the system using separate coupled particle filters. 
@@ -57,7 +57,7 @@ The first approach maintains a single particle filter system that stores the ful
 This chapter then generalizes the technique of choosing informative measurement actions to accommodate objects with coupled sections.
 To achieve this, many potential measurement actions are sampled and the action with the highest expected information gain is selected. 
 Fully predicting the information gain over the continuous belief is computationally expensive, so similar to other approaches \cite{Javdani2013} this work involves a fast approximation for information gain that takes advantage of the discretized belief from the particle filter (section \ref{sec:information gain}). 
-This chapter concludes with demonstrations of the method on a simulated part (section \ref{sec:experiment}). 
+This chapter concludes with evaluations of the rigid body approach on a real part, and the datum localization on a simulated part (section \ref{sec:experiment}). 
 
 
 
@@ -192,31 +192,31 @@ The unsigned distance $dist(M_t,S)$ is always $0$ in the ideal case, however, wh
 
 When the measurement is very accurate, in order to sample enough particles from the prior belief, a large number of states will get rejected, which makes the ray-casting for all sampled states computationally expensive. Instead, early rejection is applied using a greater distance $dist_u(M_t,S) + r_p$ before the computation of signed distance. 
 
-\subsection{Improvements on the Particle Filter}
-\textit{Adaptive Voxelization}: When the workspace is large enough, it will not be feasible to compute a distance transform for the entire workspace while maintaining a sufficiently small voxel size due to the huge memory requirements. 
-Instead, the distance field for each measurement is generated prior to the update. 
-As the belief of the object's pose is represented as a distribution, the range of the distance field $DF$ for each measurement $M_t$ is selected so that:
-\begin{align}
-    \xi < \int_{T(x_t)^{-1} M_t \in DF} bel(x_{t}) dx
-\end{align}
+%% \subsection{Improvements on the Particle Filter}
+%% \textit{Adaptive Voxelization}: When the workspace is large enough, it will not be feasible to compute a distance transform for the entire workspace while maintaining a sufficiently small voxel size due to the huge memory requirements. 
+%% Instead, the distance field for each measurement is generated prior to the update. 
+%% As the belief of the object's pose is represented as a distribution, the range of the distance field $DF$ for each measurement $M_t$ is selected so that:
+%% \begin{align}
+%%     \xi < \int_{T(x_t)^{-1} M_t \in DF} bel(x_{t}) dx
+%% \end{align}
 
-%% Where $T(x_{t-1})^{-1}M_t$ is the measurement transformed back to the object frame. 
-The voxel size is adjusted accordingly while keeping the number of voxels fixed. 
-When there is large uncertainty the voxels will become larger to improve the sample speed. When the uncertainty is low the precision is increased.
+%% %% Where $T(x_{t-1})^{-1}M_t$ is the measurement transformed back to the object frame. 
+%% The voxel size is adjusted accordingly while keeping the number of voxels fixed. 
+%% When there is large uncertainty the voxels will become larger to improve the sample speed. When the uncertainty is low the precision is increased.
 
 
-%% We improve the performance of our particle filter, shown in Figure \ref{fig:FasterParticles}, by adaptively choose the bandwidth and number of particles.
+%% %% We improve the performance of our particle filter, shown in Figure \ref{fig:FasterParticles}, by adaptively choose the bandwidth and number of particles.
 
-\textit{Adaptive Bandwidth}: The selection of the Gaussian kernel bandwidth $h$ is important during the sampling process. 
-A larger bandwidth is needed when the variance of $bel(x_t)$ is large for a fixed number of particles; otherwise a smaller bandwidth is preferred to avoid over-smoothing. 
-Silverman\textquotesingle s rule of thumb estimator \cite{Silverman1986} is used to dynamically adjust the bandwidth:
-$h(t) = (\frac{4}{(d+2)n})^{1/(d+4)} \hat{\sigma}_t$, where $\hat{\sigma}_t$ is the standard deviation of the sampled states and number of dimensions $d = 6$.
-%% $h(t) = (\frac{4}{3n})^{1/5} \hat{\sigma}_t$, where $\hat{\sigma}_t$ is the standard deviation of the sampled states.
+%% \textit{Adaptive Bandwidth}: The selection of the Gaussian kernel bandwidth $h$ is important during the sampling process. 
+%% A larger bandwidth is needed when the variance of $bel(x_t)$ is large for a fixed number of particles; otherwise a smaller bandwidth is preferred to avoid over-smoothing. 
+%% Silverman\textquotesingle s rule of thumb estimator \cite{Silverman1986} is used to dynamically adjust the bandwidth:
+%% $h(t) = (\frac{4}{(d+2)n})^{1/(d+4)} \hat{\sigma}_t$, where $\hat{\sigma}_t$ is the standard deviation of the sampled states and number of dimensions $d = 6$.
+%% %% $h(t) = (\frac{4}{3n})^{1/5} \hat{\sigma}_t$, where $\hat{\sigma}_t$ is the standard deviation of the sampled states.
 
-\textit{Adaptive Sample Size}: The number of particles is determined by \textit{Kullback-Leibler divergence} (KL-divergence) which measures the difference between the sample-based maximum likelihood estimate $\hat{p}$ and the true distribution $p$:
-\begin{align}
-D_{KL}(\hat{p},p) = \sum_{x}\hat{p}(x)log\frac{\hat{p}(x)}{p(x)}.
-\end{align}
+%% \textit{Adaptive Sample Size}: The number of particles is determined by \textit{Kullback-Leibler divergence} (KL-divergence) which measures the difference between the sample-based maximum likelihood estimate $\hat{p}$ and the true distribution $p$:
+%% \begin{align}
+%% D_{KL}(\hat{p},p) = \sum_{x}\hat{p}(x)log\frac{\hat{p}(x)}{p(x)}.
+%% \end{align}
 
 %% Suppose that the true distribution is given by a discrete multinomial distribution with $k$ different bins with probability $p=\{p_i\}$ and the number of samples drawn from each bin $x=\{x_i\}$, the \textit{log-likelihood ratio statistic} $log\Lambda$ is£º
 %% \begin{align}
@@ -358,6 +358,7 @@ Similarly, the right edge only must be localized horizontally.
 
 %% Instead of using a single CAD model for the whole object, separate mesh files are used for each section under the assumption that each physical section will match its CAD model precisely.
 
+
 Two approaches are now introduced; the first explicitly represents
 the joint probability distribution between the sections, and the second stores separate,
 independent probability distributions for each section.
@@ -453,91 +454,91 @@ If this assumption does not hold, localization can be performed for the whole ob
 
 %% The conditionals are only a prior estimate of the geometry transformations. During updates, both the transformations between sections and the pose of sections itself need to be refined based on the measurement.
 
-\subsection{Full-State Representation} \label{sec:full state}
+%% \subsection{Full-State Representation} \label{sec:full state}
 
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-	\draw (0,0) -- (8,0);
-	\draw (0,0) -- (0,0.5);
-	\draw (2,0) -- (2,0.5);
-	\draw (4,0) -- (4,0.5);
-	\draw (6,0) -- (6,0.5);
-	\draw (8,0) -- (8,0.5);
-	\draw [fill=black!10] (0,0) rectangle (2,0.5);
-	\draw [fill=black!10] (2,0) rectangle (4,0.5);
-	\draw [fill=black!10] (4,0) rectangle (6,0.5);
-	\draw [fill=black!10] (6,0) rectangle (8,0.5);
-	\node[align=left, below] at (0,-.05) {0};
-	\node[align=left, below] at (2,-.05) {6};
-	\node[align=left, below] at (4,-.05) {12};
-	\node[align=left, below] at (6,-.05) {18};
-	\node[align=left, below] at (8,-.05) {24};
-	\node[align=center, below] at (4,-.4) {Dimensions};
-	\node[align=center, above] at (1,0) {Section 0};
-	\node[align=center, above] at (3,0) {Section 1};
-	\node[align=center, above] at (5,0) {Section 2};
-	\node[align=center, above] at (7,0) {Section 3};
-	\node[align=center, above] at (4,.5) {Particle Fields};	
-	\end{tikzpicture}
-	\caption{A 24-dimensional particle for object with 4 sections}
-	\label{fig:full-state}
-\end{figure}
+%% \begin{figure}
+%% 	\centering
+%% 	\begin{tikzpicture}
+%% 	\draw (0,0) -- (8,0);
+%% 	\draw (0,0) -- (0,0.5);
+%% 	\draw (2,0) -- (2,0.5);
+%% 	\draw (4,0) -- (4,0.5);
+%% 	\draw (6,0) -- (6,0.5);
+%% 	\draw (8,0) -- (8,0.5);
+%% 	\draw [fill=black!10] (0,0) rectangle (2,0.5);
+%% 	\draw [fill=black!10] (2,0) rectangle (4,0.5);
+%% 	\draw [fill=black!10] (4,0) rectangle (6,0.5);
+%% 	\draw [fill=black!10] (6,0) rectangle (8,0.5);
+%% 	\node[align=left, below] at (0,-.05) {0};
+%% 	\node[align=left, below] at (2,-.05) {6};
+%% 	\node[align=left, below] at (4,-.05) {12};
+%% 	\node[align=left, below] at (6,-.05) {18};
+%% 	\node[align=left, below] at (8,-.05) {24};
+%% 	\node[align=center, below] at (4,-.4) {Dimensions};
+%% 	\node[align=center, above] at (1,0) {Section 0};
+%% 	\node[align=center, above] at (3,0) {Section 1};
+%% 	\node[align=center, above] at (5,0) {Section 2};
+%% 	\node[align=center, above] at (7,0) {Section 3};
+%% 	\node[align=center, above] at (4,.5) {Particle Fields};	
+%% 	\end{tikzpicture}
+%% 	\caption{A 24-dimensional particle for object with 4 sections}
+%% 	\label{fig:full-state}
+%% \end{figure}
 
-During my thesis I collaborated heavily with Shiyuan Chen for the task of autonomous localization.
-In the work on datum-based localization we had alternative approaches. Shiyuan mainly focused on the full-state approach described in this section, while I focused on the independent-state approach described next.
-Thus much of the credit for the work in this section belongs to Shiyuan.
+%% During my thesis I collaborated heavily with Shiyuan Chen for the task of autonomous localization.
+%% In the work on datum-based localization we had alternative approaches. Shiyuan mainly focused on the full-state approach described in this section, while I focused on the independent-state approach described next.
+%% Thus much of the credit for the work in this section belongs to Shiyuan.
 
-The full-state method presented maintains the full joint probability distribution between sections using a single set of full-state particles: $\particles[t] = \{\particle[t][j]\}$. 
-%% A Bayesian network is defined where the nodes are sections and the edges are the transformation relationships.
-%% The transformation between sections are defined in a graph, such that sections 
-%% Defining transformations of the sections in a graph is natural. 
-%% The sections which are related by the geometry constraints can be modeled as nodes in the graph, while the constraints serve as edges. 
-%% An example is Bayesian network, where the geometry relations between a section and its referenced datum are represented by directed edges. 
-%% The advantage for this representation is that we can restore the full joint distribution using fewer edges within Markov blanket. 
-%% However, for non-parametric continuous distribution, it is difficult to apply belief propagation approaches to update the whole graph given an observation on a section. 
-%% Instead, for the object in 3D workspace with $n$ sections being tracked, we explicitly maintain a full $6n$-dimensional state space. 
-Thus, each particle represents a combination of the poses of all of the sections (see Fig. \ref{fig:full-state}), which is drawn from the prior joint distribution $bel(\particle[0])$.
-
-
-Instead of applying a Gaussian kernel in 6D configuration space as done in section \ref{sec:rigid_body}, the continuous prior is estimated by Gaussian Mixtures in the full $6n$-dimensional configuration space, with the kernel covariance proportional to the covariance of the sampled states. This is achieved by applying kernel density estimation techniques. One popular method for the bandwidth selection is the Silverman's rule-of-thumb estimator\cite{Silverman1986}. Other techniques are discussed in more detail in \cite{sheather2004density}.
+%% The full-state method presented maintains the full joint probability distribution between sections using a single set of full-state particles: $\particles[t] = \{\particle[t][j]\}$. 
+%% %% A Bayesian network is defined where the nodes are sections and the edges are the transformation relationships.
+%% %% The transformation between sections are defined in a graph, such that sections 
+%% %% Defining transformations of the sections in a graph is natural. 
+%% %% The sections which are related by the geometry constraints can be modeled as nodes in the graph, while the constraints serve as edges. 
+%% %% An example is Bayesian network, where the geometry relations between a section and its referenced datum are represented by directed edges. 
+%% %% The advantage for this representation is that we can restore the full joint distribution using fewer edges within Markov blanket. 
+%% %% However, for non-parametric continuous distribution, it is difficult to apply belief propagation approaches to update the whole graph given an observation on a section. 
+%% %% Instead, for the object in 3D workspace with $n$ sections being tracked, we explicitly maintain a full $6n$-dimensional state space. 
+%% Thus, each particle represents a combination of the poses of all of the sections, which is drawn from the prior joint distribution $bel(\particle[0])$.
 
 
-Although it seems at first that the high dimensional state space will require a prohibitively huge number of particles to approximate the true distribution, in practice, this has been found to not the case. 
-Largely, this is due to the small internal tolerances compared to the uncertainty of the pose of the object as a whole, so particles tend to cluster in a small subset of the full state space. 
-Note that if there were no uncertainty in the transformation between sections, then the system reduces to a single 6 dimensional state space.
-In addition, the Gaussian kernel applied to the particles is capable of creating broad beliefs in specific dimensions\cite{Saund2017}, thus this particle filter is able to model the mixture of precisely localized, and poorly localized dimensions. 
-Finally, the sample acceptance probability, $p(z_t|\particle[t])$, depends only on the 6 dimensional subspace corresponding to the pose of the section being touched, and although only a thin manifold is accepted with high probability, the particle starvation challenge is no worse than previously addressed in \ref{sec:rigid_body}.
-%% We suspect there is an approximate lower dimensional structure which this particle filter captures.
+%% Instead of applying a Gaussian kernel in 6D configuration space as done in section \ref{sec:rigid_body}, the continuous prior is estimated by Gaussian Mixtures in the full $6n$-dimensional configuration space, with the kernel covariance proportional to the covariance of the sampled states. This is achieved by applying kernel density estimation techniques. One popular method for the bandwidth selection is the Silverman's rule-of-thumb estimator\cite{Silverman1986}. Other techniques are discussed in more detail in \cite{sheather2004density}.
 
 
-\begin{algorithm}[t]
-  \caption{Full-State Particle Filter}\label{alg:full state}
-  \begin{algorithmic}[1]
-    \Require{number of particles $N$ and number of sections $n$ }
-    \Require{particles $\mathbf{\particles[t]}$}
-    \Require{observation $\measurement^i_t$}
-    \Require{meshes $S=\{S_k\}^n_{k=1}$}
-    \Ensure{particles $\mathbf{\particles[t+1]}=\{\mathbf{\particle[t+1][j]}\}^N_{j = 1}$}
-    \State build distance field $D_f(p)$
-    \State $j \gets \mathbf{1}$
-    \While{$j\le N$}
-    \State $\mathbf{x}\sim p(\particle|\mathbf{\particles[t]})$ \Comment $\particle = \{\particle[][][k]\}^n_{k=1}$
-    \State $dist \gets D_f(T(\particle[][][i])^{-1}\measurement^i_t)$
-    \If{$dist \le \xi$}
-    \State $\particle[t+1][j]\gets \particle$
-    \State $j \gets j+1$
-    \EndIf
-    \EndWhile
-  \end{algorithmic}
-\end{algorithm}
+%% Although it seems at first that the high dimensional state space will require a prohibitively huge number of particles to approximate the true distribution, in practice, this has been found to not the case. 
+%% Largely, this is due to the small internal tolerances compared to the uncertainty of the pose of the object as a whole, so particles tend to cluster in a small subset of the full state space. 
+%% Note that if there were no uncertainty in the transformation between sections, then the system reduces to a single 6 dimensional state space.
+%% In addition, the Gaussian kernel applied to the particles is capable of creating broad beliefs in specific dimensions\cite{Saund2017}, thus this particle filter is able to model the mixture of precisely localized, and poorly localized dimensions. 
+%% Finally, the sample acceptance probability, $p(z_t|\particle[t])$, depends only on the 6 dimensional subspace corresponding to the pose of the section being touched, and although only a thin manifold is accepted with high probability, the particle starvation challenge is no worse than previously addressed in \ref{sec:rigid_body}.
+%% %% We suspect there is an approximate lower dimensional structure which this particle filter captures.
 
-At any time step $t$ the belief of the state $bel(\mathbf{\particle[t]}) = p(\mathbf{\particle[t]}| Z_t, \particle[0])$, and $\particle[t][][k]$ is the portion of $\particle[t]$ representing the pose of section $k$. 
-%% As for rigid part localization, the belief is estimated by a single set of particles and updated using rejection sampling. 
-During rejection sampling, new full-state samples $\particle[t+1]$ are drawn from the estimated $\hat{bel}(\mathbf{x_t})$ directly. 
-The probability of accepting a sample is based on the measurement $M^k_t$ on section $k$, and is computed by extracting the 6D pose $\particle[t+1][][k]$ from each full-state sample $\particle[t+1]$. Equation \ref{eq:unsigned} and \ref{eq:signed} are then used for the rejection sampling, except that the transform from the extracted $\particle[t+1][][k]$ is used to transform the measurement. 
-If $dist(M^k_t,S_k(\particle[t+1][][k]))$ is sufficiently large, this full-state sample $\mathbf{x_{t+1}}$ is rejected, otherwise accepted. 
-Note that the full-state sample $\mathbf{x_{t+1}}$ is accepted based on $p(M^k_t|\particle[t+1][][k])$, and the CAD model used for distance field $k$ is the mesh for that particular section, $S_k$ (shown in Algorithm \ref{alg:full state}). For simplicity, the pseudo-code does not include the adaptively adjusted sample size based on KL-divergence\cite{Saund2017}\cite{Fox2003}. 
+
+%% \begin{algorithm}[t]
+%%   \caption{Full-State Particle Filter}\label{alg:full state}
+%%   \begin{algorithmic}[1]
+%%     \Require{number of particles $N$ and number of sections $n$ }
+%%     \Require{particles $\mathbf{\particles[t]}$}
+%%     \Require{observation $\measurement^i_t$}
+%%     \Require{meshes $S=\{S_k\}^n_{k=1}$}
+%%     \Ensure{particles $\mathbf{\particles[t+1]}=\{\mathbf{\particle[t+1][j]}\}^N_{j = 1}$}
+%%     \State build distance field $D_f(p)$
+%%     \State $j \gets \mathbf{1}$
+%%     \While{$j\le N$}
+%%     \State $\mathbf{x}\sim p(\particle|\mathbf{\particles[t]})$ \Comment $\particle = \{\particle[][][k]\}^n_{k=1}$
+%%     \State $dist \gets D_f(T(\particle[][][i])^{-1}\measurement^i_t)$
+%%     \If{$dist \le \xi$}
+%%     \State $\particle[t+1][j]\gets \particle$
+%%     \State $j \gets j+1$
+%%     \EndIf
+%%     \EndWhile
+%%   \end{algorithmic}
+%% \end{algorithm}
+
+%% At any time step $t$ the belief of the state $bel(\mathbf{\particle[t]}) = p(\mathbf{\particle[t]}| Z_t, \particle[0])$, and $\particle[t][][k]$ is the portion of $\particle[t]$ representing the pose of section $k$. 
+%% %% As for rigid part localization, the belief is estimated by a single set of particles and updated using rejection sampling. 
+%% During rejection sampling, new full-state samples $\particle[t+1]$ are drawn from the estimated $\hat{bel}(\mathbf{x_t})$ directly. 
+%% The probability of accepting a sample is based on the measurement $M^k_t$ on section $k$, and is computed by extracting the 6D pose $\particle[t+1][][k]$ from each full-state sample $\particle[t+1]$. Equation \ref{eq:unsigned} and \ref{eq:signed} are then used for the rejection sampling, except that the transform from the extracted $\particle[t+1][][k]$ is used to transform the measurement. 
+%% If $dist(M^k_t,S_k(\particle[t+1][][k]))$ is sufficiently large, this full-state sample $\mathbf{x_{t+1}}$ is rejected, otherwise accepted. 
+%% Note that the full-state sample $\mathbf{x_{t+1}}$ is accepted based on $p(M^k_t|\particle[t+1][][k])$, and the CAD model used for distance field $k$ is the mesh for that particular section, $S_k$ (shown in Algorithm \ref{alg:full state}). For simplicity, the pseudo-code does not include the adaptively adjusted sample size based on KL-divergence\cite{Saund2017}\cite{Fox2003}. 
 
 %% Each measurement made on a section updates the estimate of the full joint distribution for all sections based on how well the estimate is consistent with that measurement.
 %% This updates all sections for one single measurement based on the transformation information in the prior belief without explicitly implementing the transformation.
@@ -572,8 +573,8 @@ Note that the full-state sample $\mathbf{x_{t+1}}$ is accepted based on $p(M^k_t
   \end{algorithmic}
 \end{algorithm}
 
-The first approach described above tracks the updates of both the pose of each datum and the their transformations by maintaining a full-state representation of the distribution.
-An alternative is to maintain the probability distribution for each section separately.
+%% The first approach described above tracks the updates of both the pose of each datum and the their transformations by maintaining a full-state representation of the distribution.
+My approach is to maintain the probability distribution for each section separately.
 Instead of using a full high-dimensional particle filter for the full object, individual 6-dimensional particle filters are used for each individual section under the approximation that the belief over transformations between sections are fixed and independent.
 While this loses information compared with the full joint belief, in practice this loss is acceptable.
 

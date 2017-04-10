@@ -23,9 +23,9 @@
 
 Contacting the world can provide stability, support, and sensory information.
 Humans benefit from touching the world in situations from blindly detecting an object in the back of the refrigerator, to leaning on a stair railing. 
-In the recent DARPA robotics challenge top robotics research teams from around the world submitted robots to attempt an obstacle course of challenges.
-Many of these robots fell on the stairs. 
+In the recent DARPA robotics challenge top robotics research teams from around the world submitted robots to attempt an obstacle course, and during these challenges many of these robots fell on the stairs. 
 Not a single robot used the railing \cite{Atkeson2015}.
+%% People instictly use contacts and robots should do the same.
 Even drunk people know to use railings, so there is plenty of room for improvement in robotics.
 
 However, in robotics there are good reasons to avoid contact with the environment.
@@ -40,7 +40,7 @@ Contacts introduce non-smooth discontinuities, which presents a challenge for ma
 The benefits of contacts occur on a measure-zero manifold in the robot's configuration space.
 For example, hand rests comfortably on a table at a specific configuration of shoulder, elbow, and wrist positions.
 A slight extension of the elbow while fixing all other joints leads to the hand puncturing the table, while a slight contractions pulls the hand into the air and the table might as well not exist.
-Random sampling and gradient decent are two techniques that appear in the solution to many robotics challenges, but both have difficulty with these measure-zero contact manifolds.
+Random sampling and gradient descent are two techniques repeatedly used in robotics, but both have difficulty with these measure-zero contact manifolds.
 This thesis explores and extends techniques of sampling based and gradient methods to the problems of localization and planning, with the addition of contact forces and measurements.
 
 
@@ -68,8 +68,7 @@ While there are many potential directions of research to improve these already i
 \end{figure}
 
 Robots that perform one type of task on one section of an airplane can cost millions of dollars.
-However the jig that holds the airplane section while the robot works can cost more than the robot.
-These jigs may have more actuators and tighter tolerances than the robotic system.
+However the jig that holds the airplane section while the robot works can cost more than the robot, partically because these jigs may have more actuators and tighter tolerances than the robotic system.
 When the robot begins work on a new section, before ever making a measurement the jig has already located the part to within a few inches.
 A few scripted measurement with a probe, programmed by an engineer, are sufficient to fully localize the part to within the needed tolerances.
 %% These high costs and skilled engineering time are only acceptable because the expense is amortized over many
@@ -93,9 +92,9 @@ While a team of people may include workers on both the inside and outside, large
 
 
 \section{Approach}
-The work in this thesis address two separate problems. The first is the task of localizing an object through measurements made using contact measurement.
+The work in this thesis address two separate problems. The first is the task of localizing an object through touch probing.
 The second is the task of planning a trajectory for a robotic arm that is too long to support its own cantilevered weight, and so must rest on the environment for support.
-Unifying the two problems is the challenges associated with contacts.
+%% Unifying the two problems is the challenges associated with contacts.
 
 \subsection{Localization}
 
@@ -124,27 +123,26 @@ The robot chooses where to probe, and the measurements are a function of the obj
 A triangular mesh describes the object geometry and a frame is attached to this mesh. 
 The state $X$ is the $SE(3)$ transformation from a fixed world frame to this part frame. 
 This is a 6-dimensional state stored as position $(x,y,z)$ and orientation angles $(\alpha, \beta, \gamma)$. 
-Initially it is assumed the geometry is rigid, thus the state can be fully described as the $SE(3)$ configuration of a frame attached to the part \ref{sec:rigid_body}.
-Later, this is generalized to parts with internal uncertainty \ref{sec:datum}.
-A further assume is that the part is fixed in space relative to a world frame and that probing actions do not perturb the state. 
+Initially it is assumed the geometry is rigid, thus the state can be fully described as the $SE(3)$ configuration of a frame attached to the part, while later later, the approach is generalized to parts with internal uncertainty.
+A further assumption is that the part is fixed in space relative to a world frame and that probing actions do not perturb the state. 
 
 Rather than calculating a single best estimate of the pose, a probability distribution represents the uncertainty in knowledge.
 Estimating the probability distribution is important both for choosing effective measurements and knowing when the part is localized sufficiently. 
-For feasibility, this probabilistic belief is represented numerically by a list of points drawn from the true distribution called \textit{particles}. 
+For feasibility, this probabilistic belief is represented numerically by a set of points drawn from the true distribution called \textit{particles}. 
 A measurement updates the belief using a \textit{particle filter} \cite{Thrun2000a}.
 
 However particle filters behave poorly both when the dimensionallity of the system grows large and when measurements become precise \cite{Koval2013}. 
 In the problems considered there is a large initial uncertainty, and achieving high tolerance performance necessitates measurements with low uncertainty.
 Updating the belief after performing such a measurement will eliminate most particles, leaving a poor representation of the posterior. This problem is called particle starvation.
 
-This thesis first presents a solution to particle starvation during touch localization (section \ref{sec:rigid_body}) using a particle filter with an alternate update procedure that is able to combine accurate measurements with the prior. 
+This thesis first describes a solution to particle starvation during touch localization (section \ref{sec:rigid_body}) developed in collaboration with Shiyuan Chen \cite{Saund2017} by using a particle filter with an alternate update procedure that is able to combine accurate measurements with the prior. 
 This particle filter is then generalized to parts with internal uncertainty (section \ref{sec:datum}).
 
 To minimize the time taken to localize the part, the robot should choose informative measurement actions.
 To achieve this, many actions are sampled and the one with the highest expected \textit{information gain} is selected. 
 Fully predicting this is also computationally expensive, thus previous methods using this metric introduce delays during which the robot pauses between measurements and yet still only samples a small number of actions.
-This approach involves a fast approximation for information gain that takes advantage of the discretized belief from the particle filter (section \ref{sec:information gain}). 
-This enables the sampling hundreds of potential measurement actions in a few seconds. 
+Our approach involves a fast approximation for information gain that takes advantage of the discretized belief from the particle filter (section \ref{sec:information gain}). 
+This enables the sampling of hundreds of potential measurement actions in a few seconds. 
 
 
 
@@ -169,12 +167,11 @@ Of particular interest is the dynamics model, as it models contact forces at spe
 
 When not in contact with the environment the robot dynamics obey the manipulator arm equation \cite{murray1994mathematical}.
 However, when in contact, additional forces are applied to the arm obeying a spring model: The force is proportional to the penetration distance, in the direction pushing the arm out of the environment.
-To maintain stability in the model, the simulated environment is kept squishy with a spring constant significantly lower than the physical reality.
+%% To maintain stability in the model, the simulated environment is kept squishy with a spring constant significantly lower than the physical reality.
 
 In the tasks considered in this thesis, the robot is not capable of reaching the goal point without using contact points, thus the motion planner must make use of contacts.
-To ensure this the arm used is long and thin, the torque limit is low, and goal positions are chosen far from the base of the arm.
-Thus the motors alone are not able to overcome the weight of the cantilevered robot arm.
-
+%% To ensure this the arm used is long and thin, the torque limit is low, and goal positions are chosen far from the base of the arm.
+%% Thus the motors alone are not able to overcome the weight of the cantilevered robot arm.
 Two approaches are used to plan: trajectory optimization and a sample-based planner.
 In the trajectory optimization framework a function determines the cost of a trajectory, and an initial trajectory is iteratively improved using gradient descent until a local optimum is achieved.
 The obvious choice for a cost function would penalize not reaching the goal and penalize joint torques, either through soft or hard constraints.
@@ -184,8 +181,8 @@ This provides a much better conditioned cost function, at the expense of accurat
 Towards the end of optimization the model parameters are altered to enforce a realistic solution.
 
 When initialized well, this optimization approach produces trajectories that keep joint torques low by making and breaking contacts.
-However, the cost function is still littered with non-optimal local minima, and escaping these proves difficult.
-Thus a sampled based planner is employed to generate trajectories that can either directly be used, or that serve as a decent initialization for the optimization approach.
+However, the cost function is still littered with non-optimal local minima, and escaping these prove difficult.
+Thus a sample-based planner is employed to generate trajectories that can either directly be used, or that serve as a decent initialization for the optimization approach.
 Again the thin contact manifold presents problems.
 Sampled based planners rely on generating trajectories to connect probabilistically sampled configurations, but the thin contact manifold renders naive approaches useless.
 The solution used augments the extension function of a sampled based planner, causing extensions to make progress towards their goal while staying on the contact manifold as necessary.

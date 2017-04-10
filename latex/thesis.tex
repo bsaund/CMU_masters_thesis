@@ -123,22 +123,21 @@ Arun Srivatsan
 %% into different files and input them into this file...
 
 \begin{abstract}
-  Contacting the world can provide stability, support, and sensory information, however most robots avoid contact whenever possible.
-  Contacts present a danger of large forces and challenging computational issues, but enabling robots to reason about contacts extends the extent to which robots can perceive and act in the world.
-  Computational issues arise due to the local nature of contacts, yielding subspaces of intersection thin manifolds.
+  Contacting the world can provide stability, support, and sensory information, however many robots avoid contact whenever possible.
+  Contacts present the physical danger of large forces as well as challenging computational issues, but enabling robots to reason about contacts extends the extent to which robots can perceive and act in the world.
 
   This thesis explores both localization and planning where contacts are required.
-  Several common techniques in robotics are adapted to better handle the local effects of contact.
+  Computational issues arise due to the local nature of contacts, yielding subspaces of intersection thin manifolds, so several common techniques in robotics are adapted to better handle the local effects of contact
   A particle filter is augmented to update from a precise measurement that would ordinarily eliminate most particles.
   An efficient information gain metric is defined using these particles to predict useful future measurements.
   A new dynamics model and associated cost function are created for a robotic arm, which although are not faithful to real dynamics, are conditioned well for use in existing planning methods.
   This artificial but useful dynamics model is shown in both trajectory optimization and sampled-based planning.
-  
+  The techniques are demonstrated in simulation and physical hardware.
 \end{abstract}
 
 \begin{acknowledgments}
   This thesis and my work in graduate school would not be possible without the collaboration and guidance of many intelligent people.
-  First, I would like to thank my advisors. Both Howie and Reid have provided me with support and guidance, and most importantly have forced me to justify my theories and led me to many new concepts in robotics. Their advising styles were different, but worked amazingly well together, and I am a smarter person thanks to their influence.
+  First, I would like to thank my advisors. Both Howie and Reid have provided me with support and guidance, and most importantly have forced me to justify my theories and guided me to many new concepts in robotics. Their advising styles were different, but worked amazingly well together, and I am a smarter person thanks to their influence.
   
   I would like to thank the senior PhD students who I sat near and from whom I absorbed knowledge. Discussions with Glenn, Arun, and Chao frequently inspired me. In addition, discussions and help from Guillaume, Alex, Matt, Julian, Ky, Elena, Breelyn, and many others have both directly influenced my work and generally improved my robotics knowledge.
   The former graduate students now at Hebi designed and provided the hardware that first inspired my snake arm planning goals and they have continued to support and improve the hardware.
