@@ -20,7 +20,7 @@ Section \ref{sec:trajectory_optimization} describes a solution to the motion pla
 %% The problem formulation includes a function that assigns a cost to each trajectory, and uses the gradient of this cost function to incrementally improve the trajectory.
 %% Typically a trajectory is penalized for large joint torques and for not reaching the goal, however that formulation provides insufficient gradient information when contacts are involved.
 %% dynamics model is augmented, making it less accurate but better conditioned for optimization.
-To better conidition the problem for optimization, the dynamics are augmented to create smooth gradients around contacts.
+To better condition the problem for optimization, the dynamics are augmented to create smooth gradients around contacts.
 Section \ref{sec:sample_planning} describes a sampled-based planner capable of using contact forces, and again alterations are made to handle the thin contact manifold.
 
 
@@ -51,7 +51,7 @@ In practice $M, C,$ and $N$ do not need precise estimation, because closed loop 
 The robot arm has defined sections which may be in contact with the environment.
 For simplicity in calculations, these contact sections are approximated by spheres, shown in Figure \ref{fig:sphere_approximation}.
 The environment is modeled as a triangular mesh, and contact occurs when a contact section intersection the mesh.
-The contact force is determined by a spring model, and so the magnitude is proportional to the penetration distance, and pushing the section out of the environment.
+The contact force is determined by a spring model, and so the magnitude is proportional to the penetration distance, pushing the section out of the environment.
 The physical robot and environment are both constructed of metal, so while a large spring constant provides a more accurate model this also causes numerical instabilities.
 Each trajectory is simulated as a series of discrete time steps, and a large spring constant will result in giant forces for even the slight penetration this discretization introduces.
 
@@ -311,9 +311,9 @@ The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \i
 \State $x_{new} \leftarrow $ policy($x_{prev}, x_{end}$)
 \State $i \leftarrow 0$
 \While{MovingTowardsGoal($x_{new}, T_{new}$) \textbf{and}
-  \StatexIndent[2] Nearest($T, x_{new}$) == $x_{begin}$ \textbf{and}
-  \StatexIndent[2] i $<$ iterLimit}
-\algorithmicdo
+  Nearest($T, x_{new}$) == $x_{begin}$ \textbf{and}
+  i $<$ iterLimit}
+%% \algorithmicdo
 \State $T_{new} \leftarrow $ AddNode($x_{new}, x_{prev}, T_{new}$)
 \State $x_{prev} \leftarrow x_{new}$ 
 \State $x_{new} \leftarrow $ policy($x_{prev}, x_{end}$)
@@ -324,7 +324,7 @@ The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \i
 \end{algorithm}
 
 As motivation for this approach, in many environments it is relatively easy to compute a reactive policy that can make forwards progress towards a goal while avoiding collision with obstacles, such as a potential field approach, but such policies are prone to getting stuck in local minima.
-PolicyRRT is a variant of RRT that seeks to combine the efficient, goal directed trajectory generation of reactive policies with the ability of RRT to find paths around local minima/dead ends.
+PolicyRRT is a variant of RRT that seeks to combine the efficient, goal directed trajectory generation of reactive policies with the ability of RRT to find paths around local minima and dead ends.
 PolicyRRT fundamentally behaves like a standard RRT by growing a tree by iteratively extending towards a randomly sampled configuration from the nearest point in a search tree $T$.
 PolicyRRT uses the reactive policy to move towards the random sample, potentially enabling the planner to avoid collisions with obstacles during the extension.
 When PolicyRRT is successful in extending towards the sample (does not collide with an obstacle and does not get stuck in a local minima) it then follows the policy to extend towards the goal.
@@ -384,10 +384,11 @@ Leaving the contact manifold around these configurations causes large torques as
 
 \section{Experiments}
 Trajectories were generated for a 16-DOF snake robot arm in a model of a wing section by combining the approaches shown above.
-The initial configuration and goal position for the end effector were chosen manual and contained goal positions at the corners of the available volume so that the arm must maintain contact for support.
+The initial configuration and goal position for the end effector were chosen manually and contained goal positions at the corners of the available volume so that the arm must maintain contact for support.
 
 First, the policyRRT of section \ref{sec:sample_planning} was used to generate a trajectory a for the arm to a goal position while avoiding collisions between the robot and the wing, however ignoring the torque limits of the joints.
 This trajectory was used as an initialization for the trajectory optimization approach of section \ref{sec:trajectory_optimization}
+
 
 
 

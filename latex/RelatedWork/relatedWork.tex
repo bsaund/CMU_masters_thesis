@@ -57,7 +57,7 @@ The localization approach presented here can be generalized to these sensors whi
 
 
 \subsection{Kalman Filters}
-Alternative approaches to modeling touch localization adapt a Kalman Filter to model the belief distribution.
+Alternative approaches to modeling touch localization adapt a Kalman Filter to model the belief distribution \cite{Choukroun2006}\cite{Srivatsan}.
 A Kalman filter requires a Gaussian belief of the estimated state, which is inaccurate in touch localization. 
 For example, multi-modal distributions appear when it is ambiguous whether a close edge or far edge was touched. %% Non-Gaussian distributions also occur even when the touched edge is known.
 
@@ -69,7 +69,8 @@ Srivatsan constructs a linear measurement model using two measurements and assum
 This allows direct use of a Kalman filter with a true measurement model.
 However, the true correspondence is unknown, and must be approximated, for example through Iterative Closest Point (ICP) methods.
 
-
+The approach in this thesis uses a Gaussian kernel applied to set of discrete particles, similar to a mixture of Gaussians model \cite{Thrun2000}, allowing multimodal beliefs.
+Neither a local linear approximation to the measurement model, nor correspondence between the probe tip and touched object point are required.
 
 
 %% Particle filters have been widely used and developed since their introduction. 
@@ -137,20 +138,20 @@ Tonneau et al \cite{Tonneau} approaches from the opposite direction and first ge
 \subsection{Sample based planning} \label{sec:related:RRT}
 Sampling based planners probabilistically probe the configuration space searching for feasible paths.
 The valid configuration space is never explicitly represented, and all that is needed is a function that determines whether a specific configuration is valid.
-The Rapidly-exploring Random Tree (RRT) and Probabilistic Roadmaps (PRMs) are sampling based planner which build graphs of valid trajectories (edges) between points in configuration space (nodes).
-To grow these graphs a new point in configuration space is sampled, and the closest point on the existing graph is extended towards this sampled point, as shown in Algorithm \ref{alg:RRT}. 
+The Rapidly-exploring Random Tree (RRT) is a sampling based planner which build trees of valid trajectories (edges) between points in configuration space (nodes).
+To grow these graphs a new point in configuration space is sampled, and the closest point on the existing tree is extended towards this sampled point, as shown in Algorithm \ref{alg:RRT}. 
 \cite{LaValle1998}
 
 \begin{algorithm}
-\caption{$T=(V,E) \leftarrow$ RRT$(x_{start})$}\label{alg:RRT}
-\begin{algorithmic}[1]
-\State $T \leftarrow$ InitTree($x_{start}$)
-\While {GoalNotReached($T, X_{goal}$)}
-\State $x_{sample} \in X \leftarrow$ Sample()
-\State $x_{nearest} \leftarrow $ Nearest($T, x_{sample}$)
-\State T \leftarrow $Extend(x_{nearest}, x_{sample}, T)$
-\EndWhile
-\end{algorithmic}
+  \caption{$T=(V,E) \leftarrow$ RRT$(x_{start})$} \label{alg:RRT}
+  \begin{algorithmic}[1]
+    \State $T \leftarrow$ InitTree( $x_{start}$ )
+    \While {GoalNotReached($T, X_{goal}$)}
+    \State $x_{sample} \in X \leftarrow$ Sample()
+    \State $x_{nearest} \leftarrow $ Nearest($T, x_{sample}$)
+    \State T $\leftarrow Extend(x_{nearest}, x_{sample}, T)$
+    \EndWhile
+  \end{algorithmic}
 \end{algorithm}
 
 In the most basic implementation, the Extend function constructs a linearly trajectory in configuration space from $x_{nearest}$ towards $x_{sample}$, and terminates the extension either when $x_{sample}$ is reached or the trajectory enters an invalid region. \cite{LaValle1998}
@@ -173,8 +174,8 @@ However if $x_s$ is an invalid configuration, a projection function is used to p
 \end{align}
 If $x_s^{new}$ is valid and is making progress toward $x_{sample}$, the extension algorithm continues.
 If either the $Projection$ function failed to produce a valid configuration, or the extension toward $x_s^{new}$ moves the trajectory further from $x_{sample}$ then extension is terminated and the RRT algorithm continues with a new randomly sampled point.
-In CBiRRT the method of projection must be provided by the user. 
-
+In CBiRRT the method of projection must be provided by the user, and it is not obvious how to construct a productive projection function for an arm where multiple contacts are allowed. 
+This thesis uses a sampling based planner that is able to traverse thin manifolds by using a cost function, instead of a projection function, to guide the extension.
 
 
 
@@ -205,7 +206,7 @@ Posa et. al. \cite{Posa2013} is primarily concerned with large impact forces, an
 At each iteration the optimizer alters both the joint torques and the desired contact forces to improve the cost.
 However this optimization problem has a set of complementarity constraints which enforce that each section of the robot is either in contact and can receive a contact force, or it not in contact.
 
-Mordatch et. al. \cite{Mordatch2012} designed a cost function that continuously models both the benefit and cost of adding contacts and is able to produce trajectories which add and break contacts.
+Mordatch et. al. \cite{Mordatch2012} designed an approach called contact invariant optimization, where a cost continuously models both the benefit and cost of adding contacts and is able to produce trajectories which add and break contacts.
 This formulates the problem as a purely unconstrained optimization, with all physical constraints being added to the cost function.
 The parameters of this cost function are both the joint torques and a set of continuous ``contact'' slack variables, one for each section of the robot that is allowed to make contact.
 For each section, the contact variable can be intuitively be thought of as trade off between the benefits and the challenges of making contact with the environment.
@@ -214,6 +215,9 @@ Increasing the contact variable decreases the cost as it allows contact forces t
 Of course in reality there is no partial contact, as if a section of a robot is some distance away from the environment, no contact force is applied.
 However this formulation of force at a distance makes the benefit of adding a contact visible to the gradient of the cost function.
 To ensure the final trajectory is feasible, the cost of physically infeasible partial contacts is increased dramatically towards the end of the optimization. 
+
+This thesis uses a similar approach to Mordatch's contact invariant optimization to construct an unrealistic but useful dynamics model.
+Experiments demonstrate these methods on physical robots.
 
 
 \end{document}

@@ -32,7 +32,7 @@ On the other hand, it is usually only necessary to localize a subset of the sect
     \label{fig:FullBelief:Localized}
   \end{subfigure}
   \caption{
-    Visualization of the belief of the pose of all sections of the part\\
+    Visualization of the belief of the pose of all sections of the part. The green cylinder is the important section to localize and is defined in space through offsets from the top, right, and front faces.\\
 \protect\subcap{fig:FullBelief:Unlocalized}: The prior belief of the poses before localization. The uncertainty of the goal feature is too high to perform the task.\\ 
 \protect\subcap{fig:FullBelief:Localized}: The belief of the poses after performing measurements to localize the goal feature. The pose of the goal feature is now known well enough to perform the task. Although the bottom edge (purple) and perpendicular section still have noticeable error, precise localization of these features is not needed.
 }
@@ -125,7 +125,7 @@ Instead we sample from our continuous prior belief $bel(x)$ and possibly reject 
 
 \textit{Broad Particles}: We first reconstruct the continuous prior belief by broadening each of the particles. 
 We apply a \textit{Gaussian kernel} to the particles, with the kernel covariance proportional to the covariance of the particle states. 
-This reduces particle starvation, as even if no prior particle is consistent with the measurement, the continuous belief generated fills in the gaps between particles.
+Rejection sampling may require many diverse samples, so due to this broadening even if no prior particle is consistent with the measurement, the continuous belief generated fills in the gaps between particles.
 
 
 
@@ -139,6 +139,7 @@ This reduces particle starvation, as even if no prior particle is consistent wit
 States sampled from this continuous prior are then rejected if they are inconsistent with the measurement. 
 While the formulation of rejection sampling allows us to model complicated measurement error, we implement a binary measurement model. We reject all sampled particles where the measured point is sufficiently far from all faces of the object. We define ``sufficiently far'' as more than 3 standard deviations of the sensor measurement noise.
 As a low uncertainty measurement will accept only a thin manifold in state space, the probability of sampling a particle consistent with the measurement may be low, and a lot of sampling may be required, therefore we desire the rejection process to be fast.
+This section summarizes work done by Shiyuan Chen in collaboration on rigid body touch localization \cite{Saund2017}.
 
 
 
@@ -228,31 +229,31 @@ When the measurement is very accurate, in order to sample enough particles from 
 %% \end{align}
 %% where $\chi_{k-1}^2$ is the $\chi^2$-distribution with $k-1$ degrees of freedom. By using Wilson-Hilferty transformation of $\chi^2$-distribution, the sample size $n$ is given by:
 
-\begin{figure}
-\centering
-\begin{tikzpicture}
-  \node (img) {\includegraphics[width=.5\linewidth]{./Localization/diff_trans_method}};
-  \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
-       {Translational Error (cm)};
-\end{tikzpicture}
-\begin{tikzpicture}
-  \node (img) {\includegraphics[width=.5\linewidth]{./Localization/diff_rot_method}};
-  \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
-       {Rotational Error (rad)};
-\end{tikzpicture}
-\begin{tikzpicture}
-  \node (img) {\includegraphics[width=.5\linewidth]{./Localization/time_method}};
-  \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
-       {Time for Particle Update (ms)};
-  \node[below=of img, node distance=0cm, yshift=1.2cm] 
-       {Measurement Number};
+%% \begin{figure}
+%% \centering
+%% \begin{tikzpicture}
+%%   \node (img) {\includegraphics[width=.5\linewidth]{./Localization/diff_trans_method}};
+%%   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+%%        {Translational Error (cm)};
+%% \end{tikzpicture}
+%% \begin{tikzpicture}
+%%   \node (img) {\includegraphics[width=.5\linewidth]{./Localization/diff_rot_method}};
+%%   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+%%        {Rotational Error (rad)};
+%% \end{tikzpicture}
+%% \begin{tikzpicture}
+%%   \node (img) {\includegraphics[width=.5\linewidth]{./Localization/time_method}};
+%%   \node[left=of img, node distance=0cm, rotate=90, anchor=center,yshift=-1cm] 
+%%        {Time for Particle Update (ms)};
+%%   \node[below=of img, node distance=0cm, yshift=1.2cm] 
+%%        {Measurement Number};
 
-\end{tikzpicture}
+%% \end{tikzpicture}
 
 
-\caption{Comparison of the time and accuracy of the particle filter update step when using Adaptive Bandwidth and Adaptive Sample Size}
-\label{fig:FasterParticles}
-\end{figure}
+%% \caption{Comparison of the time and accuracy of the particle filter update step when using Adaptive Bandwidth and Adaptive Sample Size}
+%% \label{fig:FasterParticles}
+%% \end{figure}
 
 
 Suppose that the true distribution is given by a discrete multinomial distribution with $k$ different bins, it can be shown that with probability $1-\delta$, the KL-divergence is less than or equal to $\epsilon$ when the sample size $n$ is given by \cite{Fox2003}:
@@ -274,13 +275,13 @@ Therefore, the number of particles $n$ can be adjusted according to the number $
 
 
 
-Figure \ref{fig:FasterParticles} shows the comparison between the particle filters with different improvements that are mentioned above. 
-The simulation uses a mesh model with 39444 triangles. 
-The set of measurements used for each method is fixed and predefined. 
-The baseline method represents the particle filter that only implements adaptive voxelization while using fixed kernel bandwidth $h=0.0035$ and fixed number of particles ($n=500$). 
-Adaptive Bandwidth improves the convergence accuracy significantly compared to the baseline method, while Adaptive Sample Size generally leads to poorer convergence with faster speed. 
-The combined method applies all of the improvements above. 
-It can achieve both faster and more accurate convergence compared to the other methods.
+%% Figure \ref{fig:FasterParticles} shows the comparison between the particle filters with different improvements that are mentioned above. 
+%% The simulation uses a mesh model with 39444 triangles. 
+%% The set of measurements used for each method is fixed and predefined. 
+%% The baseline method represents the particle filter that only implements adaptive voxelization while using fixed kernel bandwidth $h=0.0035$ and fixed number of particles ($n=500$). 
+%% Adaptive Bandwidth improves the convergence accuracy significantly compared to the baseline method, while Adaptive Sample Size generally leads to poorer convergence with faster speed. 
+%% The combined method applies all of the improvements above. 
+%% It can achieve both faster and more accurate convergence compared to the other methods.
 
 %% \subsection{Modeling Part Uncertainty: Problems with the Standard Particle Filter} 
 
@@ -449,7 +450,7 @@ More generally, the conditional probability $p(\particle[t][][k]|\mathbf{\partic
 A measurement is made on a single section at each step by a touch probe.
 Let the measurement on the section $k$ at step $t$ be $\maction^k_t$, then the posterior of section $k$ is $p(\particle[t][][k]|\mathbf{\particle[t]}, \measurementSet^k_t)$. 
 In the following algorithms, the section that a measurement contacts is known.
-This assumption is reasonable if the uncertainty of the prior belief is small compared to the physical size of each section, and measurement are not chosen on the boundary between sections.
+This assumption is reasonable if the uncertainty of the prior belief is small compared to the physical size of each section, and measurements are not chosen on the boundary between sections.
 If this assumption does not hold, localization can be performed for the whole object using the methods of section \ref{sec:rigid_body} to get better estimate, before considering the object as a combination of coupled sections.
 
 %% The conditionals are only a prior estimate of the geometry transformations. During updates, both the transformations between sections and the pose of sections itself need to be refined based on the measurement.
@@ -589,8 +590,8 @@ Since $T^k_k$ is the identity with probability 1, the updated belief can be writ
 \begin{align}
 bel(\particle[][][k]) &= p(\particle[][][k]|T^k_k,M^k) =p(\particle[][][k]|M^k)
 \end{align}
-For a section $j$ that references section $k$ ($k \neq j$), each new sample $\particle[t+1][][j]$ is drawn from the prior of its corresponding particle filter $j$. 
-$\particle[t+1][][j]$ is then transformed from the frame of section $j$ to the frame of section $k$: 
+To update the belief of a section $j$ that has a probilistic prior transform from the measured section $k$ ($k \neq j$), each new particle for section j $\particle[t+1][][j]$ is drawn from the prior of its corresponding particle filter $j$. 
+To compute consistency with the measurement, $\particle[t+1][][j]$ is then transformed from the frame of section $j$ to the frame of section $k$: 
 \begin{align}
 \sampled{x}^k = {^iT^k_j} \times \particle[][][j]
 \end{align}
@@ -670,8 +671,8 @@ where $w_i$ is the weight of particle $i$.
 To calculate the conditional entropy, $H(\particles[][][G]|\maction)$, the measurement action $\maction$ is simulated on the part distribution. Performing a measurement action yields a continuous distribution of measurement value. $\totalWeight$ samples are drawn from this distribution for each particle:
 \begin{align}
   \measurement_{i,j} = Simulate(\{\maction + \delta_j\}, \particles[][i][G]) + \eta_j \label{Eq:Simulate}\\
-  j\in \{1, 2, \textellipsis, \totalWeight\}\\
-  i\in \{1, 2, \textellipsis, N\}
+  j\in \{1, 2, \dots, \totalWeight\}\\
+  i\in \{1, 2, \dots, N\}
 \end{align}
 where $\delta_j$ is the deviation from the nominal measurement action, $Simulate$ computes the value for a measurement action applied to the part in a specific configuration, and with $\eta_j$ as measurement noise.
 
@@ -850,7 +851,7 @@ Futher experiments performed in simulation  validate the Datum Particle Filter a
     Physical Robot & 0.05 & 3 & 0.08 & 0.22 $\pm 0.09$ & 0.0047 $\pm 0.002$ & 7.0 $\pm 0.3$\\
     \rowcolor[gray]{.8}
     Simulation of Robot  & 0.05 & 3 & 0.08 & 0.17 $\pm 0.09$ & 0.005 $\pm 0.003$ & 7.0 $\pm 0.3$\\
-    Simulation of Accurate Robot & 0.01 & 3 & 0.08 & 0.03 $\pm$ 0.02 & 0.0004 $\pm 0.0002$ & 7.8 $\pm 0.3\\
+    Simulation of Accurate Robot & 0.01 & 3 & 0.08 & 0.03 $\pm$ 0.02 & 0.0004 $\pm 0.0002$ & 7.8 $\pm 0.3$\\
     \hline
   \end{tabular}}
   \captionof{table}{Results of Experiments}
