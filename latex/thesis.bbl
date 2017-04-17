@@ -1,4 +1,4 @@
-\begin{thebibliography}{59}
+\begin{thebibliography}{60}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -33,6 +33,11 @@ Dmitry Berenson, Siddhartha~S. Srinivasa, Dave Ferguson, and James~J. Kuffner.
   i:\penalty0 625--632, 2009.
 \newblock ISSN 1050-4729.
 \newblock \doi{10.1109/ROBOT.2009.5152399}.
+
+\bibitem[Blandford and Thorne(2003)]{blandford2003applications}
+Roger~D Blandford and Kip~S Thorne.
+\newblock Applications of classical physics.
+\newblock \emph{California Institute of Technology}, 2003.
 
 \bibitem[Book(1994)]{Book1994}
 W.J. Book.
