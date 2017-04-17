@@ -472,6 +472,7 @@ Fortunately, the gradient of the cost function use in the previous section for t
 %% By setting the goal configuration as the configuration randomly sampled by the RRT, the gradient of this cost function will direct the arm to explore towards this sample
 Figure \ref{fig:extend} illustrates both the linear extension and this policy extension towards a randomly sampled goal configuration.
 Leaving the contact manifold around these configurations causes large torques as the contact forces are removed, however because of the augmentation done in section \ref{sec:trajectory_optimization}, the gradient remains smooth so the policy pushes the arm back toward the support configurations.
+Thus the linear extension leaves the contact manifold, and the policy extension remains on the contact manifold.
 
 
 
