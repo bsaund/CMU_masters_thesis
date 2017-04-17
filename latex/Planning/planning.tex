@@ -359,7 +359,39 @@ In cases where the configuration must remain on this manifold, linearly extendin
 \end{figure}
 
 \subsection{Adaptation to Encourage Contacts}
-This section describes the policyRRT algorithm, which by using a policy to guide the path extension is able to follow the contact manifold.
+This section describes the policyRRT algorithm, which uses a policy to guide the path extension to follow the contact manifold and frequently attempts to extend towards the goal.
+%% PolicyRRT is an RRT with a modified extension function. 
+%% PolicyRRT differs from the basic RRT algorithm in two ways.
+%% Rather than extending in a straight line the extension follows a policy.
+
+Nonlinear extensions in an RRT were introduced as steering functions to solve kinodynamic path planning problems to enforce dynamic feasibility \cite{lavalle2001randomized}.
+Given two points $x,y \in X$, a steering function returns a points $z \in X$ where $y$ is closer to $z$ than $x$, according to some metric \cite{Karaman2011}.
+Steering functions have been used to guide dynamical system and systems with constraints such as a Dubins vehicle \cite{karaman2011anytime}, where a metric can be easily defined.
+The policy used in PolicyRRT accepts two points $x, y \in X$ and returns a $z \in X$, without having to explicitly define a metric.
+In this work the policy returns $z$ such that the cost of $z$ is less than the cost of $x$.
+
+Whereas the standard RRT often extends towards a randomly sampled point and occasionally extends towards the goal, PolicyRRT always extends first towards a random point, and then continues the extension towards the goal.
+While either approach eventually finds a feasible path if available, intuitively a ``good'' policy just needs help escaping trapped configurations, where the robot has not reached the goal and the policy does not give a productive action.
+PolicyRRT more highly weights exploration guided by the policy over exploration guided by randomly sampled points.
+However, a policy may guide the path to a trapped configuration from a wide basin, resulting in over exploration of this trapped region.
+To prevent over-exploration of a trapped region, the extension terminates if the path enters a previously explored region, where the extension is closer to an existing path than the start position.
+
+As motivation for this approach, in many environments it is relatively easy to compute a reactive policy that often makes forwards progress towards a goal while avoiding collision with obstacles,
+but such policies are prone to getting stuck in trapped regions.
+A potential field is a popular example with these characteristics \cite{koren1991potential}.
+PolicyRRT provides a method to escape these trapped regions when necessary, while still devoting a lot of computation to following the provided policy towards the goal.
+%% The work on trajectory optimization in section \ref{sec:smoothing} created a cost function with a gradient that guides an arm towards a goal while making use of contacts, but may guide the robot to local, not global, minima.
+%% PolicyRRT 
+%% PolicyRRT is a variant of RRT that seeks to combine the efficient, goal directed trajectory generation of reactive policies with the ability of RRT to find paths around local minima and dead ends.
+%% PolicyRRT fundamentally behaves like a standard RRT by growing a tree by iteratively extending towards a randomly sampled configuration from the nearest point in a search tree $T$.
+%% PolicyRRT uses the reactive policy to move towards the random sample, potentially enabling the planner to avoid collisions with obstacles during the extension.
+%% When PolicyRRT is successful in extending towards the sample (does not collide with an obstacle and does not get stuck in a local minima) it then follows the policy to extend towards the goal.
+%% To avoid oversampling regions associated with local minima, when PolicyRRT extends towards a point from some vertex $v \in T$ PolicyRRT halts extension when the trajectory leaves the Voronoi cell of $v$.
+%% Extension is also halted once the policy ceases to make progress (reaches a local minima) or exceeds a maximum number of iterations.
+
+
+
+\subsubsection{The PolicyRRT algorithm}
 
 Given:
 \begin{align}
@@ -368,7 +400,7 @@ Given:
     &X_{free} = X \setminus X_{obs}:   &&\text{free space}\\
     &x_{start} \in X_{free}:  &&\text{starting configuration}\\
     &X_{goal} \subset X_{free}: &&\text{set of goal configurations}\\
-    &policy: X \times X \rightarrow TX &&\text{Map from an initial and goal state to a motion}
+    &policy: X \times X \rightarrow TX &&\text{Map from an initial and goal state to an action}
 \end{align}
 
 The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \in X_{goal}$.
@@ -409,13 +441,6 @@ The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \i
 \end{algorithmic}
 \end{algorithm}
 
-As motivation for this approach, in many environments it is relatively easy to compute a reactive policy that can make forwards progress towards a goal while avoiding collision with obstacles, such as a potential field approach, but such policies are prone to getting stuck in local minima.
-PolicyRRT is a variant of RRT that seeks to combine the efficient, goal directed trajectory generation of reactive policies with the ability of RRT to find paths around local minima and dead ends.
-PolicyRRT fundamentally behaves like a standard RRT by growing a tree by iteratively extending towards a randomly sampled configuration from the nearest point in a search tree $T$.
-PolicyRRT uses the reactive policy to move towards the random sample, potentially enabling the planner to avoid collisions with obstacles during the extension.
-When PolicyRRT is successful in extending towards the sample (does not collide with an obstacle and does not get stuck in a local minima) it then follows the policy to extend towards the goal.
-To avoid oversampling regions associated with local minima, when PolicyRRT extends towards a point from some vertex $v \in T$ PolicyRRT halts extension when the trajectory leaves the Voronoi cell of $v$.
-Extension is also halted once the policy ceases to make progress (reaches a local minima) or exceeds a maximum number of iterations.
 %% (only when extending towards $x_{rand}$?)
 
 %% PolicyRRT is beneficial when a policy that would yield a path all the way from $x_{start}$ and $x_{goal}$ is difficult to find but finding a policy that can make some progress while avoiding obstacles, but may get stuck in local minima is relatively easy.

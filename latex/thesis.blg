@@ -1,4 +1,6 @@
-This is BibTeX, Version 0.99dThe top-level auxiliary file: thesis.aux
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: thesis.aux
 The style file: plainnat.bst
 Database file #1: FineLocalizationBib.bib
 Database file #2: DatumBib.bib
@@ -84,4 +86,45 @@ Warning--empty year in Srivatsan
 Warning--empty year in Srivatsan
 Warning--empty journal in Thrun2000a
 Warning--empty journal in Xiong2004
+You've used 64 entries,
+            2773 wiz_defined-function locations,
+            1085 strings with 19010 characters,
+and the built_in function-call counts, 34614 in all, are:
+= -- 3391
+> -- 1785
+< -- 60
++ -- 603
+- -- 537
+* -- 2723
+:= -- 5123
+add.period$ -- 278
+call.type$ -- 64
+change.case$ -- 368
+chr.to.int$ -- 62
+cite$ -- 143
+duplicate$ -- 1589
+empty$ -- 2691
+format.name$ -- 649
+if$ -- 7483
+int.to.chr$ -- 3
+int.to.str$ -- 1
+missing$ -- 64
+newline$ -- 406
+num.names$ -- 256
+pop$ -- 670
+preamble$ -- 1
+purify$ -- 305
+quote$ -- 0
+skip$ -- 1333
+stack$ -- 0
+substring$ -- 1644
+swap$ -- 334
+text.length$ -- 27
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 699
+warning$ -- 15
+while$ -- 322
+width$ -- 0
+write$ -- 985
 (There were 16 error messages)

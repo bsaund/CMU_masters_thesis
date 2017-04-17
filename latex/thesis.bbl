@@ -1,4 +1,4 @@
-\begin{thebibliography}{60}
+\begin{thebibliography}{64}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -244,6 +244,23 @@ Rudolph~Emil Kalman et~al.
 \newblock \emph{Journal of basic Engineering}, 82\penalty0 (1):\penalty0
   35--45, 1960.
 
+\bibitem[Karaman and Frazzoli(2011)]{Karaman2011}
+S~Karaman and E~Frazzoli.
+\newblock {Sampling-based algorithms for optimal motion planning}.
+\newblock \emph{The International Journal of Robotics {\ldots}}, 30\penalty0
+  (7):\penalty0 846--894, 2011.
+\newblock ISSN 0278-3649, 1741-3176.
+\newblock \doi{10.1177/0278364911406761}.
+\newblock URL \url{http://ijr.sagepub.com/content/30/7/846.short}.
+
+\bibitem[Karaman et~al.(2011)Karaman, Walter, Perez, Frazzoli, and
+  Teller]{karaman2011anytime}
+Sertac Karaman, Matthew~R Walter, Alejandro Perez, Emilio Frazzoli, and Seth
+  Teller.
+\newblock Anytime motion planning using the rrt.
+\newblock In \emph{Robotics and Automation (ICRA), 2011 IEEE International
+  Conference on}, pages 1478--1483. IEEE, 2011.
+
 \bibitem[Karavas et~al.(2012)Karavas, Tsagarakis, and Caldwell]{Karavas2012}
 Nikos~C. Karavas, Nikos~G. Tsagarakis, and Darwin~G. Caldwell.
 \newblock {Design, modeling and control of a series elastic actuator for an
@@ -252,6 +269,13 @@ Nikos~C. Karavas, Nikos~G. Tsagarakis, and Darwin~G. Caldwell.
   on Biomedical Robotics and Biomechatronics}, pages 1813--1819, 2012.
 \newblock ISSN 21551774.
 \newblock \doi{10.1109/BioRob.2012.6290757}.
+
+\bibitem[Koren and Borenstein(1991)]{koren1991potential}
+Yoram Koren and Johann Borenstein.
+\newblock Potential field methods and their inherent limitations for mobile
+  robot navigation.
+\newblock In \emph{Robotics and Automation, 1991. Proceedings., 1991 IEEE
+  International Conference on}, pages 1398--1404. IEEE, 1991.
 
 \bibitem[Koval et~al.(2011)Koval, Pollard, and Srinivasa]{Koval2011}
 Michael~C Koval, Nancy~S Pollard, and Siddhartha~S Srinivasa.
@@ -276,6 +300,12 @@ S~M LaValle.
 \newblock \doi{10.1.1.35.1853}.
 \newblock URL
   \url{http://scholar.google.com/scholar?hl=en{\&}btnG=Search{\&}q=intitle:Rapidly-exploring+random+trees:+A+new+tool+for+path+planning{\#}0}.
+
+\bibitem[LaValle and Kuffner~Jr(2001)]{lavalle2001randomized}
+Steven~M LaValle and James~J Kuffner~Jr.
+\newblock Randomized kinodynamic planning.
+\newblock \emph{The international journal of robotics research}, 20\penalty0
+  (5):\penalty0 378--400, 2001.
 
 \bibitem[Lew and Book(1993)]{Lew1993}
 JY~Lew and W.J. Book.
