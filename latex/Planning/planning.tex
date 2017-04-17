@@ -302,9 +302,9 @@ This addition is necessary since the artificial contact model created by $L_u$ a
 \end{align}
 
 $L_{Goal}$ is a penalty on the distance from the robot end effector at the last state $s_T$ to the goal location.
-Since in this formulation reaching the goal is a soft constraint, the hyperparameter $\gamma_2$ can be adjusted to balance reaching the goal with applying joint torque.
+Since in this formulation reaching the goal is a soft constraint, the hyperparameter $\gamma_G$ can be adjusted to balance reaching the goal with applying joint torque.
 \begin{align}
-  L_{Goal} = \gamma_2 ||EndEffector_T - goal||
+  L_{Goal} = \gamma_G ||EndEffector_T - goal||
 \end{align}
 
 
@@ -339,8 +339,8 @@ Thus a sample based planner is employed to provide a diversity of good initializ
 %% \subsection{RRTs and their variants}
 It is possible to solve planning problems using a sample based planner, but once again the thin contact manifold causes challenges.
 Sample based planners probabilistically sample configurations to explore the feasible space, and through sufficent exploration seek to find the trajectories to a goal while obeying constraints.
-Specifically, this section employs the RRT, described in Algorithm \ref{alg:RRT}.
-The basic RRT algorithm maintains a tree of trajectories (edges) to configurations (nodes), and grows this tree by ending to randomly sampled configuration.
+Specifically, this section employs the RRT \cite{LaValle1998}, described in Algorithm \ref{alg:RRT}.
+The basic RRT algorithm maintains a tree of trajectories (edges) to configurations (nodes), and grows this tree by extending to randomly sampled configurations.
 As discussed in Section \ref{sec:related:RRT}, the basic linear extension fails when the only allowable space for the trajectory to grow is a thin manifold, as in the case of a supporting contact.
 
 Figure \ref{fig:thin_manifold} illustrates this contact manifold.
@@ -495,19 +495,25 @@ Leaving the contact manifold around these configurations causes large torques as
 \end{figure}
 
 Experiments were preformed to demonstrate the benefits of planning with contact.
-Three algorithms were used to generate plans: the naive trajectory optimization that is not able to discover contacts, the smooth contact trajectory optimization as described in section \ref{sec:trajectory_optimization},  and an RRT. 
+Three algorithms were used to generate plans: the naive trajectory optimization that is not able to discover contacts, the smooth contact trajectory optimization as described in section \ref{sec:trajectory_optimization},  and a generic RRT. 
 Plans were generated for an approximately 1.5 meter long 11-DOF arm in a world with a flat floor.
+This world was intentionally kept simple enough that simple initialization was sufficient.
 Each joint had a maximum torque limit of 5 Nm.
-The different goal positions included moving the end effector directly above, 0.5, 1, and 1.3 meters from the base link.
+The different goal positions included moving the end effector directly above, 0.5, 1, and 1.3 meters from the base link, reaching 0.5m above the floor.
 Figure \ref{fig:flat_ground_arm} visualizes the simulated arm in this environment.
+Joint torques were calculated for these plans in simulation, and these plans were then executed on the physical robot with joint torques recorded.
+While significant effort has been invested into characterizing and improving the torque measurement on these robots, the accuracy is at best within 1 Nm.
+
 
 Table \ref{table:non_contact_comparison} displays the maximum and average torques experienced by the links.
 Both in simulation and on the physical robot it is clear allowing contacts can significantly reduce the joint torque.
-The joints can support the arm when cantilevered out 0m and 0.5m, and both naive optimization and the RRT find paths that are feasible on the robot, yet the joint torques are significantly reduced when supporting contacts are found.
-The joints are unable to support the arm when cantilevered 1m and 1.3m from the base, causing the RRT to never find a feasible path. Because the implementation of the naive optimization uses soft limits on joint torque, a path is found in simulation but this trajectory fails to execute properly on the physical robot.
+The joints can support the arm when cantilevered out 0m and 0.5m, and both optimization without contacts and the RRT find paths that are feasible on the robot, yet the joint torques are significantly reduced when supporting contacts are found.
+The joints are unable to support the arm when cantilevered 1m and 1.3m from the base, causing the RRT to never find a feasible path.
+Because the implementation of the optimization uses soft limits on joint torque, even without contacts a path is found in simulation but this trajectory fails to execute properly on the physical robot.
 
 By using contacts the trajectory optimization using an augmented dynamics model is able to plan paths for each of these goal points.
 Contacts nearly eliminate joint torques in simulation.
+As when cantilevered the joint nearest the base experience a far greater torque that other joints, the maximum torque is much higher than the average torque.
 In practice the joints torques remain decently large due to friction in the joints and other losses, as well as inaccuracies in the environment and robot model, causing contacts to occur at slightly different joint angles than expected.
 However, because the robot uses compliant actuators it is acceptable for contact to occur slightly earlier or later than expected.
 
