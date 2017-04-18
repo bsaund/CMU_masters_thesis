@@ -302,10 +302,14 @@ This addition is necessary since the artificial contact model created by $L_u$ a
 \end{align}
 
 $L_{Goal}$ is a penalty on the distance from the robot end effector at the last state $s_T$ to the goal location.
-Since in this formulation reaching the goal is a soft constraint, the hyperparameter $\gamma_G$ can be adjusted to balance reaching the goal with applying joint torque.
+
 \begin{align}
   L_{Goal} = \gamma_G ||EndEffector_T - goal||
 \end{align}
+
+As this is a soft constraint, the minimum of the cost function may not exactly be at the goal, but a large $\gamma_G$.
+The hyperparameter $\gamma_G$ can be adjusted to balance reaching the goal with applying joint torque.
+An unfortunate detail of this approach is that different tasks may be best optimized using different hyperparameters.
 
 
 \subsection{Initialization Challenges}

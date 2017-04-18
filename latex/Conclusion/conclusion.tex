@@ -27,6 +27,8 @@ However, utilizing contacts involves discovering and traversing a thin manifold 
 Chapter \ref{chap:planning} describes approaches for trajectory optimization and samples based planners for handling the effects of contacts.
 The heart of the approach is a dynamics model that can provide unrealistically optimistic contact forces at a distance, and thereby providing useful gradient information to a cost function.
 The degree to which forces at a distance can be used is controllable, enabling the enforcement of realistic final trajectories.
+However, an unfortunate characteristic of this method is that all constraints are soft, thus tuning of hyperparameters can be needed to achieve acceptable solutions.
+
 
 There is a plethora of future directions for this work.
 Perhaps most obviously, these two approaches can be combined on the same robot.
@@ -38,7 +40,7 @@ The datum based particle filter can be applied to a wide variety of environments
 It's power is the ability to focus on only the information gathering actions that aid a task, ignoring uncertainty when acceptable.
 Through collaborators we have identified a practical application in need of the approach described involving a robot in a manufacturing setting.
 
-Obvious extensions exist to the planning methods describes. The sample based planner will yield only feasible trajectories, not optimal trajectories, but the methods of RRT* can be used to produce better trajectories for initializing the optimization.
+Obvious extensions exist to the planning methods describes. The sample based planner described will yield only feasible trajectories, not optimal trajectories, but the methods of RRT* can be used to produce better trajectories for initializing the optimization.
 In addition, when the trajectory optimization fails the current solution is a random restart, however this new optimization may result in convergence to the same local minima.
 The same approaches employed in section \ref{sec:sample_planning} can be used to avoid repeated exploration of the same region.
 Finally, the dynamics model and cost function used were constructed specifically for contacts, but the methods used may be extended to other challenges in robotics.
