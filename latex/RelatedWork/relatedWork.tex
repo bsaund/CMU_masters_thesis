@@ -27,12 +27,12 @@ Since their introduction particle filters have been popular due to their ease of
 However, for a measurement with low uncertainty there exists only a thin manifold of states consistent with that measurement, yielding a low probability of any particle existing on that manifold, leading to particle starvation \cite{Thrun2000}.
 Handling particle starvation is described in detail in Chapter \ref{sec:pfilterProblems}.
 
-To address particle starvation, Koval introduced the Manifold Particle Filter, using different sampling methods depending on the volume of the space consistent with a measurement \cite{Koval2011, Koval2013}. 
+To address particle starvation, Koval et al. introduced the Manifold Particle Filter, using different sampling methods depending on the volume of the space consistent with a measurement \cite{Koval2011, Koval2013}. 
 This allows a quick update of the belief when the contact sensor is not in contact with the part, and only requires addressing the harder thin manifold update problem when contact is made. 
 Koval used multiple methods when updating from measurements when on this thin manifold, and shows that rejection sampling requires the fewest restrictions on prior knowledge of the environment, but naive rejection sampling is time consuming.
 His efficient methods require direct sampling from the contact manifold, which is not feasible for a complex part.
 
-Petrovskaya focused on global localization of objects via touch \cite{Petrovskaya2011} and introduced the Series Scaling algorithm to overcome particle starvation. 
+Petrovskaya et al. focused on global localization of objects via touch \cite{Petrovskaya2011} and introduced the Series Scaling algorithm to overcome particle starvation. 
 The Series Scaling algorithm adaptively alters the particle density depending on the complexity of the posterior. 
 Multiple passes through the measurement data are used and the precision of the modeled belief is scaled from low to high, avoiding unnecessarily precise estimates in exceedingly unlikely regions of belief space. 
 This is complementary to our approach, and implementing multiple passes on our methods could lead to a faster update process.
@@ -40,11 +40,11 @@ This is complementary to our approach, and implementing multiple passes on our m
 Much of the recent work on touch measurements uses a robotic hand with contact sensors. In these works evaluation of both actual and simulated measurements required collision checking between two meshes which is computationally expensive. 
 
 
-Hebert et. al. use geometric (CAD) models of objects such as screwdrivers and door handles as well as the geometric model of their robotic arm to autonomously choose touch actions that localize objects sufficiently to perform everyday tasks, such as grasping and opening doors. 
+Hebert et al. use geometric (CAD) models of objects such as screwdrivers and door handles as well as the geometric model of their robotic arm to autonomously choose touch actions that localize objects sufficiently to perform everyday tasks, such as grasping and opening doors. 
 Their algorithm greedily selects the next best touch action from a list of candidate actions to maximize information gain \cite{Hebert2013}.
 
 
-Javdani shows that selecting the next touch to maximize information gain is submodular under assumptions of a static object and an action cost independent of object and robot state, explaining the effectiveness of the greedy approach \cite{Javdani2013}. 
+Javdani et al. shows that selecting the next touch to maximize information gain is submodular under assumptions of a static object and an action cost independent of object and robot state, explaining the effectiveness of the greedy approach \cite{Javdani2013}. 
 This provides a sound theoretical basis for our approach.
 Javdani demonstrates the computation of information gain is time consuming and proposes an alternative method of hypothesis pruning. 
 Our formulation computes the expected information gain about two orders of magnitude faster, and thus we are able to evaluate many more potential measurement actions and model the belief using more particles.
@@ -65,7 +65,7 @@ A Kalman filter also requires a linear measurement models, which does not exist 
 The Extended Kalman Filter performs first-order linear approximations of the measurement model, but this diverges for pose estimation with large initial error \cite{Choukroun2006}.
 The Unscented Kalman Filter approximates the measurement model through evaluation at many ``sigma'' points chosen by tuning parameters.
 As the pose likelihood given a measurement varies by many orders of magnitude in different dimensions, these parameters are sensitive and unreliable.
-Srivatsan constructs a linear measurement model using two measurements and assuming the correspondence between the probe tip and the touched point on the object \cite{Srivatsan}.
+Srivatsan et al. constructs a linear measurement model using two measurements and assuming the correspondence between the probe tip and the touched point on the object \cite{Srivatsan}.
 This allows direct use of a Kalman filter with a true measurement model.
 However, the true correspondence is unknown, and must be approximated, for example through Iterative Closest Point (ICP) methods.
 
@@ -109,7 +109,7 @@ Contacts may be a necessity or they may be optional.
 %% Advancements in robots planning for contacts have occured 
 %% There are many approaches
 
-In many path planning any contact with the environment is considered a collision and thus valid paths have no interaction with the environment.
+In many path planning problems, any contact with the environment is considered a collision and thus valid paths have no interaction with the environment.
 However environmental contacts can reduce joint torques, damp vibrations, and stabilize an arm.
 Despite these benefits contacts are usually avoided because they bring algorithmic complexity during the planning stage and physical danger to the robot and environment if executed improperly.
 The increased planning complexity is due to the contact configurations being a measure-zero manifold in the robot configuration space, rendering naive planning in configuration space ineffective. 
@@ -118,7 +118,7 @@ The increased planning complexity is due to the contact configurations being a m
 \subsection{Bracing, Climbing, and Walking}
 The benefits of bracing have been studied since the 1990s.
 Lew and Book proposed bracing a micro/macro manipulator with small precise arm mounted on the end of a long coarse arm and demonstrated bracing of the macro arm against multiple locations of the environment can damp vibration caused by the micro arm \cite{Book1994} \cite{Lew1993}.
-Hollis and Hammer explored a similar micro/macro robot design and demonstrated $1 \mu m$ accuracy, well over an order of improvement compared to their unbraced manipulator \cite{Hollis1992}.
+Hollis and Hammer explored a similar micro/macro robot design and demonstrated $1 \mu m$ accuracy, well over an order of magnitude improvement compared to their unbraced manipulator \cite{Hollis1992}.
 Both of these works did not address the planning problem as both contact locations and robot trajectories were manually specified.
 
 
@@ -131,16 +131,15 @@ The dominant planning architectures hierarchically separated stages of contact p
 Highest, and slowest, in the hierarchy a planner decides the path for a simplified model of the robot through the workspace using heuristic costs.
 Lower down in the hierarchy, a footstep planner determines the contact locations for feet to best achieve the higher level trajectory.
 Still further down, another planner determines joint trajectories to move the feet into the requested footstep locations while maintaining stability  \cite{Deits2015} \cite{Atkeson2015}.
-Tonneau et al \cite{Tonneau} approaches from the opposite direction and first generates a trajectory then considers a discrete set of contacts close to that trajectory.
+Tonneau et al. \cite{Tonneau} approaches from the opposite direction and first generates a trajectory then considers a discrete set of contacts close to that trajectory.
 
 
 
-\subsection{Sample based planning} \label{sec:related:RRT}
+\subsection{Sample Based Planning} \label{sec:related:RRT}
 Sampling based planners probabilistically probe the configuration space searching for feasible paths.
 The valid configuration space is never explicitly represented, and all that is needed is a function that determines whether a specific configuration is valid.
 The Rapidly-exploring Random Tree (RRT) is a sampling based planner which build trees of valid trajectories (edges) between points in configuration space (nodes).
-To grow these graphs a new point in configuration space is sampled, and the closest point on the existing tree is extended towards this sampled point, as shown in Algorithm \ref{alg:RRT}. 
-\cite{LaValle1998}
+To grow these graphs a new point in configuration space is sampled, and the closest point on the existing tree is extended towards this sampled point, as shown in Algorithm \ref{alg:RRT} \cite{LaValle1998}.
 
 \begin{algorithm}
   \caption{$T=(V,E) \leftarrow$ RRT$(x_{start})$} \label{alg:RRT}
@@ -154,7 +153,7 @@ To grow these graphs a new point in configuration space is sampled, and the clos
   \end{algorithmic}
 \end{algorithm}
 
-In the most basic implementation, the Extend function constructs a linearly trajectory in configuration space from $x_{nearest}$ towards $x_{sample}$, and terminates the extension either when $x_{sample}$ is reached or the trajectory enters an invalid region. \cite{LaValle1998}
+In the most basic implementation, the Extend function constructs a linearly trajectory in configuration space from $x_{nearest}$ towards $x_{sample}$, and terminates the extension either when $x_{sample}$ is reached or the trajectory enters an invalid region \cite{LaValle1998}.
 This extension step requires augmentation to be useful in planning with contacts.
 Sampling based planners will never sample directly on the measure-zero contact manifold, and linearly extending a contact configuration to a new sampled point will immediately leave the contact manifold, immediately entering an invalid region in configuration space, producing no progress.
 
@@ -180,13 +179,13 @@ This thesis uses a sampling based planner that is able to traverse thin manifold
 
 
 \subsection{Trajectory Optimization}
-In contract to sampling based planners, trajectory optimization addresses the path planning problem by incrementally improving an initial trajectory.
+In contrast to sampling based planners, trajectory optimization addresses the path planning problem by incrementally improving an initial trajectory.
 Trajectory optimization uses a cost function to assign a cost to every trajectory, and an initial trajectory is repeatedly adjusted to reduce this cost.
 While a large class of work focuses on trajectory optimization with unknown dynamics, in this thesis it is assumed the dynamics are known, and the guiding approach is to assume the dynamics are locally linear and perform updates to the parameters of the trajectory based on the gradient of the cost function.
 This approach will converge to local, but not necessarily global, minimal cost trajectories.
 Contact forces present an initial challenge, as the assumption of locally linear dynamics no longer holds.
 
-Deits et. al. handles the foot placement contacts for walking robots through mixed-integer optimization \cite{Deits2015}.
+Deits et al. handles the foot placement contacts for walking robots through mixed-integer optimization \cite{Deits2015}.
 In a path for a walking robot there are an integer number of footstep placements, but the trajectories of the feet and robot are continuous.
 One approach is to fix the number of footsteps and run a purely continuous optimization over the trajectories.
 This continuous optimization is then repeated for each integer number of footsteps considered plausible.
@@ -194,19 +193,19 @@ To reduce the number of optimization, their approach assigns a cost to each foot
 This approach works because the integer parameter is relatively simple, i.e. once the right foot steps the only next contact to consider is the left foot.
 
 
-Both Posa et. al. \cite{Posa2013} and Mordatch et. al. \cite{Mordatch2012}  handle the discontinuous contacts by smoothing.
+Both Posa et al. \cite{Posa2013} and Mordatch et al. \cite{Mordatch2012}  handle the discontinuous contacts by smoothing.
 Both formulations assume a given set of locations on the robot are allowed to make contact with the given environment.
 Both works write the cost of a trajectory as a function of both joint torques and contact forces, thus the contact forces are a slack variable, and treated as parameters of the trajectory.
-Of course in reality a robot cannot choose the contact force applied, as the force is generated by electron repulsion as a function of the distance between the environment and the robot.
+Of course, in reality, a robot cannot choose the contact force applied, as the force is generated by electron repulsion as a function of the distance between the environment and the robot.
 However, this inaccurate physics model smooths the cost function and allows the robot to discover the benefits of contacts.
 Additional constraints are imposed to ensure the final trajectory is physically feasible.
 
 
-Posa et. al. \cite{Posa2013} is primarily concerned with large impact forces, and writes the problem as a constrained optimization.
+Posa et al. \cite{Posa2013} is primarily concerned with large impact forces, and writes the problem as a constrained optimization.
 At each iteration the optimizer alters both the joint torques and the desired contact forces to improve the cost.
-However this optimization problem has a set of complementarity constraints which enforce that each section of the robot is either in contact and can receive a contact force, or it not in contact.
+However this optimization problem has a set of complementarity constraints which enforce that each section of the robot is either in contact and can receive a contact force, or is not in contact.
 
-Mordatch et. al. \cite{Mordatch2012} designed an approach called contact invariant optimization, where a cost continuously models both the benefit and cost of adding contacts and is able to produce trajectories which add and break contacts.
+Mordatch et al. \cite{Mordatch2012} designed an approach called contact invariant optimization, where a cost continuously models both the benefit and cost of adding contacts and is able to produce trajectories which add and break contacts.
 This formulates the problem as a purely unconstrained optimization, with all physical constraints being added to the cost function.
 The parameters of this cost function are both the joint torques and a set of continuous ``contact'' slack variables, one for each section of the robot that is allowed to make contact.
 For each section, the contact variable can be intuitively be thought of as trade off between the benefits and the challenges of making contact with the environment.

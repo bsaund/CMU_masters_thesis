@@ -36,9 +36,9 @@ Instead of firmly grasping a handle, a few centimeters of error have caused robo
 Even when working entirely in simulation contacts between rigid bodies cause problems for physics engines.
 
 
-Contacts introduce non-smooth discontinuities, which presents a challenge for many tools in the roboticists arsenal.
+Contacts introduce non-smooth discontinuities, which presents a challenge for many tools in the robotics arsenal.
 The benefits of contacts occur on a measure-zero manifold in the robot's configuration space.
-For example, hand rests comfortably on a table at a specific configuration of shoulder, elbow, and wrist positions.
+For example, consider a hand resting comfortably on a table at a specific configuration of shoulder, elbow, and wrist positions.
 A slight extension of the elbow while fixing all other joints leads to the hand puncturing the table, while a slight contractions pulls the hand into the air and the table might as well not exist.
 Random sampling and gradient descent are two techniques repeatedly used in robotics, but both have difficulty with these measure-zero contact manifolds.
 This thesis explores and extends techniques of sampling based and gradient methods to the problems of localization and planning, with the addition of contact forces and measurements.
@@ -69,8 +69,8 @@ While there are many potential directions of research to improve these already i
 
 Robots that perform one type of task on one section of an airplane can cost millions of dollars.
 However the jig that holds the airplane section while the robot works can cost more than the robot, partically because these jigs may have more actuators and tighter tolerances than the robotic system.
-When the robot begins work on a new section, before ever making a measurement the jig has already located the part to within a few inches.
-A few scripted measurement with a probe, programmed by an engineer, are sufficient to fully localize the part to within the needed tolerances.
+When the robot begins work on a new section, before ever making a measurement, the jig has already located the part to within a few inches.
+A few scripted measurements with a probe, programmed by an engineer, are sufficient to fully localize the part to within the needed tolerances.
 %% These high costs and skilled engineering time are only acceptable because the expense is amortized over many
 When amortized over many airplanes the per-part cost drops.
 However, this process is inflexible and poorly suited to low-rate manufacturing.
@@ -129,7 +129,7 @@ The robot chooses where to probe, and the measurements are a function of the obj
 A triangular mesh describes the object geometry and a frame is attached to this mesh. 
 The state $X$ is the $SE(3)$ transformation from a fixed world frame to this part frame. 
 This is a 6-dimensional state stored as position $(x,y,z)$ and orientation angles $(\alpha, \beta, \gamma)$. 
-Initially it is assumed the geometry is rigid, thus the state can be fully described as the $SE(3)$ configuration of a frame attached to the part, while later later, the approach is generalized to parts with internal uncertainty.
+Initially it is assumed the geometry is rigid, thus the state can be fully described as the $SE(3)$ configuration of a frame attached to the part, while later, the approach is generalized to parts with internal uncertainty.
 A further assumption is that the part is fixed in space relative to a world frame and that probing actions do not perturb the state. 
 
 Rather than calculating a single best estimate of the pose, a probability distribution represents the uncertainty in knowledge.
@@ -181,7 +181,7 @@ In the tasks considered in this thesis, the robot is not capable of reaching the
 Two approaches are used to plan: trajectory optimization and a sample-based planner.
 In the trajectory optimization framework a function determines the cost of a trajectory, and an initial trajectory is iteratively improved using gradient descent until a local optimum is achieved.
 The obvious choice for a cost function would penalize not reaching the goal and penalize joint torques, either through soft or hard constraints.
-However due to the local nature of contacts, potentially useful contacts that are not yet made have no influence on the cost function, and these solutions will never be discovered.
+However, due to the local nature of contacts, potentially useful contacts that are not yet made have no influence on the cost function, and these solutions will never be discovered.
 The solution is an augmentation of the dynamics model, allowing contact forces at a distance.
 This provides a much better conditioned cost function, at the expense of accurately modeling the world.
 Towards the end of optimization the model parameters are altered to enforce a realistic solution.

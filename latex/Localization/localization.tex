@@ -32,7 +32,8 @@ On the other hand, it is usually only necessary to localize a subset of the sect
     \label{fig:FullBelief:Localized}
   \end{subfigure}
   \caption{
-    Visualization of the belief of the pose of all sections of the part. The green cylinder is the important section to localize and is defined in space through offsets from the top, right, and front faces.\\
+    Visualization of the pose belief distribution of all part sections.
+    The task is to localize the green cylinder, whose position is defined through offsets from the top, right, and front faces.\\
 \protect\subcap{fig:FullBelief:Unlocalized}: The prior belief of the poses before localization. The uncertainty of the goal feature is too high to perform the task.\\ 
 \protect\subcap{fig:FullBelief:Localized}: The belief of the poses after performing measurements to localize the goal feature. The pose of the goal feature is now known well enough to perform the task. Although the bottom edge (purple) and perpendicular section still have noticeable error, precise localization of these features is not needed.
 }
@@ -84,7 +85,7 @@ The entire information obtained from the measurement $t$ is $z_t = \{\maction_t,
 Measurement error exists due to sensor error and robot uncertainty. 
 %% For the robot arms and sensors used in manufacturing, the uncertainty added typically ranges from 0.1 to 1mm \cite{Saund2013}. 
 
-\subsection{Problems with the standard particle filter} \label{sec:pfilterProblems}
+\subsection{Problems with the Standard Particle Filter} \label{sec:pfilterProblems}
 
 A common method of updating particles based on a measurement is importance sampling \cite{Thrun2000}.
 In importance sampling each particle is weighted by the probability of the measurement conditioned on the state that particle represents. 
@@ -161,7 +162,7 @@ As the object is fixed during the localization process, voxelization can be done
 \textit{Voxelization}: Voxelization is the key part to transform the mesh model to axis-aligned discretized space, which can be stored and accessed easily as a standard array. 
 The array form of the CAD model can greatly facilitate the computation of the distance field, as described below. 
 Each voxel is assumed to be a cube in 3D space. 
-A fast 3D Triangle-Box Overlap method \cite{Akenine-Mollser2001} is used to label the voxels that overlap the mesh triangles of the object surface. 
+A fast 3D triangle-box overlap method \cite{Akenine-Mollser2001} is used to label the voxels that overlap the mesh triangles of the object surface. 
 The voxel map is then mapped to a binary-valued 3D array $f(q)$, where each value is either $0$ or $\infty$ depending on whether the corresponding voxel overlaps the object surface.
 
 \textit{Voxelized Distance Field}: The computation of distance field $D_f(p)$ takes the input of the computed binary array $f(q)$ (Eq. \ref{eq:8}), and a linear-time algorithm for 3D distance field construction \cite{Felzenszwalb2004} is then used. The resulting distance field is also stored in an array for constant time access during the evaluation of sampled states.
@@ -368,7 +369,7 @@ Figures \ref{fig:FullBelief} and \ref{fig:Overview} visualize the independent-st
  %% (touch probe or 1D laser range finder). 
 
 The rest of this chapter uses the following notation.
-$\particles[t][][k]$ is the set of N particles representing the belief of section $k$ at time step $t$.
+$\particles[t][][k]$ is the set of $N$ particles representing the belief of section $k$ at time step $t$.
 Frequently $t$ is omitted when implicit.
 Each particle is a configuration for a single section $\particles[][][k] = \{\particle[][j][k]\}_{j=1}^{N}$.
 The omission of $k$ indicates all necessary particles to represent the belief of the part: $\particles = \{\particles[][][k]\}$ and $\particle = \{\particle[][][k]\}$.
@@ -381,7 +382,7 @@ The omission of $k$ indicates all necessary particles to represent the belief of
   \centering
   \begin{subfigure}[b]{.5\linewidth}
     \includegraphics[width=\linewidth, clip, trim=4in 5in 6.5in 4.5in]{./Localization/MainVerticalWithHole}
-    \caption{CAD}
+    \caption{CAD with specified measurements}
     \label{fig:Overview:CAD}
   \end{subfigure}
   \hfill
@@ -400,7 +401,7 @@ The omission of $k$ indicates all necessary particles to represent the belief of
     Visualization of independent-state particle filter\\
 \protect\subcap{fig:Overview:CAD}: Side view of the CAD drawing with dimensions (simplified for clarity). 
 %The top and right edges serve as datums for the hole. 
-This drawing indicates the nominal distance between the top and bottom edge is 0.23m, with a symmetric tolerance of 5mm.
+This drawing indicates the nominal distance between the top and bottom edge is 23cm, with a symmetric tolerance of 0.5 cm.
 This drawing also defines a hole with a 1cm diameter, and the top edge as its vertical datum and side edge as its horizontal datum.\\ 
 \protect\subcap{fig:Overview:belief_top}: The beliefs of the top (green) and right (blue) edges of the part are shown. 
 The true part location is shown in gray. 
@@ -451,7 +452,7 @@ A measurement is made on a single section at each step by a touch probe.
 Let the measurement on the section $k$ at step $t$ be $\maction^k_t$, then the posterior of section $k$ is $p(\particle[t][][k]|\mathbf{\particle[t]}, \measurementSet^k_t)$. 
 In the following algorithms, the section that a measurement contacts is known.
 This assumption is reasonable if the uncertainty of the prior belief is small compared to the physical size of each section, and measurements are not chosen on the boundary between sections.
-If this assumption does not hold, localization can be performed for the whole object using the methods of section \ref{sec:rigid_body} to get better estimate, before considering the object as a combination of coupled sections.
+If this assumption does not hold, localization can be performed for the whole object using the methods of section \ref{sec:rigid_body} to get better estimates, before considering the object as a combination of coupled sections.
 
 %% The conditionals are only a prior estimate of the geometry transformations. During updates, both the transformations between sections and the pose of sections itself need to be refined based on the measurement.
 
@@ -787,7 +788,7 @@ Once this second measurement is performed \subcap{heat:third}, another measureme
 
 
 
-Adaptations are made to this process to accommodate the two representations as described next:
+Adaptations are made to this process to accommodate the two representations as described next.
 
 
 \subsection{Information for Full-State Representation}
@@ -804,14 +805,14 @@ Then, any information on this limited full state will be reduction of uncertaint
 %% Due to the simplicity of this approach, experiments on the Full State Particle Filter presented in section \ref{sec:experiment} use this method of limited the number of sections in the full state.
 
 An approach that does not require pruning irrelevant sections from the full state involves combining particles that produce similar configuration for the goal feature. 
-To calculate $H(\particles[][][G]|\maction)$ using particles $\particles$, measurement actions are used to sort the particles into bins as in described in section \ref{subsec:IG}.
+To calculate $H(\particles[][][G]|\maction)$ using particles $\particles$, measurement actions are used to sort the particles into bins as described in section \ref{subsec:IG}.
 Then, particles that produce sufficiently similar goal feature configurations are treated as identical particles when computing entropy, by combining these into groups $\groups$.
 \begin{align}
   p(\particles[][L]|\bin_k) &= 
   \frac{\sum_{i,j} \mathds{1}(\measurement_{i,j} \in \bin_k) \mathds{1}(i \in L) \cdot w_i}{W_k}\\
   H(\particles | \bin_k) &= -\sum_L p(\particles[][L]|\bin_k) \log(p(\particles[][L]|\bin_k))  
 \end{align}
-These group can be constructed by discretizing the space of possible configurations for the goal feature.
+These groups can be constructed by discretizing the space of possible configurations for the goal feature.
 An issue which this thesis does not address is the balance of a requiring a reasonably small number of particles while maintaining sufficient density for this descretization of goal feature configuration to produce meaningful group sizes.
 
 
@@ -825,7 +826,7 @@ The independent-state representation makes the approximation that the distributi
 A temporary set of particles $\tilde \particles^\feature$ is created by sampling transforms $T_G^\feature$ and applying these transforms to $\particles[][][G]$.
 $\tilde {\particles[][][\feature]}$ is used in Eq. \ref{Eq:Simulate} to generate sample measurement values $\tilde \measurement_{i,j}$, which are used in the calculation for bin entropy $H(\particles|\bin_k)$.
 While the independence approximation could be used again in the calculation of bin probabilities $p(\bin_k)$, this approximation is not needed. 
-Measurements $m_{i,j}$ calculated using $\particles[][][\feature]$ are used to calculated $p(\bin_k)$.
+Measurements $m_{i,j}$ calculated using $\particles[][][\feature]$ are used to calculate $p(\bin_k)$.
 
 %% However, measurements $m_{i,j}$ are also calculated using $\particles[][][\feature]$.
 %% These measurements are used to calculate the bin probabilities $p(\bin_k)$.

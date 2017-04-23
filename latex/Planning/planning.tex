@@ -4,7 +4,7 @@
 
 To reach into confined spaces robot arms must be thin, long, and maneuverable.
 A thin robot may have small actuators with limited torque such that the joints cannot support the weight of the outstretched cantilevered arm.
-However confined spaces are filled with places to rest for support, and contact forces can compensate for low joint torque. 
+However, confined spaces are filled with places to rest for support, and contact forces can compensate for low joint torque. 
 Robot motion planners that take advantage of support extend the reach and improve stability for long thin arms.
 
 This chapter considers motion planning for a robot arm that may experience contact forces.
@@ -52,10 +52,10 @@ In practice $M, C,$ and $N$ do not need precise estimation, because closed loop 
 \subsection{Accurate Contact Model}
 
 Modeling the dynamics when the robot is in contact with the environment is significantly more challenging, and creating useful contact models is still an active area of research \cite{Posa2013}\cite{del2012control}\cite{Tonneau}.
-This section describes a somewhat accurate contact model, however this model is ultimately not used in my path planning approahces.
+This section describes a somewhat accurate contact model, however this model is ultimately not used in my path planning approaches.
 The purpose of introducing this model is to illustrate the challenges of planning with accurate contact forces.
 
-The true contact forces are caused by strain due to deformations in the environment and robot which are complicated to model accurately \cite{Saund2013}, so I make the following assumptions when modelling contact force as a function of joint angle.
+The true contact forces are caused by strain due to deformations in the environment and robot which are too complicated to model accurately \cite{Saund2013}, so I make the following assumptions when modelling contact force as a function of joint angle.
 \begin{enumerate}
 \item Deformations of the environment obey a linear spring model, with spring constant k \cite{blandford2003applications}.
 \item The robot arm has a discrete set of defined sections which may be in contact with the environment. In this work each section $i$ is modeled as a sphere with radius $r_i$, as shown in Figure \ref{fig:sphere_approximation}.
@@ -73,7 +73,7 @@ The contactact force felt by section $i$ is:
   f_i = k {\bf d_i}.
 \end{align}
 
-Contact force $i$ adds to the joint torques dependant on the jacobian of section $i$ \cite{murray1994mathematical}:
+Contact force $i$ adds to the joint torques dependant on the Jacobian of section $i$ \cite{murray1994mathematical}:
 \begin{align}
   \tau = J_{i}^T F_i
 \end{align}
@@ -97,7 +97,7 @@ For specific implementation, a quadratic cost function is chosen:
 
 
 Figure \ref{fig:naive_cost} shows such a cost function, with the goal position at $\theta=1.4$.
-At $\theta=0$ there is no cost due to torque, as the arm is balanced vertically, but there is cost due to not achieve the goal position.
+At $\theta=0$ there is no cost due to torque, as the arm is balanced vertically, but there is cost due to not achieving the goal position.
 At approximately $\theta= \pm 1.4$ the arm perfectly rests on the ground, so again there is no cost due to torque.
 Moving slightly towards $\theta=0$ breaks the contact, so torque increases.
 Moving slightly away from $\theta=0$ forces the arm further into the ground, drastically increasing the contact force and therefore joint torque.
@@ -115,7 +115,7 @@ Although not perfect, the contact model described above has the correct structur
 There is no contact force when the arm is in free space, and the contact force increases quickly once the robot joints push the arm into the environment.
 In this model, robot joint angles which cause significant penetration yeild huge joint torques, while in reality either the robot or environment would physically fail.
 This discrepency is acceptable as both situations are not acceptable.
-Since this structre is correct, attempting to make a more accurate contact model with not solve the problem.
+Since this structre is correct, attempting to make a more accurate contact model will not solve the problem.
 
 %% first the smallest distance between each robot contact section and the environment is calculated, illustrated in Figure \ref{fig:contact_distance}.
 
@@ -239,7 +239,7 @@ Figure \ref{fig:contact_distance} shows the contact distance $d$ for a section o
 Non-zero values for $c$ are intentionally allowed when the robot is not in contact with the environment even though this is not physically realistic.
 However, during optimizing either $c_{t,i}$ or $d_{t,i}$ will tend towards 0.
 The term $\gamma_{CV}$ weights the cost of contact violation relative to other costs.
-To ensure physically reallistic trajectories, this hyperparameter is increased as optimization progresses.
+To ensure physically realistic trajectories, this hyperparameter is increased as optimization progresses.
 
 
 
@@ -368,7 +368,7 @@ In cases where the configuration must remain on this manifold, linearly extendin
 \end{figure}
 
 \subsection{Adaptation to Encourage Contacts}
-This section describes the policyRRT algorithm, which uses a policy to guide the path extension to follow the contact manifold and frequently attempts to extend towards the goal.
+This section describes the PolicyRRT algorithm, which uses a policy to guide the path extension to follow the contact manifold and frequently attempts to extend towards the goal.
 %% PolicyRRT is an RRT with a modified extension function. 
 %% PolicyRRT differs from the basic RRT algorithm in two ways.
 %% Rather than extending in a straight line the extension follows a policy.
@@ -385,7 +385,7 @@ PolicyRRT more highly weights exploration guided by the policy over exploration 
 However, a policy may guide the path to a trapped configuration from a wide basin, resulting in over exploration of this trapped region.
 To prevent over-exploration of a trapped region, the extension terminates if the path enters a previously explored region, where the extension is closer to an existing path than the start position.
 
-As motivation for this approach, in many environments it is relatively easy to compute a reactive policy that often makes forwards progress towards a goal while avoiding collision with obstacles,
+As motivation for this approach, in many environments it is relatively easy to compute a reactive policy that often makes forward progress towards a goal while avoiding collision with obstacles,
 but such policies are prone to getting stuck in trapped regions.
 A potential field is a popular example with these characteristics \cite{koren1991potential}.
 PolicyRRT provides a method to escape these trapped regions when necessary, while still devoting a lot of computation to following the provided policy towards the goal.
@@ -416,7 +416,7 @@ The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \i
 
 
 \begin{algorithm}
-\caption{$T=(V,E) \leftarrow$ policyRRT$(x_{start})$}\label{euclid}
+\caption{$T=(V,E) \leftarrow$ PolicyRRT$(x_{start})$}\label{euclid}
 \begin{algorithmic}[1]
 \State $T \leftarrow$ InitTree($x_{start}$)
 \While {GoalNotReached($T, X_{goal}$)}
@@ -462,7 +462,7 @@ The algorithm aims to find a path in $X_{free}$ from $x_{start}$ to $x_{goal} \i
   \centering
   \includegraphics[width=.5\linewidth]{./Planning/extend.pdf}
   
-  \caption{Illustration of Policy RRT extension on the contact manifold}
+  \caption{Illustration of PolicyRRT extension on the contact manifold}
   \label{fig:extend}
 \end{figure}
 
@@ -492,7 +492,7 @@ Thus the linear extension leaves the contact manifold, and the policy extension 
 
 
 \section{Experiments}
-\subsection{Comparison to non-contact plans}
+\subsection{Comparison to Non-Contact Plans}
 \begin{table}
 \centering
 %% \vspace{3em}
@@ -533,11 +533,11 @@ Experiments were preformed to demonstrate the benefits of planning with contact.
 Three algorithms were used to generate plans: the naive trajectory optimization that is not able to discover contacts, the smooth contact trajectory optimization as described in section \ref{sec:trajectory_optimization},  and a generic RRT. 
 Plans were generated for an approximately 1.5 meter long 11-DOF arm in a world with a flat floor.
 This world was intentionally kept simple enough that simple initialization was sufficient.
-Each joint had a maximum torque limit of 5 Nm.
+Each joint had a maximum torque limit of 5Nm.
 The different goal positions included moving the end effector directly above, 0.5, 1, and 1.3 meters from the base link, reaching 0.5m above the floor.
 Figure \ref{fig:flat_ground_arm} visualizes the simulated arm in this environment.
 Joint torques were calculated for these plans in simulation, and these plans were then executed on the physical robot with joint torques recorded.
-While significant effort has been invested into characterizing and improving the torque measurement on these robots, the accuracy is at best within 1 Nm.
+While significant effort has been invested into characterizing and improving the torque measurement on these robots, the accuracy is at best within 1Nm.
 
 
 Table \ref{table:non_contact_comparison} displays the maximum and average torques experienced by the links.
@@ -572,7 +572,7 @@ However, because the robot uses compliant actuators it is acceptable for contact
 Trajectories were generated for a 16-DOF snake robot arm in a model of a wing section by combining the approaches shown above.
 The initial configuration and goal position for the end effector were chosen manually and contained goal positions at the corners of the available volume so that the arm must maintain contact for support.
 
-First, the policyRRT of section \ref{sec:sample_planning} was used to generate a trajectory a for the arm to a goal position while avoiding collisions between the robot and the wing, however ignoring the torque limits of the joints.
+First, the PolicyRRT of section \ref{sec:sample_planning} was used to generate a trajectory a for the arm to a goal position while avoiding collisions between the robot and the wing, however ignoring the torque limits of the joints.
 This trajectory was used as an initialization for the trajectory optimization approach of section \ref{sec:trajectory_optimization}
 
 
