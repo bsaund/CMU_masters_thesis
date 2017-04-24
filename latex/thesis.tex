@@ -127,12 +127,12 @@ Arun Srivatsan
   Contacts present the physical danger of large forces as well as challenging computational issues, but enabling robots to reason about contacts extends the extent to which robots can perceive and act in the world.
 
   This thesis explores both localization and planning where contacts are required.
-  Computational issues arise due to the local nature of contacts, yielding subspaces of intersection thin manifolds, so several common techniques in robotics are adapted to better handle the local effects of contact.
-  A particle filter is augmented to update from a precise measurement that would ordinarily eliminate most particles.
+  Contact measurements are sparse and precise, and contact forces are sudden and hard.
+  In this work, several common techniques in robotics are adapted to better handle the local nature of contacts.
+  A particle filter is augmented to both update from a precise measurement that would ordinarily eliminate most particles, and also accommodate internal model uncertainty.
   An efficient information gain metric is defined using these particles to predict useful future measurements.
-  A new dynamics model and associated cost function are created for a robotic arm, which although are not faithful to real dynamics, are conditioned well for use in existing planning methods.
+  A new contact dynamics model and associated cost function are created for a robotic arm, which although different than the real dynamics, are conditioned well for use in existing planning methods.
   This artificial but useful dynamics model is shown in both trajectory optimization and sampled-based planning.
-  The techniques are demonstrated in simulation and physical hardware.
 \end{abstract}
 
 \begin{acknowledgments}
